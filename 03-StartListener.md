@@ -1,0 +1,1 @@
+# 启动监听> 2019.09.22[toc]## 讲义[Administering the Listener](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/netag/configuring-and-administering-oracle-net-listener.html#GUID-CF3D3974-B170-4FB1-8850-6A083CBC7917)## 注意点dbca图形化界面创建数据库时，已经配置了监听，因此无需修改配置文件，直接启动```bashlsnrctl statuslsnrctl startlsnrctl stop```
