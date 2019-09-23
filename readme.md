@@ -1,6 +1,6 @@
 # Readme
 
-##　入门文章
+## 入门文章
 
 [Oracle 12c Articles](https://oracle-base.com/articles/12c/articles-12c)
 
