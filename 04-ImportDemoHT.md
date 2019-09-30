@@ -113,7 +113,89 @@ PR_REP	   Public Relations Representative	     4500      10500
 19 rows selected.
 ```
 
+## 如果为图像化安装HR
+
+### 解锁HR用户
+
+"alter user hr account unlock;"  在commit操作之后，继续："alter user hr identified by hr;"
+
+```bash
+[oracle@ol7-122 database]$ sqlplus / as sysdba
+
+SQL*Plus: Release 12.2.0.1.0 Production on Mon Sep 30 00:23:17 2019
+
+Copyright (c) 1982, 2016, Oracle.  All rights reserved.
 
 
+Connected to:
+Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
+
+SQL> alter session set container=booboo;
+
+Session altered.
+
+SQL> alter user hr account unlock;
+
+User altered.
+
+SQL> commit;
+
+Commit complete.
+
+SQL> alter user hr identified by hr;
+
+User altered.
+```
+
+### 连接数据库
+
+查看监听情况：
 
 
+```bash
+[oracle@ol7-122 database]$ lsnrctl status
+
+LSNRCTL for Linux: Version 12.2.0.1.0 - Production on 30-SEP-2019 00:26:48
+
+Copyright (c) 1991, 2016, Oracle.  All rights reserved.
+
+Connecting to (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=ol7-122.localdomain)(PORT=1521)))
+STATUS of the LISTENER
+------------------------
+Alias                     LISTENER
+Version                   TNSLSNR for Linux: Version 12.2.0.1.0 - Production
+Start Date                29-SEP-2019 23:08:16
+Uptime                    0 days 1 hr. 18 min. 47 sec
+Trace Level               off
+Security                  ON: Local OS Authentication
+SNMP                      OFF
+Listener Parameter File   /u01/app/oracle/product/12.2.0.1/db_1/network/admin/listener.ora
+Listener Log File         /u01/app/oracle/diag/tnslsnr/ol7-122/listener/alert/log.xml
+Listening Endpoints Summary...
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=::1)(PORT=1521)))
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=ipc)(KEY=EXTPROC1521)))
+Services Summary...
+Service "93c0700a4d444239e053809da8c05cda.localdomain" has 1 instance(s).
+  Instance "cdb1", status READY, has 1 handler(s) for this service...
+Service "booboo.localdomain" has 1 instance(s).
+  Instance "cdb1", status READY, has 1 handler(s) for this service...
+Service "cdb1.localdomain" has 1 instance(s).
+  Instance "cdb1", status READY, has 1 handler(s) for this service...
+Service "cdb1XDB.localdomain" has 1 instance(s).
+  Instance "cdb1", status READY, has 1 handler(s) for this service...
+The command completed successfully
+```
+
+从返回结果可以 pdb：booboo的连接关键参数
+
+* host ol7-122.localdomain
+* port 1521
+* server booboo.localdomain
+
+登录命令：
+
+`sqlplus hr/hr@ol7-122.localdomain:1521/booboo.localdomain`
+
+```bash
+
+```
