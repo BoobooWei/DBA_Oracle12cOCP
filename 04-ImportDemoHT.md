@@ -8,10 +8,14 @@
 
 Page 31
 
-
 ## 注意点
 
-> 要进入pdb再导入数据
+启动HR example的方法：
+
+1. 手动导入
+2. dbca图形化界面都选
+
+> 如果为手动导入数据，要进入pdb再导入数据
 
 ```bash
 cd /u01/app/oracle/product/12.2.0/db_1/demo/schema/human_resources
@@ -19,6 +23,7 @@ sqlplus / as sysdba
 SQL> alter session set container=booboopdb1;
 SQL> @hr_main.sql
 SQL> select table_name from dba_tables where owner='HR';
+SQL> alter session set container=cdb$root; -- 切换到容器中
 ```
 
 > sys用户连接booboopdb1库
@@ -38,11 +43,63 @@ DEPARTMENTS
 JOBS
 EMPLOYEES
 JOB_HISTORY
+
+SQL> conn hr/Oracle123@127.0.0.1:1521/booboopdb1
+Connected.
 ```
 
 > hr用户连接booboopdb1库
 
 ```bash
+sqlplus hr/Oracle123@127.0.0.1:1521/booboopdb1
+
+先查看监听，找到service
+[oracle@oracle01 ~]$ lsnrctl status
+
+LSNRCTL for Linux: Version 12.2.0.1.0 - Production on 12-OCT-2019 19:21:57
+
+Copyright (c) 1991, 2016, Oracle.  All rights reserved.
+
+Connecting to (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=ol7-122.localdomain)(PORT=1521)))
+STATUS of the LISTENER
+------------------------
+Alias                     LISTENER
+Version                   TNSLSNR for Linux: Version 12.2.0.1.0 - Production
+Start Date                12-OCT-2019 19:02:32
+Uptime                    0 days 0 hr. 19 min. 59 sec
+Trace Level               off
+Security                  ON: Local OS Authentication
+SNMP                      OFF
+Listener Parameter File   /u01/app/oracle/product/12.2.0/db_1/network/admin/listener.ora
+Listener Log File         /u01/app/oracle/diag/tnslsnr/oracle01/listener/alert/log.xml
+Listening Endpoints Summary...
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=oracle01)(PORT=1521)))
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=ipc)(KEY=EXTPROC1521)))
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=tcps)(HOST=oracle01)(PORT=5500))(Security=(my_wallet_directory=/u01/app/oracle/admin/booboo/xdb_wallet))(Presentation=HTTP)(Session=RAW))
+Services Summary...
+Service "93227d66515623b9e0553ce49b3eaf97" has 1 instance(s).
+  Instance "booboo", status READY, has 1 handler(s) for this service...
+Service "932283ef357f23fbe0553ce49b3eaf97" has 1 instance(s).
+  Instance "booboo", status READY, has 1 handler(s) for this service...
+Service "9322894c27292419e0553ce49b3eaf97" has 1 instance(s).
+  Instance "booboo", status READY, has 1 handler(s) for this service...
+Service "93228eb75d13244ce0553ce49b3eaf97" has 1 instance(s).
+  Instance "booboo", status READY, has 1 handler(s) for this service...
+Service "booboo" has 1 instance(s).
+  Instance "booboo", status READY, has 1 handler(s) for this service...
+Service "boobooXDB" has 1 instance(s).
+  Instance "booboo", status READY, has 1 handler(s) for this service...
+Service "booboopdb1" has 1 instance(s).
+  Instance "booboo", status READY, has 1 handler(s) for this service...
+Service "booboopdb2" has 1 instance(s).
+  Instance "booboo", status READY, has 1 handler(s) for this service...
+Service "booboopdb3" has 1 instance(s).
+  Instance "booboo", status READY, has 1 handler(s) for this service...
+Service "booboopdb4" has 1 instance(s).
+  Instance "booboo", status READY, has 1 handler(s) for this service...
+The command completed successfully
+
+
 [oracle@oracle01 human_resources]$ sqlplus hr/Oracle123@127.0.0.1:1521/booboopdb1 
 
 SQL*Plus: Release 12.2.0.1.0 Production on Sun Sep 22 04:57:12 2019
@@ -195,7 +252,3 @@ The command completed successfully
 登录命令：
 
 `sqlplus hr/hr@ol7-122.localdomain:1521/booboo.localdomain`
-
-```bash
-
-```
