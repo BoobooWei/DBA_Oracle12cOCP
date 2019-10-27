@@ -190,9 +190,405 @@ Tips-监听名字`LISTENER`为何不建议修改？
 
 ### 性能视图`v$fixed_table`
 
+```sql
+SQL> column Name format a30
+SQL> select name from v$fixed_table where name like '%USER%';
+
+NAME
+------------------------------
+X$LOGMNR_USER$
+X$RO_USER_ACCOUNT
+X$KFVACFSREALMUSER
+X$DIAG_DDE_USER_ACTION_DEF
+X$DIAG_DDE_USER_ACTION
+X$DIAG_EM_USER_ACTIVITY
+X$DIAG_VEM_USER_ACTLOG
+X$DIAG_VEM_USER_ACTLOG1
+GV$IM_USER_SEGMENTS
+V$IM_USER_SEGMENTS
+GV$PWFILE_USERS
+V$PWFILE_USERS
+GV$ASM_ACFS_SEC_REALM_USER
+V$ASM_ACFS_SEC_REALM_USER
+GV$ASM_USER
+V$ASM_USER
+GV$ASM_USERGROUP
+V$ASM_USERGROUP
+GV$ASM_USERGROUP_MEMBER
+V$ASM_USERGROUP_MEMBER
+GV$RO_USER_ACCOUNT
+V$RO_USER_ACCOUNT
+
+22 rows selected.
+```
+
+
+
 ### 字典视图`dict`
 
-## 表视图 `tab`
+```sql
+SQL> column table_name format a100
+SQL> select table_name from dict where rownum<10;
+
+TABLE_NAME
+----------------------------------------------------------------------------------------------------
+CDB_2PC_NEIGHBORS
+CDB_2PC_PENDING
+CDB_ACL_NAME_MAP
+CDB_ADDM_FDG_BREAKDOWN
+CDB_ADDM_FINDINGS
+CDB_ADDM_INSTANCES
+CDB_ADDM_SYSTEM_DIRECTIVES
+CDB_ADDM_TASKS
+CDB_ADDM_TASK_DIRECTIVES
+
+9 rows selected.
+```
+
+### 表视图 `tab`
+
+```sql
+SQL> column TNAME format a20
+SQL> select * from tab;
+
+TNAME		     TABTYPE  CLUSTERID
+-------------------- ------- ----------
+BOOBOO		     SYNONYM
+COUNTRIES	     TABLE
+DEPARTMENTS	     TABLE
+EMPLOYEES	     TABLE
+EMP_DETAILS_VIEW     VIEW
+JOBS		     TABLE
+JOB_HISTORY	     TABLE
+LOCATIONS	     TABLE
+REGIONS 	     TABLE
+
+9 rows selected.
+
+```
 
 
+
+## 参数文件
+
+[11g 参数文件]( [https://github.com/BoobooWei/booboo_oracle/blob/master/D-体系结构和存储引擎-03-物理结构_参数文件parameter_files.md) 
+
+[12c 参数文件]( https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/creating-and-configuring-an-oracle-database.html#GUID-7302C60F-E96E-4202-AC81-25A6C93EEFA3  )
+
+- [*《 Oracle数据库SQL语言参考》*](https://www.oracle.com/pls/topic/lookup?ctx=en/database/oracle/oracle-database/12.2/admin&id=SQLRF00902)中有关该`ALTER` `SYSTEM`命令的 信息
+-  [在CDB中使用ALTER SYSTEM SET语句]( https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/administering-a-cdb-with-sql-plus.html#GUID-E47348D6-5350-4890-ACD6-7BA1C1DD4E95 ) 
+
+12c 参数文件 与 11g 参数文件的不同之处
+
+```bash
+1. pdb 继承 cdb的参数
+2. pdb 参数可以变更，保存在CDB级别的 pdb_spfile$ 系统表中，对参数文件没有影响
+3. pdb 参数哪些可以变更，当 ISPDB_MODIFIABLE 列TRUE用于V$SYSTEM_PARAMETER视图中的参数时，可以修改PDB的初始化参数。
+4. 文本初始化参数文件（PFILE）不能包含特定于PDB的参数值。
+
+-- 下查询列出了可为PDB修改的所有初始化参数：
+SELECT NAME FROM V$SYSTEM_PARAMETER WHERE ISPDB_MODIFIABLE='TRUE' ORDER BY NAME;
+
+-- 可被动态修改 且 pdb 中可被覆盖的 参数
+SELECT NAME,ISPDB_MODIFIABLE,ISSYS_MODIFIABLE FROM V$SYSTEM_PARAMETER WHERE ISPDB_MODIFIABLE='TRUE' and ISSYS_MODIFIABLE<>'FALSE' ORDER BY NAME;
+
+-- 不可动态修改 且 pdb 中可被覆盖的 参数
+SELECT NAME,ISPDB_MODIFIABLE,ISSYS_MODIFIABLE FROM V$SYSTEM_PARAMETER WHERE ISPDB_MODIFIABLE='TRUE' and ISSYS_MODIFIABLE='FALSE' ORDER BY NAME;
+```
+
+### 动态参数修改
+
+```sql
+-- pdb中查看当前动态参数memory_max_target
+SQL> select num,name,type,value,isdefault,ISBASIC,ISPDB_MODIFIABLE from v$system_parameter where name='open_cursors';
+
+       NUM NAME 		      TYPE VALUE		ISDEFAULT ISBAS
+---------- -------------------- ---------- -------------------- --------- -----
+ISPDB
+-----
+      3328 open_cursors 		 3 300			FALSE	  TRUE
+TRUE
+
+-- 可以在pdb中直接修改
+SQL> alter system set open_cursors=500 scope=both;
+
+System altered.
+
+SQL> show parameter open_cursors;
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+open_cursors			     integer	 500
+SQL> select num,name,type,value,isdefault,ISBASIC,ISPDB_MODIFIABLE from v$parameter where name='open_cursors';
+
+       NUM NAME 		      TYPE VALUE		ISDEFAULT ISBAS
+---------- -------------------- ---------- -------------------- --------- -----
+ISPDB
+-----
+      3328 open_cursors 		 3 500			FALSE	  TRUE
+TRUE
+
+
+SQL> select num,name,type,value,isdefault,ISBASIC,ISPDB_MODIFIABLE from v$system_parameter where name='open_cursors';
+
+       NUM NAME 		      TYPE VALUE		ISDEFAULT ISBAS
+---------- -------------------- ---------- -------------------- --------- -----
+ISPDB
+-----
+      3328 open_cursors 		 3 500			FALSE	  TRUE
+TRUE
+```
+
+
+
+### 静态参数修改
+
+```bash
+-- pdb中查看当前静态参数memory_max_target
+SQL> show pdbs
+
+    CON_ID CON_NAME			  OPEN MODE  RESTRICTED
+---------- ------------------------------ ---------- ----------
+	 3 BOOBOOPDB1			  READ WRITE NO
+
+SQL> column name format a20
+SQL> column value format a20
+SQL> select NAME,VALUE,ISSYS_MODIFIABLE from v$parameter where name='memory_max_target';
+
+NAME		     VALUE		  ISSYS_MOD
+-------------------- -------------------- ---------
+memory_max_target    0			  FALSE
+
+-- 查看memory_max_target的ISPDB_MODIFIABLE的值为FALSE，代表pdb中不可以修改
+SQL> select num,name,type,value,isdefault,ISBASIC,ISPDB_MODIFIABLE from v$system_parameter where name='memory_max_target';
+
+       NUM NAME 		      TYPE VALUE		ISDEFAULT ISBAS
+---------- -------------------- ---------- -------------------- --------- -----
+ISPDB
+-----
+      1376 memory_max_target		 6 0			TRUE	  FALSE
+FALSE
+
+-- pdb中修改该参数值
+SQL> alter system set memory_max_target=1g scope=spfile;
+alter system set memory_max_target=1g scope=spfile
+*
+ERROR at line 1:
+ORA-65040: operation not allowed from within a pluggable database
+
+
+-- pdb中修改open_links
+SQL> select num,name,type,value,isdefault,ISBASIC,ISPDB_MODIFIABLE from v$system_parameter where name='open_links';
+
+       NUM NAME 						    TYPE VALUE		      ISDEFAULT ISBAS ISPDB
+---------- -------------------------------------------------- ---------- -------------------- --------- ----- -----
+      3288 open_links						       3 4		      TRUE	FALSE TRUE
+
+SQL> alter system set open_links=10 scope=spfile;
+
+System altered.
+
+-- cdb中查看pdb_spfile$表中记录的参数值
+SQL> select name,value$ from pdb_spfile$ where name='open_cursors';
+
+NAME		     VALUE$
+-------------------- --------------------
+open_cursors	     500
+
+-- 通过cdb，重启pdb后生效
+SQL> STARTUP PLUGGABLE DATABASE booboopdb1 FORCE
+Pluggable Database opened.
+
+-- pdb中查看参数值
+SQL> show parameter open_cursors
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+open_cursors			     integer	 500
+
+
+--文本初始化参数文件（PFILE）不能包含特定于PDB的参数值。
+```
+
+查看参数
+
+```sql
+SQL> SELECT NAME,ISPDB_MODIFIABLE,ISSYS_MODIFIABLE FROM V$SYSTEM_PARAMETER WHERE ISPDB_MODIFIABLE='TRUE' and ISSYS_MODIFIABLE<>'FALSE' ORDER BY NAME;
+
+NAME						   ISPDB ISSYS_MOD
+-------------------------------------------------- ----- ---------
+approx_for_aggregation				   TRUE  IMMEDIATE
+approx_for_count_distinct			   TRUE  IMMEDIATE
+approx_for_percentile				   TRUE  IMMEDIATE
+asm_diskstring					   TRUE  IMMEDIATE
+awr_pdb_autoflush_enabled			   TRUE  IMMEDIATE
+cell_offload_compaction 			   TRUE  IMMEDIATE
+cell_offload_decryption 			   TRUE  IMMEDIATE
+cell_offload_parameters 			   TRUE  IMMEDIATE
+cell_offload_plan_display			   TRUE  IMMEDIATE
+cell_offload_processing 			   TRUE  IMMEDIATE
+cell_offloadgroup_name				   TRUE  IMMEDIATE
+commit_logging					   TRUE  IMMEDIATE
+commit_wait					   TRUE  IMMEDIATE
+commit_write					   TRUE  IMMEDIATE
+containers_parallel_degree			   TRUE  IMMEDIATE
+cpu_count					   TRUE  IMMEDIATE
+create_stored_outlines				   TRUE  IMMEDIATE
+cursor_bind_capture_destination 		   TRUE  IMMEDIATE
+cursor_invalidation				   TRUE  IMMEDIATE
+cursor_sharing					   TRUE  IMMEDIATE
+db_block_checking				   TRUE  IMMEDIATE
+db_cache_size					   TRUE  IMMEDIATE
+db_create_file_dest				   TRUE  IMMEDIATE
+db_create_online_log_dest_1			   TRUE  IMMEDIATE
+db_create_online_log_dest_2			   TRUE  IMMEDIATE
+db_create_online_log_dest_3			   TRUE  IMMEDIATE
+db_create_online_log_dest_4			   TRUE  IMMEDIATE
+db_create_online_log_dest_5			   TRUE  IMMEDIATE
+db_file_multiblock_read_count			   TRUE  IMMEDIATE
+db_index_compression_inheritance		   TRUE  IMMEDIATE
+db_securefile					   TRUE  IMMEDIATE
+db_unrecoverable_scn_tracking			   TRUE  IMMEDIATE
+ddl_lock_timeout				   TRUE  IMMEDIATE
+default_sharing 				   TRUE  IMMEDIATE
+deferred_segment_creation			   TRUE  IMMEDIATE
+dst_upgrade_insert_conv 			   TRUE  IMMEDIATE
+enable_automatic_maintenance_pdb		   TRUE  IMMEDIATE
+enable_ddl_logging				   TRUE  IMMEDIATE
+encrypt_new_tablespaces 			   TRUE  IMMEDIATE
+fixed_date					   TRUE  IMMEDIATE
+global_names					   TRUE  IMMEDIATE
+heat_map					   TRUE  IMMEDIATE
+inmemory_clause_default 			   TRUE  IMMEDIATE
+inmemory_expressions_usage			   TRUE  IMMEDIATE
+inmemory_force					   TRUE  IMMEDIATE
+inmemory_query					   TRUE  IMMEDIATE
+inmemory_size					   TRUE  IMMEDIATE
+inmemory_virtual_columns			   TRUE  IMMEDIATE
+java_jit_enabled				   TRUE  IMMEDIATE
+job_queue_processes				   TRUE  IMMEDIATE
+listener_networks				   TRUE  IMMEDIATE
+local_listener					   TRUE  IMMEDIATE
+log_archive_min_succeed_dest			   TRUE  IMMEDIATE
+long_module_action				   TRUE  IMMEDIATE
+max_datapump_jobs_per_pdb			   TRUE  IMMEDIATE
+max_dump_file_size				   TRUE  IMMEDIATE
+max_idle_time					   TRUE  IMMEDIATE
+max_iops					   TRUE  IMMEDIATE
+max_mbps					   TRUE  IMMEDIATE
+max_pdbs					   TRUE  IMMEDIATE
+max_string_size 				   TRUE  IMMEDIATE
+nls_length_semantics				   TRUE  IMMEDIATE
+nls_nchar_conv_excp				   TRUE  IMMEDIATE
+object_cache_max_size_percent			   TRUE  DEFERRED
+object_cache_optimal_size			   TRUE  DEFERRED
+olap_page_pool_size				   TRUE  DEFERRED
+open_cursors					   TRUE  IMMEDIATE
+optimizer_adaptive_plans			   TRUE  IMMEDIATE
+optimizer_adaptive_reporting_only		   TRUE  IMMEDIATE
+optimizer_adaptive_statistics			   TRUE  IMMEDIATE
+optimizer_capture_sql_plan_baselines		   TRUE  IMMEDIATE
+optimizer_dynamic_sampling			   TRUE  IMMEDIATE
+optimizer_features_enable			   TRUE  IMMEDIATE
+optimizer_index_caching 			   TRUE  IMMEDIATE
+optimizer_index_cost_adj			   TRUE  IMMEDIATE
+optimizer_inmemory_aware			   TRUE  IMMEDIATE
+optimizer_mode					   TRUE  IMMEDIATE
+optimizer_secure_view_merging			   TRUE  IMMEDIATE
+optimizer_use_invisible_indexes 		   TRUE  IMMEDIATE
+optimizer_use_pending_statistics		   TRUE  IMMEDIATE
+optimizer_use_sql_plan_baselines		   TRUE  IMMEDIATE
+parallel_degree_limit				   TRUE  IMMEDIATE
+parallel_degree_policy				   TRUE  IMMEDIATE
+parallel_force_local				   TRUE  IMMEDIATE
+parallel_instance_group 			   TRUE  IMMEDIATE
+parallel_max_servers				   TRUE  IMMEDIATE
+parallel_min_time_threshold			   TRUE  IMMEDIATE
+pdb_file_name_convert				   TRUE  IMMEDIATE
+pdb_lockdown					   TRUE  IMMEDIATE
+pga_aggregate_limit				   TRUE  IMMEDIATE
+pga_aggregate_target				   TRUE  IMMEDIATE
+plscope_settings				   TRUE  IMMEDIATE
+plsql_ccflags					   TRUE  IMMEDIATE
+plsql_code_type 				   TRUE  IMMEDIATE
+plsql_debug					   TRUE  IMMEDIATE
+plsql_optimize_level				   TRUE  IMMEDIATE
+plsql_v2_compatibility				   TRUE  IMMEDIATE
+plsql_warnings					   TRUE  IMMEDIATE
+query_rewrite_enabled				   TRUE  IMMEDIATE
+query_rewrite_integrity 			   TRUE  IMMEDIATE
+recyclebin					   TRUE  DEFERRED
+remote_dependencies_mode			   TRUE  IMMEDIATE
+remote_listener 				   TRUE  IMMEDIATE
+remote_recovery_file_dest			   TRUE  IMMEDIATE
+resource_limit					   TRUE  IMMEDIATE
+resource_manager_plan				   TRUE  IMMEDIATE
+result_cache_mode				   TRUE  IMMEDIATE
+result_cache_remote_expiration			   TRUE  IMMEDIATE
+resumable_timeout				   TRUE  IMMEDIATE
+session_cached_cursors				   TRUE  DEFERRED
+sessions					   TRUE  IMMEDIATE
+sga_min_size					   TRUE  IMMEDIATE
+sga_target					   TRUE  IMMEDIATE
+shadow_core_dump				   TRUE  IMMEDIATE
+shared_pool_size				   TRUE  IMMEDIATE
+shared_servers					   TRUE  IMMEDIATE
+skip_unusable_indexes				   TRUE  IMMEDIATE
+smtp_out_server 				   TRUE  IMMEDIATE
+sort_area_retained_size 			   TRUE  DEFERRED
+sort_area_size					   TRUE  DEFERRED
+spatial_vector_acceleration			   TRUE  IMMEDIATE
+sql_trace					   TRUE  IMMEDIATE
+sqltune_category				   TRUE  IMMEDIATE
+star_transformation_enabled			   TRUE  IMMEDIATE
+statistics_level				   TRUE  IMMEDIATE
+temp_undo_enabled				   TRUE  IMMEDIATE
+timed_os_statistics				   TRUE  IMMEDIATE
+timed_statistics				   TRUE  IMMEDIATE
+undo_retention					   TRUE  IMMEDIATE
+undo_tablespace 				   TRUE  IMMEDIATE
+workarea_size_policy				   TRUE  IMMEDIATE
+xml_db_events					   TRUE  IMMEDIATE
+
+132 rows selected.
+
+SQL> SELECT NAME,ISPDB_MODIFIABLE,ISSYS_MODIFIABLE FROM V$SYSTEM_PARAMETER WHERE ISPDB_MODIFIABLE='TRUE' and ISSYS_MODIFIABLE='FALSE' ORDER BY NAME;
+
+NAME						   ISPDB ISSYS_MOD
+-------------------------------------------------- ----- ---------
+O7_DICTIONARY_ACCESSIBILITY			   TRUE  FALSE
+blank_trimming					   TRUE  FALSE
+commit_point_strength				   TRUE  FALSE
+common_user_prefix				   TRUE  FALSE
+db_domain					   TRUE  FALSE
+db_files					   TRUE  FALSE
+db_performance_profile				   TRUE  FALSE
+nls_calendar					   TRUE  FALSE
+nls_comp					   TRUE  FALSE
+nls_currency					   TRUE  FALSE
+nls_date_format 				   TRUE  FALSE
+nls_date_language				   TRUE  FALSE
+nls_dual_currency				   TRUE  FALSE
+nls_iso_currency				   TRUE  FALSE
+nls_language					   TRUE  FALSE
+nls_numeric_characters				   TRUE  FALSE
+nls_sort					   TRUE  FALSE
+nls_territory					   TRUE  FALSE
+nls_time_format 				   TRUE  FALSE
+nls_time_tz_format				   TRUE  FALSE
+nls_timestamp_format				   TRUE  FALSE
+nls_timestamp_tz_format 			   TRUE  FALSE
+open_links					   TRUE  FALSE
+pdb_os_credential				   TRUE  FALSE
+rollback_segments				   TRUE  FALSE
+sql92_security					   TRUE  FALSE
+undo_management 				   TRUE  FALSE
+utl_file_dir					   TRUE  FALSE
+
+28 rows selected.
+```
+
+
+
+[参考链接]( https://www.cnblogs.com/askscuti/p/10878906.html)
 
