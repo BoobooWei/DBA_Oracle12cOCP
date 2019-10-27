@@ -74,35 +74,35 @@
 | D80190GC11_les05.pdf | Using Conversion Functions and Conditional Expressions | 使用转换函数和条件表达式   | 2    |
 | D80190GC11_les06.pdf | Reporting Aggregated Data Using the Group Functions    | 组函数                     | 2    |
 | D80190GC11_les07.pdf | Displaying Data from Multiple Tables Using Joins       | 多表连接                   | 2    |
-| D80190GC11_les08.pdf | Using Subqueries to Solve Queries                      | 子查询                     |      |
-| D80190GC11_les09.pdf | Using the Set Operators                                | 集合                       |      |
-| D80190GC11_les10.pdf | Managing Tables Using DML Statements                   | DML语句                    |      |
-| D80190GC11_les11.pdf | Introduction to Data Definition Language               | DDL语句                    |      |
+| D80190GC11_les08.pdf | Using Subqueries to Solve Queries                      | 子查询                     | 3    |
+| D80190GC11_les09.pdf | Using the Set Operators                                | 集合                       | 3    |
+| D80190GC11_les10.pdf | Managing Tables Using DML Statements                   | DML语句                    | 3    |
+| D80190GC11_les11.pdf | Introduction to Data Definition Language               | DDL语句                    | 3    |
 
 
 #### D80190GC11 SQL进阶
 
-| 文件                  | 标题                                        | 说明                  | DAY  |
-| --------------------- | ------------------------------------------- | --------------------- | ---- |
-| D80194GC11_Les01.pdf  | Introduction                                | 课程简介和复习SQL基础 |      |
-| D80194GC11_Les02.pdf  | Introduction to Data Dictionary Views       | 数据字典视图          |      |
-| D80194GC11_Les03.pdf  | Creating Sequences, Synonyms, and Indexes   |                       |      |
-| D80194GC11_Les04.pdf  | Creating Views                              |                       |      |
-| D80194GC11_Les05.pdf  | Managing Schema Objects                     |                       |      |
-| D80194GC11_Les06.pdf  | Retrieving Data by Using Subqueries         |                       |      |
-| D80194GC11_Les07.pdf  | Manipulating Data by Using Subqueries       |                       |      |
-| D80194GC11_Les08.pdf  | Controlling User Access                     |                       |      |
-| D80194GC11_Les09.pdf  | Manipulating Data                           |                       |      |
-| D80194GC11_Les010.pdf | Managing Data in Different Time Zones       |                       |      |
-| D80194GC11_Les11.pdf  | Table Descriptions                          |                       |      |
-| D80194GC11_Les12.pdf  | Using SQL Developer                         |                       |      |
-| D80194GC11_Les13.pdf  | Using SQL*Plus                              |                       |      |
-| D80194GC11_Les14.pdf  | Commonly Used SQL Commands                  |                       |      |
-| D80194GC11_Les15.pdf  | Generating Reports by Grouping Related Data |                       |      |
-| D80194GC11_Les16.pdf  | Hierarchical Retrieval                      |                       |      |
-| D80194GC11_Les17.pdf  | Writing Advanced Scripts                    |                       |      |
-| D80194GC11_Les18.pdf  | Oracle Database Architectural Components    |                       |      |
-| D80194GC11_Les19.pdf  | Regular Expression Support                  |                       |      |
+| 文件                  | 标题                                        | 说明                     | DAY  |
+| --------------------- | ------------------------------------------- | ------------------------ | ---- |
+| D80194GC11_Les01.pdf  | Introduction                                | 课程简介和复习SQL基础    | 4    |
+| D80194GC11_Les02.pdf  | Introduction to Data Dictionary Views       | 数据字典视图             | 4    |
+| D80194GC11_Les03.pdf  | Creating Sequences, Synonyms, and Indexes   | 创建序列、同义词和索引   | 4    |
+| D80194GC11_Les04.pdf  | Creating Views                              | 创建视图                 | 4    |
+| D80194GC11_Les05.pdf  | Managing Schema Objects                     | 管理架构对象             |      |
+| D80194GC11_Les06.pdf  | Retrieving Data by Using Subqueries         | 使用子查询检索数据       |      |
+| D80194GC11_Les07.pdf  | Manipulating Data by Using Subqueries       | 使用子查询操作数据       |      |
+| D80194GC11_Les08.pdf  | Controlling User Access                     | 控制用户访问             |      |
+| D80194GC11_Les09.pdf  | Manipulating Data                           | 操作数据                 |      |
+| D80194GC11_Les010.pdf | Managing Data in Different Time Zones       | 管理不同时区的数据       |      |
+| D80194GC11_Les11.pdf  | Table Descriptions                          | 表描述                   |      |
+| D80194GC11_Les12.pdf  | Using SQL Developer                         | 使用SQL Developer工具    |      |
+| D80194GC11_Les13.pdf  | Using SQL*Plus                              | 使用SQL*Plus             |      |
+| D80194GC11_Les14.pdf  | Commonly Used SQL Commands                  | 常用的sql命令            |      |
+| D80194GC11_Les15.pdf  | Generating Reports by Grouping Related Data | 通过分组相关数据生成报表 |      |
+| D80194GC11_Les16.pdf  | Hierarchical Retrieval                      | 分层检索                 |      |
+| D80194GC11_Les17.pdf  | Writing Advanced Scripts                    | 编写高级脚本             |      |
+| D80194GC11_Les18.pdf  | Oracle Database Architectural Components    | Oracle数据库体系结构组件 |      |
+| D80194GC11_Les19.pdf  | Regular Expression Support                  | 正则表达式支持           |      |
 
 
 
@@ -112,29 +112,29 @@
 
 | 文件                  | 标题                                                   | 说明                       | DAY |
 | --------------------- | ------------------------------------------------------ | -------------------------- | ---- |
-| Appendix_A.pdf | Working with Oracle Support                | 课程简介和对Oracle的简介   |     |
-| D78846GC20_01.pdf | Introduction |    |     |
-| D78846GC20_02.pdf | Exploring Oracle Database Architecture |    |     |
-| D78846GC20_03.pdf | Oracle Database Management Tools |    |     |
-| D78846GC20_04.pdf | Managing the Database Instance |    |     |
-| D78846GC20_05.pdf | Configuring the Oracle Network Environment |    |     |
-| D78846GC20_06.pdf | Administering User Security |    |     |
-| D78846GC20_07.pdf | Managing Database Storage Structures |    |     |
-| D78846GC20_08.pdf | Managing Space |    |     |
-| D78846GC20_09.pdf | Managing Undo Data |    |     |
-| D78846GC20_10.pdf | Managing Data Concurrency |    |     |
-| D78846GC20_11.pdf | Implementing Oracle Database Auditing |    |     |
-| D78846GC20_12.pdf | Backup and Recovery: Concepts |    |     |
-| D78846GC20_13.pdf | Backup and Recovery: Configuration |    |     |
-| D78846GC20_14.pdf | Performing Database Backups |    |     |
-| D78846GC20_15.pdf | Performing Database Recovery |    |     |
-| D78846GC20_16.pdf | Moving Data |    |     |
-| D78846GC20_17.pdf | Database Maintenance |    |     |
-| D78846GC20_18.pdf | Managing Performance |    |     |
-| D78846GC20_19.pdf | Managing Performance: SQL Tuning |    |     |
-| D78846GC20_20.pdf | Using Database Resource Manager | | |
-| D78846GC20_21.pdf | Using Oracle Scheduler to Automate Tasks | | |
-| D78846GC20_22.pdf | Oracle Database Cloud Service: Overview | | |
+| Appendix_A.pdf | Working with Oracle Support                | 使用Oracle的支持 |     |
+| D78846GC20_01.pdf | Introduction | 课程简介和对Oracle的简介 |     |
+| D78846GC20_02.pdf | Exploring Oracle Database Architecture | 数据架构 |     |
+| D78846GC20_03.pdf | Oracle Database Management Tools | 管理工具 |     |
+| D78846GC20_04.pdf | Managing the Database Instance | 管理实例 | 4 |
+| D78846GC20_05.pdf | Configuring the Oracle Network Environment | 管理网络 | 4 |
+| D78846GC20_06.pdf | Administering User Security | 管理用户 |     |
+| D78846GC20_07.pdf | Managing Database Storage Structures | 管理存储 |     |
+| D78846GC20_08.pdf | Managing Space | 管理空间 |     |
+| D78846GC20_09.pdf | Managing Undo Data | 管理回滚 |     |
+| D78846GC20_10.pdf | Managing Data Concurrency | 管理并发 |     |
+| D78846GC20_11.pdf | Implementing Oracle Database Auditing | 管理审计 |     |
+| D78846GC20_12.pdf | Backup and Recovery: Concepts | 备份恢复概念 |     |
+| D78846GC20_13.pdf | Backup and Recovery: Configuration | 管理恢复配置 |     |
+| D78846GC20_14.pdf | Performing Database Backups | 执行备份 |     |
+| D78846GC20_15.pdf | Performing Database Recovery | 执行恢复 |     |
+| D78846GC20_16.pdf | Moving Data | 移动数据 |     |
+| D78846GC20_17.pdf | Database Maintenance | 数据库维护 |     |
+| D78846GC20_18.pdf | Managing Performance | 管理性能 |     |
+| D78846GC20_19.pdf | Managing Performance: SQL Tuning | SQL调优 |     |
+| D78846GC20_20.pdf | Using Database Resource Manager | 资源管理 | |
+| D78846GC20_21.pdf | Using Oracle Scheduler to Automate Tasks | 调试与自动任务 | |
+| D78846GC20_22.pdf | Oracle Database Cloud Service: Overview | 云服务 | |
 
 
 
