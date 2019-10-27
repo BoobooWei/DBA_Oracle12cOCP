@@ -592,3 +592,36 @@ utl_file_dir					   TRUE  FALSE
 
 [参考链接]( https://www.cnblogs.com/askscuti/p/10878906.html)
 
+## 启动和关闭
+
+[Starting Up and Shutting Down]( https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/starting-up-and-shutting-down.html#GUID-045DE684-6680-4099-A49E-2F5B5FA59670 )
+
+## 跟踪文件
+
+[Managing Diagnostic Data]( https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/managing-diagnostic-data.html#GUID-8DEB1BE0-8FB9-4FB2-A19A-17CF6F5791C3 )
+
+## 课程目标
+
+```
+1. Start and stop the Oracle database instance and components
+2. Modify database initialization parameters
+3. Describe the stages of database startup
+4. Describe database shutdown options 
+5. View the alert log
+6. Access dynamic performance views
+```
+
+
+
+### 1. 启动和停止数据库实例和组件
+
+### 2. 修改数据库初始化参数
+
+### 3. 描述数据库启动的阶段
+
+### 4. 描述数据关闭的参数含义
+
+### 5. 查看告警日志
+
+### 6. 访问动态性能视图
+
