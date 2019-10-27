@@ -271,7 +271,7 @@ REGIONS 	     TABLE
 
 ## 参数文件
 
-[11g 参数文件]( [https://github.com/BoobooWei/booboo_oracle/blob/master/D-体系结构和存储引擎-03-物理结构_参数文件parameter_files.md) 
+[11g 参数文件](https://github.com/BoobooWei/booboo_oracle/blob/master/D-体系结构和存储引擎-03-物理结构_参数文件parameter_files.md) 
 
 [12c 参数文件]( https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/creating-and-configuring-an-oracle-database.html#GUID-7302C60F-E96E-4202-AC81-25A6C93EEFA3  )
 
@@ -286,7 +286,7 @@ REGIONS 	     TABLE
 3. pdb 参数哪些可以变更，当 ISPDB_MODIFIABLE 列TRUE用于V$SYSTEM_PARAMETER视图中的参数时，可以修改PDB的初始化参数。
 4. 文本初始化参数文件（PFILE）不能包含特定于PDB的参数值。
 
--- 下查询列出了可为PDB修改的所有初始化参数：
+-- 查询可被PDB修改的所有初始化参数：
 SELECT NAME FROM V$SYSTEM_PARAMETER WHERE ISPDB_MODIFIABLE='TRUE' ORDER BY NAME;
 
 -- 可被动态修改 且 pdb 中可被覆盖的 参数
@@ -343,7 +343,7 @@ TRUE
 
 ### 静态参数修改
 
-```bash
+```sql
 -- pdb中查看当前静态参数memory_max_target
 SQL> show pdbs
 
@@ -410,7 +410,7 @@ open_cursors			     integer	 500
 --文本初始化参数文件（PFILE）不能包含特定于PDB的参数值。
 ```
 
-查看参数
+### 查看参数
 
 ```sql
 SQL> SELECT NAME,ISPDB_MODIFIABLE,ISSYS_MODIFIABLE FROM V$SYSTEM_PARAMETER WHERE ISPDB_MODIFIABLE='TRUE' and ISSYS_MODIFIABLE<>'FALSE' ORDER BY NAME;
