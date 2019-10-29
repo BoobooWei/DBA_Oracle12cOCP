@@ -113,14 +113,14 @@
 | 文件                  | 标题                                                   | 说明                       | DAY |
 | --------------------- | ------------------------------------------------------ | -------------------------- | ---- |
 | Appendix_A.pdf | Working with Oracle Support                | 使用Oracle的支持 |     |
-| D78846GC20_01.pdf | Introduction | 课程简介和对Oracle的简介 |     |
-| D78846GC20_02.pdf | Exploring Oracle Database Architecture | 数据架构 |     |
-| D78846GC20_03.pdf | Oracle Database Management Tools | 管理工具 |     |
+| D78846GC20_01.pdf | Introduction | 课程简介和对Oracle的简介 | 4 |
+| D78846GC20_02.pdf | Exploring Oracle Database Architecture | 数据架构 | 4 |
+| D78846GC20_03.pdf | Oracle Database Management Tools | 管理工具 | 4 |
 | D78846GC20_04.pdf | Managing the Database Instance | 管理实例 | 4 |
 | D78846GC20_05.pdf | Configuring the Oracle Network Environment | 管理网络 | 4 |
 | D78846GC20_06.pdf | Administering User Security | 管理用户 |     |
-| D78846GC20_07.pdf | Managing Database Storage Structures | 管理存储 |     |
-| D78846GC20_08.pdf | Managing Space | 管理空间 |     |
+| D78846GC20_07.pdf | Managing Database Storage Structures | 管理存储 | 4 |
+| D78846GC20_08.pdf | Managing Space | 管理空间 | 4 |
 | D78846GC20_09.pdf | Managing Undo Data | 管理回滚 |     |
 | D78846GC20_10.pdf | Managing Data Concurrency | 管理并发 |     |
 | D78846GC20_11.pdf | Implementing Oracle Database Auditing | 管理审计 |     |
