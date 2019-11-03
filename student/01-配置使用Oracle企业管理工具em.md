@@ -4,7 +4,7 @@
 >
 > Configuring Enterprise Manager Database Express
 
-默认安装oracle12c 时已安装oem工具，访问时必须通过https
+默认安装oracle12c 时已安装oem工具`exec DBMS_XDB.setHTTPPort(5500)`，访问时必须通过https
 
  https://192.168.43.135:5500/em/login 
 
@@ -70,3 +70,8 @@ tcp    LISTEN     0      128      :::5505                 :::*                  
 
 ![](pic/003.png)
 
+注意：
+
+web登陆容器无法登陆
+
+web登陆pdb可以登陆

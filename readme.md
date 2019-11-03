@@ -118,7 +118,7 @@
 | D78846GC20_03.pdf | Oracle Database Management Tools | 管理工具 | 4 |
 | D78846GC20_04.pdf | Managing the Database Instance | 管理实例 | 4 |
 | D78846GC20_05.pdf | Configuring the Oracle Network Environment | 管理网络 | 4 |
-| D78846GC20_06.pdf | Administering User Security | 管理用户 |     |
+| D78846GC20_06.pdf | Administering User Security | 管理用户 | 5 |
 | D78846GC20_07.pdf | Managing Database Storage Structures | 管理存储 | 4 |
 | D78846GC20_08.pdf | Managing Space | 管理空间 | 4 |
 | D78846GC20_09.pdf | Managing Undo Data | 管理回滚 |     |

@@ -594,7 +594,60 @@ utl_file_dir					   TRUE  FALSE
 
 ## 启动和关闭
 
+### 帮助文档
+
 [Starting Up and Shutting Down]( https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/starting-up-and-shutting-down.html#GUID-045DE684-6680-4099-A49E-2F5B5FA59670 )
+
+[v$instance](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/V-INSTANCE.html#GUID-6A0C9B51-1714-4223-B166-9D54C4E65D67)
+
+```sql
+--通过v$fixed_table查看和实例相关的视图
+SQL> col name format a30
+SQL> select * from v$fixed_table where name like '%INSTANCE';
+
+NAME				OBJECT_ID TYPE	 TABLE_NUM     CON_ID
+------------------------------ ---------- ----- ---------- ----------
+GV$TEMPFILE_INFO_INSTANCE      4294955937 VIEW	     65537	    0
+V$TEMPFILE_INFO_INSTANCE       4294955938 VIEW	     65537	    0
+GV$INSTANCE		       4294951325 VIEW	     65537	    0
+V$INSTANCE		       4294951066 VIEW	     65537	    0
+--查看v$instance的结构
+SQL> desc v$instance;
+ Name					   Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ INSTANCE_NUMBER				    NUMBER
+ INSTANCE_NAME					    VARCHAR2(16)
+ HOST_NAME					    VARCHAR2(64)
+ VERSION					    VARCHAR2(17)
+ STARTUP_TIME					    DATE
+ STATUS 					    VARCHAR2(12)
+ PARALLEL					    VARCHAR2(3)
+ THREAD#					    NUMBER
+ ARCHIVER					    VARCHAR2(7)
+ LOG_SWITCH_WAIT				    VARCHAR2(15)
+ LOGINS 					    VARCHAR2(10)
+ SHUTDOWN_PENDING				    VARCHAR2(3)
+ DATABASE_STATUS				    VARCHAR2(17)
+ INSTANCE_ROLE					    VARCHAR2(18)
+ ACTIVE_STATE					    VARCHAR2(9)
+ BLOCKED					    VARCHAR2(3)
+ CON_ID 					    NUMBER
+ INSTANCE_MODE					    VARCHAR2(11)
+ EDITION					    VARCHAR2(7)
+ FAMILY 					    VARCHAR2(80)
+ DATABASE_TYPE					    VARCHAR2(15)
+--查看实例的状态
+SQL> select instance_name,host_name,status from v$instance;
+
+INSTANCE_NAME
+----------------
+HOST_NAME							 STATUS
+---------------------------------------------------------------- ------------
+booboo
+oracle01							 OPEN
+```
+
+
 
 ## 跟踪文件
 
