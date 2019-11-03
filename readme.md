@@ -121,8 +121,8 @@
 | D78846GC20_06.pdf | Administering User Security | 管理用户 | 5 |
 | D78846GC20_07.pdf | Managing Database Storage Structures | 管理存储 | 4 |
 | D78846GC20_08.pdf | Managing Space | 管理空间 | 4 |
-| D78846GC20_09.pdf | Managing Undo Data | 管理回滚 |     |
-| D78846GC20_10.pdf | Managing Data Concurrency | 管理并发 |     |
+| D78846GC20_09.pdf | Managing Undo Data | 管理回滚 | 5 |
+| D78846GC20_10.pdf | Managing Data Concurrency | 管理并发 | 5 |
 | D78846GC20_11.pdf | Implementing Oracle Database Auditing | 管理审计 |     |
 | D78846GC20_12.pdf | Backup and Recovery: Concepts | 备份恢复概念 |     |
 | D78846GC20_13.pdf | Backup and Recovery: Configuration | 管理恢复配置 |     |

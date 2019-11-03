@@ -40,6 +40,8 @@ dbca -silent -deleteDatabase -sourceDB booboo -sysDBAUserName sys -sysDBAPasswor
 ```sql
 show pdbs
 alter pluggable database booboopdb4 close;
+alter pluggable database booboopdb3 close;
+alter pluggable database booboopdb2 close;
 alter pluggable database all save state;
 show pdbs
 alter session set container=booboopdb1;
