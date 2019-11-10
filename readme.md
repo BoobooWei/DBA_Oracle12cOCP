@@ -124,12 +124,12 @@
 | D78846GC20_09.pdf | Managing Undo Data | 管理回滚 | 5 |
 | D78846GC20_10.pdf | Managing Data Concurrency | 管理并发 | 5 |
 | D78846GC20_11.pdf | Implementing Oracle Database Auditing | 管理审计 |     |
-| D78846GC20_12.pdf | Backup and Recovery: Concepts | 备份恢复概念 |     |
-| D78846GC20_13.pdf | Backup and Recovery: Configuration | 管理恢复配置 |     |
-| D78846GC20_14.pdf | Performing Database Backups | 执行备份 |     |
-| D78846GC20_15.pdf | Performing Database Recovery | 执行恢复 |     |
-| D78846GC20_16.pdf | Moving Data | 移动数据 |     |
-| D78846GC20_17.pdf | Database Maintenance | 数据库维护 |     |
+| D78846GC20_12.pdf | Backup and Recovery: Concepts | 备份恢复概念 | 6 |
+| D78846GC20_13.pdf | Backup and Recovery: Configuration | 管理恢复配置 | 6 |
+| D78846GC20_14.pdf | Performing Database Backups | 执行备份 | 6 |
+| D78846GC20_15.pdf | Performing Database Recovery | 执行恢复 | 6 |
+| D78846GC20_16.pdf | Moving Data | 移动数据 | 6 |
+| D78846GC20_17.pdf | Database Maintenance | 数据库维护 | 6 |
 | D78846GC20_18.pdf | Managing Performance | 管理性能 |     |
 | D78846GC20_19.pdf | Managing Performance: SQL Tuning | SQL调优 |     |
 | D78846GC20_20.pdf | Using Database Resource Manager | 资源管理 | |
