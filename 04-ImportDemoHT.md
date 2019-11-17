@@ -22,6 +22,21 @@ cd /u01/app/oracle/product/12.2.0/db_1/demo/schema/human_resources
 sqlplus / as sysdba
 SQL> alter session set container=booboopdb1;
 SQL> @hr_main.sql
+specify password for HR as parameter 1:
+Enter value for 1: hr
+
+specify default tablespeace for HR as parameter 2:
+Enter value for 2: user
+
+specify temporary tablespace for HR as parameter 3:
+Enter value for 3: temp
+
+specify log path as parameter 4:
+Enter value for 4: /home/oracle/
+
+
+PL/SQL procedure successfully completed.
+
 SQL> select table_name from dba_tables where owner='HR';
 SQL> alter session set container=cdb$root; -- 切换到容器中
 ```
