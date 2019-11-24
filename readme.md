@@ -88,21 +88,21 @@
 | D80194GC11_Les02.pdf  | Introduction to Data Dictionary Views       | 数据字典视图             | 4    |
 | D80194GC11_Les03.pdf  | Creating Sequences, Synonyms, and Indexes   | 创建序列、同义词和索引   | 4    |
 | D80194GC11_Les04.pdf  | Creating Views                              | 创建视图                 | 4    |
-| D80194GC11_Les05.pdf  | Managing Schema Objects                     | 管理架构对象             |      |
-| D80194GC11_Les06.pdf  | Retrieving Data by Using Subqueries         | 使用子查询检索数据       |      |
-| D80194GC11_Les07.pdf  | Manipulating Data by Using Subqueries       | 使用子查询操作数据       |      |
-| D80194GC11_Les08.pdf  | Controlling User Access                     | 控制用户访问             |      |
-| D80194GC11_Les09.pdf  | Manipulating Data                           | 操作数据                 |      |
-| D80194GC11_Les010.pdf | Managing Data in Different Time Zones       | 管理不同时区的数据       |      |
-| D80194GC11_Les11.pdf  | Table Descriptions                          | 表描述                   |      |
-| D80194GC11_Les12.pdf  | Using SQL Developer                         | 使用SQL Developer工具    |      |
-| D80194GC11_Les13.pdf  | Using SQL*Plus                              | 使用SQL*Plus             |      |
-| D80194GC11_Les14.pdf  | Commonly Used SQL Commands                  | 常用的sql命令            |      |
-| D80194GC11_Les15.pdf  | Generating Reports by Grouping Related Data | 通过分组相关数据生成报表 |      |
-| D80194GC11_Les16.pdf  | Hierarchical Retrieval                      | 分层检索                 |      |
-| D80194GC11_Les17.pdf  | Writing Advanced Scripts                    | 编写高级脚本             |      |
-| D80194GC11_Les18.pdf  | Oracle Database Architectural Components    | Oracle数据库体系结构组件 |      |
-| D80194GC11_Les19.pdf  | Regular Expression Support                  | 正则表达式支持           |      |
+| D80194GC11_Les05.pdf  | Managing Schema Objects                     | 管理架构对象             | 4    |
+| D80194GC11_Les06.pdf  | Retrieving Data by Using Subqueries         | 使用子查询检索数据       | 4    |
+| D80194GC11_Les07.pdf  | Manipulating Data by Using Subqueries       | 使用子查询操作数据       | 4    |
+| D80194GC11_Les08.pdf  | Controlling User Access                     | 控制用户访问             | 4    |
+| D80194GC11_Les09.pdf  | Manipulating Data                           | 操作数据                 | 4    |
+| D80194GC11_Les010.pdf | Managing Data in Different Time Zones       | 管理不同时区的数据       | 4    |
+| D80194GC11_Les11.pdf  | Table Descriptions                          | 表描述                   | 4    |
+| D80194GC11_Les12.pdf  | Using SQL Developer                         | 使用SQL Developer工具    | 4    |
+| D80194GC11_Les13.pdf  | Using SQL*Plus                              | 使用SQL*Plus             | 4    |
+| D80194GC11_Les14.pdf  | Commonly Used SQL Commands                  | 常用的sql命令            | 4    |
+| D80194GC11_Les15.pdf  | Generating Reports by Grouping Related Data | 通过分组相关数据生成报表 | 4    |
+| D80194GC11_Les16.pdf  | Hierarchical Retrieval                      | 分层检索                 | 4    |
+| D80194GC11_Les17.pdf  | Writing Advanced Scripts                    | 编写高级脚本             | 4    |
+| D80194GC11_Les18.pdf  | Oracle Database Architectural Components    | Oracle数据库体系结构组件 | 4    |
+| D80194GC11_Les19.pdf  | Regular Expression Support                  | 正则表达式支持           | 4    |
 
 
 
@@ -112,7 +112,7 @@
 
 | 文件                  | 标题                                                   | 说明                       | DAY |
 | --------------------- | ------------------------------------------------------ | -------------------------- | ---- |
-| Appendix_A.pdf | Working with Oracle Support                | 使用Oracle的支持 |     |
+| Appendix_A.pdf | Working with Oracle Support                | 使用Oracle的支持 | 4 |
 | D78846GC20_01.pdf | Introduction | 课程简介和对Oracle的简介 | 4 |
 | D78846GC20_02.pdf | Exploring Oracle Database Architecture | 数据架构 | 4 |
 | D78846GC20_03.pdf | Oracle Database Management Tools | 管理工具 | 4 |
@@ -161,24 +161,22 @@
 
 | 文件                  | 标题                                                   | 说明                       | DAY |
 | --------------------- | ------------------------------------------------------ | -------------------------- | ---- |
-| D78850GC20_les01.ppt | Introduction |    |     |
-| D78850GC20_les02.ppt | Getting Started |    |     |
-| D78850GC20_les03.ppt | Configuring for Recoverability |    |     |
-| D78850GC20_les04.ppt | Using the RMAN Recovery Catalog |    |     |
-| D78850GC20_les05.ppt | Backup Strategies and Terminology |    |     |
-| D78850GC20_les06.ppt | Creating Backups |    |     |
-| D78850GC20_les07.ppt | Improving Your Backups |    |     |
-| D78850GC20_les08.ppt | Using RMAN-Encrypted Backups |    |     |
-| D78850GC20_les09.ppt | Diagnosing Datase Failure |    |     |
-| D78850GC20_les10.ppt | Restore and Recovery Concepts |    |     |
-| D78850GC20_les11.ppt | Preforming Recovery |    |     |
-| D78850GC20_les12.ppt | Performing Recovery II |    |     |
-| D78850GC20_les13.ppt | RMAN and Oracle Secure Backup |    |     |
-| D78850GC20_les14.ppt | Using Flashback Technologies |    |     |
-| D78850GC20_les15.ppt | Flashback Database |    |     |
-| D78850GC20_les16.ppt | Transporting Data |    |     |
-| D78850GC20_les17.ppt | Performing Point-in-Time Recovery |    |     |
-| D78850GC20_les18.ppt | Duplicating a Database |    |     |
-| D78850GC20_les19.ppt | RMAN Troubleshooting and Tunning |    |     |
-| D78850GC20_les20.ppt | WorkShop Overview |    |     |
-| D78850GC20_les21.ppt | Oracle Database Cloud Service: Overview |    |     |
+| D78850GC20_les01.ppt | Introduction | 备份介绍 | 7 |
+| D78850GC20_les02.ppt | Getting Started | 开始 | 7 |
+| D78850GC20_les03.ppt | Configuring for Recoverability | 为恢复做配置 | 7 |
+| D78850GC20_les04.ppt | Using the RMAN Recovery Catalog | 使用RMAN恢复目录 | 8 |
+| D78850GC20_les05.ppt | Backup Strategies and Terminology | 备份策略和术语 | 8 |
+| D78850GC20_les06.ppt | Creating Backups | 创建备份 | 8 |
+| D78850GC20_les07.ppt | Improving Your Backups | 改进备份 | 8 |
+| D78850GC20_les08.ppt | Using RMAN-Encrypted Backups | 使用RMAN加密备份 | 8 |
+| D78850GC20_les09.ppt | Diagnosing Datase Failure | 诊断数据故障 | 8 |
+| D78850GC20_les10.ppt | Restore and Recovery Concepts | 导入和恢复的概念 | 8 |
+| D78850GC20_les11.ppt | Preforming Recovery | 恢复1 | 8 |
+| D78850GC20_les12.ppt | Performing Recovery II | 恢复2 | 8 |
+| D78850GC20_les13.ppt | RMAN and Oracle Secure Backup | RMAN和Oracle安全备份 | 8 |
+| D78850GC20_les14.ppt | Using Flashback Technologies | 使用闪回技术 | 8 |
+| D78850GC20_les15.ppt | Flashback Database | 闪回数据库 | 8 |
+| D78850GC20_les16.ppt | Transporting Data | 传输数据 | 8 |
+| D78850GC20_les17.ppt | Performing Point-in-Time Recovery | 指定到时间点恢复 | 8 |
+| D78850GC20_les18.ppt | Duplicating a Database | 复制数据库 | 8 |
+| D78850GC20_les19.ppt | RMAN Troubleshooting and Tunning | RMAN故障排除和调试 | 8 |
