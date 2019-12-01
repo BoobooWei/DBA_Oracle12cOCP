@@ -171,12 +171,12 @@
 | D78850GC20_les08.ppt | Using RMAN-Encrypted Backups | 使用RMAN加密备份 | 8 |
 | D78850GC20_les09.ppt | Diagnosing Datase Failure | 诊断数据故障 | 8 |
 | D78850GC20_les10.ppt | Restore and Recovery Concepts | 导入和恢复的概念 | 8 |
-| D78850GC20_les11.ppt | Preforming Recovery | 恢复1 | 8 |
-| D78850GC20_les12.ppt | Performing Recovery II | 恢复2 | 8 |
-| D78850GC20_les13.ppt | RMAN and Oracle Secure Backup | RMAN和Oracle安全备份 | 8 |
-| D78850GC20_les14.ppt | Using Flashback Technologies | 使用闪回技术 | 8 |
-| D78850GC20_les15.ppt | Flashback Database | 闪回数据库 | 8 |
-| D78850GC20_les16.ppt | Transporting Data | 传输数据 | 8 |
-| D78850GC20_les17.ppt | Performing Point-in-Time Recovery | 指定到时间点恢复 | 8 |
-| D78850GC20_les18.ppt | Duplicating a Database | 复制数据库 | 8 |
-| D78850GC20_les19.ppt | RMAN Troubleshooting and Tunning | RMAN故障排除和调试 | 8 |
+| D78850GC20_les11.ppt | Preforming Recovery | 恢复1 | 9 |
+| D78850GC20_les12.ppt | Performing Recovery II | 恢复2 | 9 |
+| D78850GC20_les13.ppt | RMAN and Oracle Secure Backup | RMAN和Oracle安全备份 | 9 |
+| D78850GC20_les14.ppt | Using Flashback Technologies | 使用闪回技术 | 10 |
+| D78850GC20_les15.ppt | Flashback Database | 闪回数据库 | 10 |
+| D78850GC20_les16.ppt | Transporting Data | 传输数据 | 10 |
+| D78850GC20_les17.ppt | Performing Point-in-Time Recovery | 指定到时间点恢复 | 10 |
+| D78850GC20_les18.ppt | Duplicating a Database | 复制数据库 | 10 |
+| D78850GC20_les19.ppt | RMAN Troubleshooting and Tunning | RMAN故障排除和调试 | 10 |
