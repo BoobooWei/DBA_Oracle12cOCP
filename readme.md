@@ -130,11 +130,11 @@
 | D78846GC20_15.pdf | Performing Database Recovery | 执行恢复 | 6 |
 | D78846GC20_16.pdf | Moving Data | 移动数据 | 6 |
 | D78846GC20_17.pdf | Database Maintenance | 数据库维护 | 6 |
-| D78846GC20_18.pdf | Managing Performance | 管理性能 |     |
-| D78846GC20_19.pdf | Managing Performance: SQL Tuning | SQL调优 |     |
-| D78846GC20_20.pdf | Using Database Resource Manager | 资源管理 | |
-| D78846GC20_21.pdf | Using Oracle Scheduler to Automate Tasks | 调试与自动任务 | |
-| D78846GC20_22.pdf | Oracle Database Cloud Service: Overview | 云服务 | |
+| D78846GC20_18.pdf | Managing Performance | 管理性能 |  11   |
+| D78846GC20_19.pdf | Managing Performance: SQL Tuning | SQL调优 |   11  |
+| D78846GC20_20.pdf | Using Database Resource Manager | 资源管理 |11 |
+| D78846GC20_21.pdf | Using Oracle Scheduler to Automate Tasks | 调试与自动任务 | 11|
+| D78846GC20_22.pdf | Oracle Database Cloud Service: Overview | 云服务 |11 |
 
 
 
@@ -177,6 +177,6 @@
 | D78850GC20_les14.ppt | Using Flashback Technologies | 使用闪回技术 | 10 |
 | D78850GC20_les15.ppt | Flashback Database | 闪回数据库 | 10 |
 | D78850GC20_les16.ppt | Transporting Data | 传输数据 | 10 |
-| D78850GC20_les17.ppt | Performing Point-in-Time Recovery | 指定到时间点恢复 | 10 |
-| D78850GC20_les18.ppt | Duplicating a Database | 复制数据库 | 10 |
-| D78850GC20_les19.ppt | RMAN Troubleshooting and Tunning | RMAN故障排除和调试 | 10 |
+| D78850GC20_les17.ppt | Performing Point-in-Time Recovery | 指定到时间点恢复 | 11 |
+| D78850GC20_les18.ppt | Duplicating a Database | 复制数据库 |  |
+| D78850GC20_les19.ppt | RMAN Troubleshooting and Tunning | RMAN故障排除和调试 |  |
