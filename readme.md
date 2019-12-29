@@ -142,20 +142,20 @@
 
 #### D79128GC10 多租户管理
 
-| 文件                 | 标题                                                         | 说明                       | DAY  |
-| -------------------- | ------------------------------------------------------------ | -------------------------- | ---- |
-| D79128GC10_Les01.pdf | Introduction                                                 | 多租户管理介绍             | 12   |
-| D79128GC10_Les02.pdf | Basics of Multitenant Container Database and Pluggable Databases | 关于cdb和pdb的基础知识     | 12   |
-| D79128GC10_Les03.pdf | Creating a Multitenant Container Database and Pluggable Databases | 创建cdb和pdb               | 12   |
-| D79128GC10_Les04.pdf | Managing a Multitenant Container Database and Pluggable Databases | 管理cdb和pdb               | 12   |
-| D79128GC10_Les05.pdf | Managing Tablespaces in CDB and PDBs                         | 管理cdb和pdb的表空间       | 12   |
-| D79128GC10_Les06.pdf | Managing Security in CDB and PDBs                            | 管理cdb和pdb的安全         | 12   |
-| D79128GC10_Les07.pdf | Backup, Recovery, Flashback CDB and PDBs                     | cdb和pdb的备份，恢复，闪回 | 12   |
-| D79128GC10_Les08.pdf | Performance                                                  | cdb和pdb的性能             | 12   |
-| D79128GC10_Les09.pdf | Miscellaneous`美 [ˌmɪsəˈleɪniəs]`                            | 杂项                       | 12   |
-| D79128GC10_Les10.pdf | Oracle Database Cloud Service: Overview                      | 云服务                     | 12   |
-| D79128GC10_Les11.pdf | Consolidated Database Replay Procedures and Tables           |                            | 12   |
-| D79128GC10_Les12.pdf | New Processes, Views, Parameters, Packages and Privileges    |                            | 12   |
+| 文件                 | 标题                                                         | 说明                                                         | DAY  |
+| -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ---- |
+| D79128GC10_Les01.pdf | Introduction                                                 | 了解多租户架构                                               | 12   |
+| D79128GC10_Les02.pdf | Basics of Multitenant Container Database and Pluggable Databases | 了解常规数据库和应用程序可插入数据库                         | 12   |
+| D79128GC10_Les03.pdf | Creating a Multitenant Container Database and Pluggable Databases | 创建和管理多租户容器数据库和可插入数据库                     | 12   |
+| D79128GC10_Les04.pdf | Managing a Multitenant Container Database and Pluggable Databases | 以特定配置（例如Data Guard，Database Vault）管理CDB和PDB     | 12   |
+| D79128GC10_Les05.pdf | Managing Tablespaces in CDB and PDBs                         | 管理多租户容器数据库和可插入数据库中的存储                   | 12   |
+| D79128GC10_Les06.pdf | Managing Security in CDB and PDBs                            | 管理多租户容器数据库以及常规和应用程序可插入数据库中的安全性 | 12   |
+| D79128GC10_Les07.pdf | Backup, Recovery, Flashback CDB and PDBs                     | 在多租户容器数据库以及常规和应用程序可插入数据库上执行备份，恢复和闪回操作 | 12   |
+| D79128GC10_Les08.pdf | Performance                                                  | 监视性能并管理多租户容器数据库和可插入数据库中的资源         | 12   |
+| D79128GC10_Les09.pdf | Miscellaneous`美 [ˌmɪsəˈleɪniəs]`                            | 执行特定的操作，例如Oracle Data Pump的传输，加载，加密，审计 | 12   |
+| D79128GC10_Les10.pdf | Oracle Database Cloud Service: Overview                      | 云服务                                                       | 12   |
+| D79128GC10_Les11.pdf | Consolidated Database Replay Procedures and Tables           |                                                              | 12   |
+| D79128GC10_Les12.pdf | New Processes, Views, Parameters, Packages and Privileges    |                                                              | 12   |
 
 #### D78850GC20 备份与恢复
 
