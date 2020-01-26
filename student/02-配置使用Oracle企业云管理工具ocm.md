@@ -6,6 +6,11 @@
 
 [toc]
 
+安装注意事项：
+1. 先安装OCM软件需要的Oracle数据库`ocmrep`
+2. 单独准备一台服务器安装ocm
+
+
 ## Cloud Control 12cR5 图形化安装
 
  https://docs.oracle.com/cd/E24628_01/install.121/e22624/install_em_exist_db.htm#EMBSC165 
