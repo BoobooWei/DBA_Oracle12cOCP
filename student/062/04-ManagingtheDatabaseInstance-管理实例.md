@@ -4,7 +4,28 @@
 >
 > 2020.01.29 BoobooWei
 
-[toc]
+<!-- MDTOC maxdepth:6 firsth1:1 numbering:0 flatten:0 bullets:0 updateOnSave:1 -->
+
+[实践4:管理实例](#实践4管理实例)   
+&emsp;[实践4:概览](#实践4概览)   
+&emsp;[实践4-1:使用Oracle Enterprise Manager Cloud Control管理Oracle实例](#实践4-1使用oracle-enterprise-manager-cloud-control管理oracle实例)   
+&emsp;[实践4-2:使用Oracle Enterprise Manger Database Express管理Oracle实例](#实践4-2使用oracle-enterprise-manger-database-express管理oracle实例)   
+&emsp;[实践4-3:使用SQL*Plus管理Oracle实例](#实践4-3使用sqlplus管理oracle实例)   
+&emsp;&emsp;[Overview](#overview)   
+&emsp;&emsp;[Tasks](#tasks)   
+&emsp;&emsp;[Practice](#practice)   
+&emsp;&emsp;[KnowledgePoint](#knowledgepoint)   
+&emsp;&emsp;&emsp;[12c 参数文件 与 11g 参数文件的不同之处](#12c-参数文件-与-11g-参数文件的不同之处)   
+&emsp;&emsp;&emsp;[动态参数修改](#动态参数修改)   
+&emsp;&emsp;&emsp;[静态参数修改](#静态参数修改)   
+&emsp;&emsp;&emsp;[查看参数](#查看参数)   
+&emsp;[实践4-4:通过使用自动诊断存储库命令查看警报日志接口(ADRCI)](#实践4-4通过使用自动诊断存储库命令查看警报日志接口adrci)   
+&emsp;&emsp;[Overview](#overview)   
+&emsp;&emsp;[Tasks](#tasks)   
+&emsp;&emsp;[Practice](#practice)   
+&emsp;&emsp;[KnowledgePoint](#knowledgepoint)   
+
+<!-- /MDTOC -->
 
 ## 实践4:概览
 
@@ -34,7 +55,7 @@ In this practice, you use SQL*Plus to view and change instance parameters.
 
 1. Optimize SQL*Plus：configuring `$ORACLE_HOME/sqlplus/admin/glogin.sql`
 2. Set the JOB_QUEUE_PROCESSES initialization parameter to 1000 by using SQL*Plus.
-3. Using SQL*Plus, shut down and restart the orcl database instance. 
+3. Using SQL*Plus, shut down and restart the orcl database instance.
 4. Use the **SHOW PARAMETER** command to verify the settings for **SGA_MAX_SIZE**, **DB_CACHE_SIZE**, and **SHARED_POOL_SIZE**.
 5. Check the value of **JOB_QUEUE_PROCESSES**.
 6. Exit from SQL*Plus.
@@ -68,7 +89,7 @@ In this practice, you use SQL*Plus to view and change instance parameters.
 3. 使用 SQL*Plus 关闭并重启orcl实例
 
    ```sql
-   shutdown immediate 
+   shutdown immediate
    startup
    ```
 
@@ -86,7 +107,7 @@ In this practice, you use SQL*Plus to view and change instance parameters.
    show parameter job_queue_processes
    ```
 
-6. 退出 SQL*Plus 
+6. 退出 SQL*Plus
 
    ```sql
    exit
@@ -95,12 +116,12 @@ In this practice, you use SQL*Plus to view and change instance parameters.
 
 ### KnowledgePoint
 
-[11g 参数文件](https://github.com/BoobooWei/booboo_oracle/blob/master/D-体系结构和存储引擎-03-物理结构_参数文件parameter_files.md) 
+[11g 参数文件](https://github.com/BoobooWei/booboo_oracle/blob/master/D-体系结构和存储引擎-03-物理结构_参数文件parameter_files.md)
 
 [12c 参数文件]( https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/creating-and-configuring-an-oracle-database.html#GUID-7302C60F-E96E-4202-AC81-25A6C93EEFA3  )
 
 - [*《 Oracle数据库SQL语言参考》*](https://www.oracle.com/pls/topic/lookup?ctx=en/database/oracle/oracle-database/12.2/admin&id=SQLRF00902)中有关该`ALTER` `SYSTEM`命令的 信息
--  [在CDB中使用ALTER SYSTEM SET语句]( https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/administering-a-cdb-with-sql-plus.html#GUID-E47348D6-5350-4890-ACD6-7BA1C1DD4E95 ) 
+-  [在CDB中使用ALTER SYSTEM SET语句]( https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/administering-a-cdb-with-sql-plus.html#GUID-E47348D6-5350-4890-ACD6-7BA1C1DD4E95 )
 
 #### 12c 参数文件 与 11g 参数文件的不同之处
 
@@ -430,21 +451,21 @@ In this practice, you use command-line tools to view the orcl instance alert log
 
    ```bash
    [oracle@oracle01 ~]$ adrci
-   
+
    ADRCI: Release 12.2.0.1.0 - Production on Thu Jan 30 02:27:35 2020
-   
+
    Copyright (c) 1982, 2017, Oracle and/or its affiliates.  All rights reserved.
-   
+
    ADR base = "/u01/app/oracle"
    adrci> show alert
-   
+
    Choose the home from which to view the alert log:
-   
+
    1: diag/rdbms/booboo/booboo
    2: diag/clients/user_oracle/host_2874269298_107
    3: diag/tnslsnr/oracle01/listener
    Q: to quit
-   
+
    Please select option: 1
    Output the results to file: /tmp/alert_88137_1406_booboo_1.ado
    ```
@@ -465,7 +486,7 @@ In this practice, you use command-line tools to view the orcl instance alert log
    Clearing Resource Manager CDB plan via parameter
    2020-01-29 23:08:35.821000 +08:00
    Resize operation completed for file# 3, old size 563200K, new size 573440K
-   
+
    --输入:q 退出
    --退出vi后继续进入adrci的交互界面
    --输入Q
