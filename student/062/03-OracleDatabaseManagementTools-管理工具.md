@@ -6,13 +6,13 @@
 >
 > 2020.01.29 BoobooWei
 
-<!-- MDTOC maxdepth:6 firsth1:1 numbering:0 flatten:0 bullets:1 updateOnSave:1 -->
+<!-- MDTOC maxdepth:6 firsth1:1 numbering:0 flatten:0 bullets:0 updateOnSave:1 -->
 
-- [实践3:Oracle数据库管理工具](#实践3oracle数据库管理工具)   
-   - [实践3:概述](#实践3概述)   
-   - [实践3-1:在Oracle Enterprise Manager Cloud Control中注册orcl数据库](#实践3-1在oracle-enterprise-manager-cloud-control中注册orcl数据库)   
-   - [实践3-2:创建管理用户](#实践3-2创建管理用户)   
-   - [实践3-3:登录到Oracle Enterprise Manger Database Express](#实践3-3登录到oracle-enterprise-manger-database-express)   
+[实践3:Oracle数据库管理工具](#实践3oracle数据库管理工具)   
+&emsp;[实践3:概述](#实践3概述)   
+&emsp;[实践3-1:在Oracle Enterprise Manager Cloud Control中注册orcl数据库](#实践3-1在oracle-enterprise-manager-cloud-control中注册orcl数据库)   
+&emsp;[实践3-2:创建管理用户](#实践3-2创建管理用户)   
+&emsp;[实践3-3:登录到Oracle Enterprise Manger Database Express](#实践3-3登录到oracle-enterprise-manger-database-express)   
 
 <!-- /MDTOC -->
 
