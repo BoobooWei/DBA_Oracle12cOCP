@@ -1,7 +1,7 @@
 # 实践6:管理用户
 
 > **Practices for Lesson 6: Administering User**
-> 
+>
 > 2020.01.29 BoobooWei
 
 <!-- MDTOC maxdepth:6 firsth1:1 numbering:0 flatten:0 bullets:0 updateOnSave:1 -->
@@ -513,6 +513,9 @@ In this practice, you create the following users and assign appropriate profiles
    2020-01-31 03:01:42
 
    --等待15分钟
+   RPANDYA@booboopdb1>SELECT salary FROM hr.employees WHERE EMPLOYEE_ID=197;
+   ERROR at line 1:
+   ORA-02396: exceeded maximum idle time, please connect again
 
    ```
 
