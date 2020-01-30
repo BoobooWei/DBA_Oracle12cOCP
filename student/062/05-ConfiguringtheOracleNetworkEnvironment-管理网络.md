@@ -1,6 +1,6 @@
 # 实践5:管理网络
 
-> **Practices for Lesson 5: Configuring the Oracle Network Environment **
+> **Practices for Lesson 5: Configuring the Oracle Network Environment**
 >
 > 2020.01.29 BoobooWei
 
