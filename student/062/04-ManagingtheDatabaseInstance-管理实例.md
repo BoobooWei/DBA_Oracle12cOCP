@@ -113,6 +113,45 @@ In this practice, you use SQL*Plus to view and change instance parameters.
    exit
    ```
 
+拓展
+
+1. 查看参数的属性
+
+   ```sql
+   SYS@booboo>exec print_table(q'[select * from V$SYSTEM_PARAMETER WHERE name='job_queue_processes']')
+NUM			      		    : 3106
+NAME			      	    : job_queue_processes
+TYPE			      	    : 3
+VALUE			      	    : 1000
+DISPLAY_VALUE		      : 1000
+DEFAULT_VALUE		      : 4000
+ISDEFAULT		      	  : FALSE
+ISSES_MODIFIABLE	    : FALSE
+ISSYS_MODIFIABLE	    : IMMEDIATE
+ISPDB_MODIFIABLE	    : TRUE
+ISINSTANCE_MODIFIABLE	: TRUE
+ISMODIFIED		      	: FALSE
+ISADJUSTED		      	: FALSE
+ISDEPRECATED		      : FALSE
+ISBASIC 		      	  : FALSE
+DESCRIPTION		      	: maximum number of job queue slave processes
+UPDATE_COMMENT		    :
+HASH			     	      : 1663833312
+CON_ID			        	: 0
+   ```
+
+   
+
+2. 说出该参数的重要属性
+
+   ISSES_MODIFIABLE：FALSE —— 不能执行 `alter session`
+
+   ISSYS_MODIFIABLE：IMMEDIATE —— 可动态修改且立刻生效 `alter system`
+
+   ISPDB_MODIFIABLE：TRUE —— pdb级别可以覆盖cdb
+
+   ISINSTANCE_MODIFIABLE：TRUE —— 实例级别可以修改
+
 
 ### KnowledgePoint
 
@@ -123,10 +162,62 @@ In this practice, you use SQL*Plus to view and change instance parameters.
 - [*《 Oracle数据库SQL语言参考》*](https://www.oracle.com/pls/topic/lookup?ctx=en/database/oracle/oracle-database/12.2/admin&id=SQLRF00902)中有关该`ALTER` `SYSTEM`命令的 信息
 -  [在CDB中使用ALTER SYSTEM SET语句]( https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/administering-a-cdb-with-sql-plus.html#GUID-E47348D6-5350-4890-ACD6-7BA1C1DD4E95 )
 
+#### 视图解释V$SYSTEM_PARAMETER
+
+`V$SYSTEM_PARAMETER`显示有关实例当前有效的初始化参数的信息。新会话将从实例范围的值继承参数值。
+
+| 柱                      | 数据类型         | 描述                                                         |
+| :---------------------- | :--------------- | :----------------------------------------------------------- |
+| `NUM`                   | `NUMBER`         | 参数编号                                                     |
+| `NAME`                  | `VARCHAR2(80)`   | 参数名称                                                     |
+| `TYPE`                  | `NUMBER`         | 参数类型：`1` -布尔值`2` -弦`3` - 整数`4` -参数文件`5` -保留`6` -大整数 |
+| `VALUE`                 | `VARCHAR2(4000)` | 实例范围的参数值                                             |
+| `DISPLAY_VALUE`         | `VARCHAR2(4000)` | 用户友好格式的参数值。例如，如果该`VALUE`列显示`262144`大整数参数的值，则该`DISPLAY_VALUE`列将显示value `256K`。 |
+| `ISDEFAULT`             | `VARCHAR2(9)`    | 指示参数是设置为默认值（`TRUE`）还是在参数文件中指定了参数值（`FALSE`） |
+| `ISSES_MODIFIABLE`      | `VARCHAR2(5)`    | 指示是否参数可以与被改变`ALTER SESSION`（`TRUE`）否（`FALSE`） |
+| `ISSYS_MODIFIABLE`      | `VARCHAR2(9)`    | 指示参数是否可以更改`ALTER SYSTEM`以及更改何时生效：`IMMEDIATE`- `ALTER SYSTEM`无论用于启动实例的参数文件的类型如何，都可以更改参数。更改将立即生效。`DEFERRED`- `ALTER SYSTEM`无论用于启动实例的参数文件的类型如何，都可以更改参数。该更改在后续会话中生效。`FALSE`- `ALTER SYSTEM`除非使用服务器参数文件启动实例，否则无法使用参数进行更改。该更改在后续实例中生效。 |
+| `ISINSTANCE_MODIFIABLE` | `VARCHAR2(5)`    | 对于可以使用更改的参数`ALTER SYSTEm`，指示参数值对于每个实例（`TRUE`）可以不同，还是对于所有Real Application Clusters实例（`FALSE`）参数必须具有相同的值。如果该`ISSYS_MODIFIABLE`列为`FALSE`，则此列始终为`FALSE`。 |
+| `ISMODIFIED`            | `VARCHAR2(8)`    | 指示如何修改参数。如果`ALTER SYSTEM`执行，则值为`MODIFIED`。 |
+| `ISADJUSTED`            | `VARCHAR2(5)`    | 指示Oracle是否将输入值调整为更合适的值（例如，参数值应为质数，但用户输入了非质数，因此Oracle将值调整为下一个质数） |
+| `ISDEPRECATED`          | `VARCHAR2(5)`    | 指示是否已弃用该参数`TRUE`（`FALSE`）                        |
+| `ISBASIC`               | `VARCHAR2(5)`    | 指示参数是否是基本参数（`TRUE`），或者（`FALSE`）            |
+| `DESCRIPTION`           | `VARCHAR2(255)`  | 参数说明                                                     |
+| `UPDATE_COMMENT`        | `VARCHAR2(255)`  | 与最新更新相关的评论                                         |
+| `HASH`                  | `NUMBER`         | 参数名称的哈希值                                             |
+
+```sql
+SYS@booboo>select distinct ISINSTANCE_MODIFIABLE,ISSYS_MODIFIABLE,ISSES_MODIFIABLE,ISPDB_MODIFIABLE from v$system_parameter;
+
+ISINS ISSYS_MOD ISSES ISPDB
+----- --------- ----- -----
+FALSE FALSE	FALSE TRUE
+TRUE  IMMEDIATE TRUE  FALSE
+FALSE IMMEDIATE FALSE TRUE
+TRUE  IMMEDIATE FALSE FALSE
+TRUE  DEFERRED	FALSE FALSE
+TRUE  DEFERRED	TRUE  TRUE
+TRUE  IMMEDIATE FALSE TRUE
+FALSE FALSE	TRUE  TRUE
+FALSE FALSE	TRUE  FALSE
+TRUE  IMMEDIATE TRUE  TRUE
+FALSE IMMEDIATE FALSE FALSE
+FALSE FALSE	FALSE FALSE
+
+12 rows selected.
+
+SYS@booboo>select count(*) from v$system_parameter;
+
+  COUNT(*)
+----------
+       417
+```
+
+
+
 #### 12c 参数文件 与 11g 参数文件的不同之处
 
 ```bash
-1. pdb 继承 cdb的参数
+1. pdb 继承 cdb 的参数
 2. pdb 参数可以变更，保存在CDB级别的 pdb_spfile$ 系统表中，对参数文件没有影响
 3. pdb 参数哪些可以变更，当 ISPDB_MODIFIABLE 列TRUE用于V$SYSTEM_PARAMETER视图中的参数时，可以修改PDB的初始化参数。
 4. 文本初始化参数文件（PFILE）不能包含特定于PDB的参数值。
@@ -145,43 +236,149 @@ SELECT NAME,ISPDB_MODIFIABLE,ISSYS_MODIFIABLE FROM V$SYSTEM_PARAMETER WHERE ISPD
 
 ```sql
 -- pdb中查看当前动态参数open_cursors
-SQL> select num,name,type,value,isdefault,ISBASIC,ISPDB_MODIFIABLE from v$system_parameter where name='open_cursors';
-
-       NUM NAME 		      TYPE VALUE		ISDEFAULT ISBAS
----------- -------------------- ---------- -------------------- --------- -----
-ISPDB
------
-      3328 open_cursors 		 3 300			FALSE	  TRUE
-TRUE
-
+SYS@booboo>exec print_table(q'[select * from V$SYSTEM_PARAMETER WHERE name='open_cursors']')
+NUM			      				: 3328
+NAME			     				: open_cursors
+TYPE			      			: 3
+VALUE			      			: 300
+DISPLAY_VALUE		      : 300
+DEFAULT_VALUE		      : 50
+ISDEFAULT		      		: FALSE
+ISSES_MODIFIABLE	    : FALSE
+ISSYS_MODIFIABLE	    : IMMEDIATE
+ISPDB_MODIFIABLE	    : TRUE
+ISINSTANCE_MODIFIABLE	: TRUE
+ISMODIFIED		      	: FALSE
+ISADJUSTED		      	: FALSE
+ISDEPRECATED		      : FALSE
+ISBASIC 		      		: TRUE
+DESCRIPTION		      	: max # cursors per session
+UPDATE_COMMENT		    :
+HASH			      			: 4033294835
+CON_ID			      		: 0
 -- 可以在pdb中直接修改
-SQL> alter system set open_cursors=500 scope=both;
+SYS@booboo>show pdbs;
+
+    CON_ID CON_NAME			  OPEN MODE  RESTRICTED
+---------- ------------------------------ ---------- ----------
+	 3 BOOBOOPDB1			  READ WRITE NO
+SYS@booboo>show parameter open_cursors;
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+open_cursors			     integer	 300
+SYS@booboo>alter system set open_cursors=500 scope=both;
 
 System altered.
 
-SQL> show parameter open_cursors;
+SYS@booboo>show parameter open_cursors;
 
 NAME				     TYPE	 VALUE
 ------------------------------------ ----------- ------------------------------
 open_cursors			     integer	 500
-SQL> select num,name,type,value,isdefault,ISBASIC,ISPDB_MODIFIABLE from v$parameter where name='open_cursors';
 
-       NUM NAME 		      TYPE VALUE		ISDEFAULT ISBAS
----------- -------------------- ---------- -------------------- --------- -----
-ISPDB
------
-      3328 open_cursors 		 3 500			FALSE	  TRUE
-TRUE
+SYS@booboo>exec print_table(q'[select * from V$SYSTEM_PARAMETER WHERE name='open_cursors']')
+NUM			      				: 3328
+NAME			     				: open_cursors
+TYPE			      			: 3
+VALUE			      			: 500
+DISPLAY_VALUE		      : 500
+DEFAULT_VALUE		      : 50
+ISDEFAULT		      		: FALSE
+ISSES_MODIFIABLE	    : FALSE
+ISSYS_MODIFIABLE	    : IMMEDIATE
+ISPDB_MODIFIABLE	    : TRUE
+ISINSTANCE_MODIFIABLE	: TRUE
+ISMODIFIED		      	: MODIFIED
+ISADJUSTED		      	: FALSE
+ISDEPRECATED		      : FALSE
+ISBASIC 		      		: TRUE
+DESCRIPTION		      	: max # cursors per session
+UPDATE_COMMENT		    :
+HASH			      			: 4033294835
+CON_ID			      		: 3
 
+--切换到cdb，查看参数值还是300
+SYS@booboo>conn / as sysdba
+Connected.
+SYS@booboo>show pdbs;
 
-SQL> select num,name,type,value,isdefault,ISBASIC,ISPDB_MODIFIABLE from v$system_parameter where name='open_cursors';
+    CON_ID CON_NAME			  OPEN MODE  RESTRICTED
+---------- ------------------------------ ---------- ----------
+	 2 PDB$SEED			  READ ONLY  NO
+	 3 BOOBOOPDB1			  READ WRITE NO
+	 4 BOOBOOPDB2			  MOUNTED
+	 5 BOOBOOPDB3			  MOUNTED
+	 6 BOOBOOPDB4			  MOUNTED
+	 
+SYS@booboo>show parameter open_cursors;
 
-       NUM NAME 		      TYPE VALUE		ISDEFAULT ISBAS
----------- -------------------- ---------- -------------------- --------- -----
-ISPDB
------
-      3328 open_cursors 		 3 500			FALSE	  TRUE
-TRUE
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+open_cursors			     integer	 300	 
+
+SYS@booboo>exec print_table(q'[select * from V$PARAMETER WHERE name='open_cursors']')
+NUM			      : 3328
+NAME			      : open_cursors
+TYPE			      : 3
+VALUE			      : 300
+DISPLAY_VALUE		      : 300
+DEFAULT_VALUE		      : 50
+ISDEFAULT		      : FALSE
+ISSES_MODIFIABLE	      : FALSE
+ISSYS_MODIFIABLE	      : IMMEDIATE
+ISPDB_MODIFIABLE	      : TRUE
+ISINSTANCE_MODIFIABLE	      : TRUE
+ISMODIFIED		      : FALSE
+ISADJUSTED		      : FALSE
+ISDEPRECATED		      : FALSE
+ISBASIC 		      : TRUE
+DESCRIPTION		      : max # cursors per session
+UPDATE_COMMENT		      :
+HASH			      : 4033294835
+CON_ID			      : 1
+
+SYS@booboo>exec print_table(q'[select * from V$SYSTEM_PARAMETER WHERE name='open_cursors']')
+NUM			      : 3328
+NAME			      : open_cursors
+TYPE			      : 3
+VALUE			      : 300
+DISPLAY_VALUE		      : 300
+DEFAULT_VALUE		      : 50
+ISDEFAULT		      : FALSE
+ISSES_MODIFIABLE	      : FALSE
+ISSYS_MODIFIABLE	      : IMMEDIATE
+ISPDB_MODIFIABLE	      : TRUE
+ISINSTANCE_MODIFIABLE	      : TRUE
+ISMODIFIED		      : FALSE
+ISADJUSTED		      : FALSE
+ISDEPRECATED		      : FALSE
+ISBASIC 		      : TRUE
+DESCRIPTION		      : max # cursors per session
+UPDATE_COMMENT		      :
+HASH			      : 4033294835
+CON_ID			      : 0
+-----------------
+NUM			      : 3328
+NAME			      : open_cursors
+TYPE			      : 3
+VALUE			      : 500
+DISPLAY_VALUE		      : 500
+DEFAULT_VALUE		      : 50
+ISDEFAULT		      : FALSE
+ISSES_MODIFIABLE	      : FALSE
+ISSYS_MODIFIABLE	      : IMMEDIATE
+ISPDB_MODIFIABLE	      : TRUE
+ISINSTANCE_MODIFIABLE	      : TRUE
+ISMODIFIED		      : MODIFIED
+ISADJUSTED		      : FALSE
+ISDEPRECATED		      : FALSE
+ISBASIC 		      : TRUE
+DESCRIPTION		      : max # cursors per session
+UPDATE_COMMENT		      :
+HASH			      : 4033294835
+CON_ID			      : 3
+-----------------
 ```
 
 #### 静态参数修改
@@ -231,210 +428,61 @@ SQL> alter system set open_links=10 scope=spfile;
 
 System altered.
 
--- cdb中查看pdb_spfile$表中记录的参数值
-SQL> select name,value$ from pdb_spfile$ where name='open_cursors';
+SYS@booboo>show parameter open_lin;
 
-NAME		     VALUE$
--------------------- --------------------
-open_cursors	     500
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+open_links			     integer	 4
+open_links_per_instance 	     integer	 4
 
 -- 通过cdb，重启pdb后生效
 SQL> STARTUP PLUGGABLE DATABASE booboopdb1 FORCE
 Pluggable Database opened.
 
 -- pdb中查看参数值
-SQL> show parameter open_cursors
+SYS@booboo>show parameter open_lin;
 
 NAME				     TYPE	 VALUE
 ------------------------------------ ----------- ------------------------------
-open_cursors			     integer	 500
+open_links			     integer	 10
+open_links_per_instance 	     integer	 4
 
 
 --文本初始化参数文件（PFILE）不能包含特定于PDB的参数值。
+--PDB 的参数存储在 CDB 的 PDB_SPFILE$ 字典表中以 con_id 区别，所以， PDB 的 PDB_SPFILE$ 表是空的。
+SYS@booboo> exec print_table('select PDB_UID, NAME, VALUE$ from pdb_spfile$')
+PDB_UID 		      : 2350619425
+NAME			      : open_cursors
+VALUE$			      : 500
+-----------------
+PDB_UID 		      : 2350619425
+NAME			      : open_links
+VALUE$			      : 10
+-----------------
+
+PL/SQL procedure successfully completed.
 ```
 
 #### 查看参数
 
 ```sql
-SQL> SELECT NAME,ISPDB_MODIFIABLE,ISSYS_MODIFIABLE FROM V$SYSTEM_PARAMETER WHERE ISPDB_MODIFIABLE='TRUE' and ISSYS_MODIFIABLE<>'FALSE' ORDER BY NAME;
+SELECT NAME,ISPDB_MODIFIABLE,ISSYS_MODIFIABLE 
+FROM V$SYSTEM_PARAMETER 
+WHERE 
+	ISPDB_MODIFIABLE='TRUE' and 
+	ISSYS_MODIFIABLE<>'FALSE' 
+ORDER BY NAME;
 
-NAME						   ISPDB ISSYS_MOD
--------------------------------------------------- ----- ---------
-approx_for_aggregation				   TRUE  IMMEDIATE
-approx_for_count_distinct			   TRUE  IMMEDIATE
-approx_for_percentile				   TRUE  IMMEDIATE
-asm_diskstring					   TRUE  IMMEDIATE
-awr_pdb_autoflush_enabled			   TRUE  IMMEDIATE
-cell_offload_compaction 			   TRUE  IMMEDIATE
-cell_offload_decryption 			   TRUE  IMMEDIATE
-cell_offload_parameters 			   TRUE  IMMEDIATE
-cell_offload_plan_display			   TRUE  IMMEDIATE
-cell_offload_processing 			   TRUE  IMMEDIATE
-cell_offloadgroup_name				   TRUE  IMMEDIATE
-commit_logging					   TRUE  IMMEDIATE
-commit_wait					   TRUE  IMMEDIATE
-commit_write					   TRUE  IMMEDIATE
-containers_parallel_degree			   TRUE  IMMEDIATE
-cpu_count					   TRUE  IMMEDIATE
-create_stored_outlines				   TRUE  IMMEDIATE
-cursor_bind_capture_destination 		   TRUE  IMMEDIATE
-cursor_invalidation				   TRUE  IMMEDIATE
-cursor_sharing					   TRUE  IMMEDIATE
-db_block_checking				   TRUE  IMMEDIATE
-db_cache_size					   TRUE  IMMEDIATE
-db_create_file_dest				   TRUE  IMMEDIATE
-db_create_online_log_dest_1			   TRUE  IMMEDIATE
-db_create_online_log_dest_2			   TRUE  IMMEDIATE
-db_create_online_log_dest_3			   TRUE  IMMEDIATE
-db_create_online_log_dest_4			   TRUE  IMMEDIATE
-db_create_online_log_dest_5			   TRUE  IMMEDIATE
-db_file_multiblock_read_count			   TRUE  IMMEDIATE
-db_index_compression_inheritance		   TRUE  IMMEDIATE
-db_securefile					   TRUE  IMMEDIATE
-db_unrecoverable_scn_tracking			   TRUE  IMMEDIATE
-ddl_lock_timeout				   TRUE  IMMEDIATE
-default_sharing 				   TRUE  IMMEDIATE
-deferred_segment_creation			   TRUE  IMMEDIATE
-dst_upgrade_insert_conv 			   TRUE  IMMEDIATE
-enable_automatic_maintenance_pdb		   TRUE  IMMEDIATE
-enable_ddl_logging				   TRUE  IMMEDIATE
-encrypt_new_tablespaces 			   TRUE  IMMEDIATE
-fixed_date					   TRUE  IMMEDIATE
-global_names					   TRUE  IMMEDIATE
-heat_map					   TRUE  IMMEDIATE
-inmemory_clause_default 			   TRUE  IMMEDIATE
-inmemory_expressions_usage			   TRUE  IMMEDIATE
-inmemory_force					   TRUE  IMMEDIATE
-inmemory_query					   TRUE  IMMEDIATE
-inmemory_size					   TRUE  IMMEDIATE
-inmemory_virtual_columns			   TRUE  IMMEDIATE
-java_jit_enabled				   TRUE  IMMEDIATE
-job_queue_processes				   TRUE  IMMEDIATE
-listener_networks				   TRUE  IMMEDIATE
-local_listener					   TRUE  IMMEDIATE
-log_archive_min_succeed_dest			   TRUE  IMMEDIATE
-long_module_action				   TRUE  IMMEDIATE
-max_datapump_jobs_per_pdb			   TRUE  IMMEDIATE
-max_dump_file_size				   TRUE  IMMEDIATE
-max_idle_time					   TRUE  IMMEDIATE
-max_iops					   TRUE  IMMEDIATE
-max_mbps					   TRUE  IMMEDIATE
-max_pdbs					   TRUE  IMMEDIATE
-max_string_size 				   TRUE  IMMEDIATE
-nls_length_semantics				   TRUE  IMMEDIATE
-nls_nchar_conv_excp				   TRUE  IMMEDIATE
-object_cache_max_size_percent			   TRUE  DEFERRED
-object_cache_optimal_size			   TRUE  DEFERRED
-olap_page_pool_size				   TRUE  DEFERRED
-open_cursors					   TRUE  IMMEDIATE
-optimizer_adaptive_plans			   TRUE  IMMEDIATE
-optimizer_adaptive_reporting_only		   TRUE  IMMEDIATE
-optimizer_adaptive_statistics			   TRUE  IMMEDIATE
-optimizer_capture_sql_plan_baselines		   TRUE  IMMEDIATE
-optimizer_dynamic_sampling			   TRUE  IMMEDIATE
-optimizer_features_enable			   TRUE  IMMEDIATE
-optimizer_index_caching 			   TRUE  IMMEDIATE
-optimizer_index_cost_adj			   TRUE  IMMEDIATE
-optimizer_inmemory_aware			   TRUE  IMMEDIATE
-optimizer_mode					   TRUE  IMMEDIATE
-optimizer_secure_view_merging			   TRUE  IMMEDIATE
-optimizer_use_invisible_indexes 		   TRUE  IMMEDIATE
-optimizer_use_pending_statistics		   TRUE  IMMEDIATE
-optimizer_use_sql_plan_baselines		   TRUE  IMMEDIATE
-parallel_degree_limit				   TRUE  IMMEDIATE
-parallel_degree_policy				   TRUE  IMMEDIATE
-parallel_force_local				   TRUE  IMMEDIATE
-parallel_instance_group 			   TRUE  IMMEDIATE
-parallel_max_servers				   TRUE  IMMEDIATE
-parallel_min_time_threshold			   TRUE  IMMEDIATE
-pdb_file_name_convert				   TRUE  IMMEDIATE
-pdb_lockdown					   TRUE  IMMEDIATE
-pga_aggregate_limit				   TRUE  IMMEDIATE
-pga_aggregate_target				   TRUE  IMMEDIATE
-plscope_settings				   TRUE  IMMEDIATE
-plsql_ccflags					   TRUE  IMMEDIATE
-plsql_code_type 				   TRUE  IMMEDIATE
-plsql_debug					   TRUE  IMMEDIATE
-plsql_optimize_level				   TRUE  IMMEDIATE
-plsql_v2_compatibility				   TRUE  IMMEDIATE
-plsql_warnings					   TRUE  IMMEDIATE
-query_rewrite_enabled				   TRUE  IMMEDIATE
-query_rewrite_integrity 			   TRUE  IMMEDIATE
-recyclebin					   TRUE  DEFERRED
-remote_dependencies_mode			   TRUE  IMMEDIATE
-remote_listener 				   TRUE  IMMEDIATE
-remote_recovery_file_dest			   TRUE  IMMEDIATE
-resource_limit					   TRUE  IMMEDIATE
-resource_manager_plan				   TRUE  IMMEDIATE
-result_cache_mode				   TRUE  IMMEDIATE
-result_cache_remote_expiration			   TRUE  IMMEDIATE
-resumable_timeout				   TRUE  IMMEDIATE
-session_cached_cursors				   TRUE  DEFERRED
-sessions					   TRUE  IMMEDIATE
-sga_min_size					   TRUE  IMMEDIATE
-sga_target					   TRUE  IMMEDIATE
-shadow_core_dump				   TRUE  IMMEDIATE
-shared_pool_size				   TRUE  IMMEDIATE
-shared_servers					   TRUE  IMMEDIATE
-skip_unusable_indexes				   TRUE  IMMEDIATE
-smtp_out_server 				   TRUE  IMMEDIATE
-sort_area_retained_size 			   TRUE  DEFERRED
-sort_area_size					   TRUE  DEFERRED
-spatial_vector_acceleration			   TRUE  IMMEDIATE
-sql_trace					   TRUE  IMMEDIATE
-sqltune_category				   TRUE  IMMEDIATE
-star_transformation_enabled			   TRUE  IMMEDIATE
-statistics_level				   TRUE  IMMEDIATE
-temp_undo_enabled				   TRUE  IMMEDIATE
-timed_os_statistics				   TRUE  IMMEDIATE
-timed_statistics				   TRUE  IMMEDIATE
-undo_retention					   TRUE  IMMEDIATE
-undo_tablespace 				   TRUE  IMMEDIATE
-workarea_size_policy				   TRUE  IMMEDIATE
-xml_db_events					   TRUE  IMMEDIATE
-
-132 rows selected.
-
-SQL> SELECT NAME,ISPDB_MODIFIABLE,ISSYS_MODIFIABLE FROM V$SYSTEM_PARAMETER WHERE ISPDB_MODIFIABLE='TRUE' and ISSYS_MODIFIABLE='FALSE' ORDER BY NAME;
-
-NAME						   ISPDB ISSYS_MOD
--------------------------------------------------- ----- ---------
-O7_DICTIONARY_ACCESSIBILITY			   TRUE  FALSE
-blank_trimming					   TRUE  FALSE
-commit_point_strength				   TRUE  FALSE
-common_user_prefix				   TRUE  FALSE
-db_domain					   TRUE  FALSE
-db_files					   TRUE  FALSE
-db_performance_profile				   TRUE  FALSE
-nls_calendar					   TRUE  FALSE
-nls_comp					   TRUE  FALSE
-nls_currency					   TRUE  FALSE
-nls_date_format 				   TRUE  FALSE
-nls_date_language				   TRUE  FALSE
-nls_dual_currency				   TRUE  FALSE
-nls_iso_currency				   TRUE  FALSE
-nls_language					   TRUE  FALSE
-nls_numeric_characters				   TRUE  FALSE
-nls_sort					   TRUE  FALSE
-nls_territory					   TRUE  FALSE
-nls_time_format 				   TRUE  FALSE
-nls_time_tz_format				   TRUE  FALSE
-nls_timestamp_format				   TRUE  FALSE
-nls_timestamp_tz_format 			   TRUE  FALSE
-open_links					   TRUE  FALSE
-pdb_os_credential				   TRUE  FALSE
-rollback_segments				   TRUE  FALSE
-sql92_security					   TRUE  FALSE
-undo_management 				   TRUE  FALSE
-utl_file_dir					   TRUE  FALSE
-
-28 rows selected.
+SELECT NAME,ISPDB_MODIFIABLE,ISSYS_MODIFIABLE 
+FROM V$SYSTEM_PARAMETER 
+WHERE 
+	ISPDB_MODIFIABLE='TRUE' and 
+	ISSYS_MODIFIABLE='FALSE' 
+ORDER BY NAME;
 ```
 
 ## 实践4-4:通过使用自动诊断存储库命令查看警报日志接口(ADRCI)
-Practice 4-4: Viewing the Alert Log by Using the Automatic Diagnostic Repository Command
-
-Interface (ADRCI)
+Practice 4-4: Viewing the Alert Log by Using the Automatic Diagnostic Repository Command Interface (ADRCI)
 
 ### Overview
 

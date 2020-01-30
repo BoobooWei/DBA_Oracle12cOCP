@@ -1,5 +1,3 @@
-
-
 # 实践3:Oracle数据库管理工具
 
 > **Practices for Lesson 3: Oracle Database Management Tools**
