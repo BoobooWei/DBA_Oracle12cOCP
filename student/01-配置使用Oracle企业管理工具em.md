@@ -4,15 +4,30 @@
 >
 > Configuring Enterprise Manager Database Express
 
+<!-- MDTOC maxdepth:6 firsth1:1 numbering:0 flatten:0 bullets:1 updateOnSave:1 -->
+
+- [01-配置使用Oracle企业管理工具em](#01-配置使用oracle企业管理工具em)   
+   - [访问CDB](#访问cdb)   
+   - [访问PDB](#访问pdb)   
+
+<!-- /MDTOC -->
+
 默认安装oracle12c 时已安装oem工具`exec DBMS_XDB.setHTTPPort(5500)`，访问时必须通过https
 
- https://192.168.43.135:5500/em/login 
+ https://192.168.43.135:5500/em/login
 
 手动添加其他oem的访问端口时``exec dbms_xdb_config.sethttpport(5505);`，必须通过 http
 
- http://192.168.43.135:5505/em 
+ http://192.168.43.135:5505/em
 
+## 访问CDB
 
+注意这里不填写容器名，如果填写，浏览器则会弹出输入框，你输入什么都没有用。
+这里你们可能会遇见错误：登录被拒绝; 用户名/口令无效。
+
+![](pic/023.jpg)
+
+## 访问PDB
 
 
 1. sqlplus / as sysdba`
@@ -60,18 +75,12 @@ tcp    LISTEN     0      128      :::5505                 :::*                  
 
 ```
 
-访问  http://192.168.43.135:8088/em/login 
+访问  http://192.168.43.135:8088/em/login
 
 ![](pic/001.png)
 
-访问 http://192.168.43.135:5505/em/login 
+访问 http://192.168.43.135:5505/em/login
 
 ![](pic/002.png)
 
 ![](pic/003.png)
-
-注意：
-
-web登陆容器无法登陆
-
-web登陆pdb可以登陆
