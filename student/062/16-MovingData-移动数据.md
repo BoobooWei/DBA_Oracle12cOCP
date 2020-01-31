@@ -14,7 +14,23 @@ Practices for Lesson 16: Overview
 
 Practice 16-1: Moving Data by Using Data Pump
 
+### Overview
+
+### Task
+
+### Practice
+
+### KnowledgePoint
+
 ## 实践16-2:使用SQL*Loader加载数据
 
 Practice 16-2: Loading Data by Using SQL*Loader
+
+### Overview
+
+### Task
+
+### Practice
+
+### KnowledgePoint
 

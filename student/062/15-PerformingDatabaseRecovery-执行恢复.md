@@ -14,3 +14,11 @@ Practices for Lesson 15: Overview
 
 Practice 15-1: Recovering from the Loss of a Data File
 
+### Overview
+
+### Task
+
+### Practice
+
+### KnowledgePoint
+

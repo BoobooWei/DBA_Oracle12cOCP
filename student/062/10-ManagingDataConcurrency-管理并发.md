@@ -14,4 +14,12 @@ Practices for Lesson 10: Overview.
 
 Practice 10-1: Resolving Lock Conflicts
 
+### Overview
+
+### Task
+
+### Practice
+
+### KnowledgePoint
+
  

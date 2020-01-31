@@ -14,10 +14,34 @@ Practices for Lesson 11: Overview
 
 Practice 11-1: Enabling Unified Auditing
 
+### Overview
+
+### Task
+
+### Practice
+
+### KnowledgePoint
+
 ## 实践11-2:创建审计用户
 
 Practice 11-2: Creating Audit Users
 
+### Overview
+
+### Task
+
+### Practice
+
+### KnowledgePoint
+
 ## 实践11-3:创建审计策略
 
 Practice 11-3: Creating an Audit Policy
+
+### Overview
+
+### Task
+
+### Practice
+
+### KnowledgePoint

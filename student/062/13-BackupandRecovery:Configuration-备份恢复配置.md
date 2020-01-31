@@ -13,3 +13,11 @@ Practices for Lesson 13: Overview
 ## 实践13-1:配置数据库进行恢复
 
 Practice 13-1: Configuring Your Database for Recovery
+
+### Overview
+
+### Task
+
+### Practice
+
+### KnowledgePoint

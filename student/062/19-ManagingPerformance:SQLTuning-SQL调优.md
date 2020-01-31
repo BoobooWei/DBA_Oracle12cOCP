@@ -13,3 +13,11 @@ Practices for Lesson 19: Overview
 ## 实践19-1:使用自动SQL调优
 
 Practice 19-1: Using Automatic SQL Tuning
+
+### Overview
+
+### Task
+
+### Practice
+
+### KnowledgePoint
