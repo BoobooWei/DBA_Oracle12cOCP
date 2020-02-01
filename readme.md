@@ -12,6 +12,7 @@
 * [Oracle Universal Installer (OUI) Silent Installations](https://oracle-base.com/articles/misc/oui-silent-installations)
 * [Database Configuration Assistant (DBCA) : Creating Databases in Silent Mode](https://oracle-base.com/articles/misc/database-configuration-assistant-dbca-silent-mode)
 * [Multitenant : Startup and Shutdown Container Databases (CDB) and Pluggable Databases (PDB) in Oracle Database 12c Release 1 (12.1)](https://oracle-base.com/articles/12c/multitenant-startup-and-shutdown-cdb-and-pdb-12cr1#preserve-pdb-startup-state)
+* [Oracle Enterprise Manager Cloud Control 12c Release 5 (12.1.0.5) Silent Installation on Oracle Linux 7](https://oracle-base.com/articles/12c/cloud-control-12cr5-silent-installation-on-oracle-linux-7) 
 
 ## 数据库管理员帮助文档
 
