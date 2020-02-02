@@ -16,7 +16,100 @@
 
 ## Cloud Control 12cR5 图形化安装
 
+
+### 官方帮助文档
+
  https://docs.oracle.com/cd/E24628_01/install.121/e22624/install_em_exist_db.htm#EMBSC165
+
+ https://oracle-base.com/articles/12c/cloud-control-12cr5-installation-on-oracle-linux-5-and-6
+
+ 其他帮助
+
+ https://www.jianshu.com/p/91b0b782e507
+
+### 图形化安装
+
+#### 虚拟机配置
+
+| IP 地址       | 192.168.14.154                                      |
+| ------------- | --------------------------------------------------- |
+| 操作系统      | Red Hat Enterprise Linux Server release 7.3 (Maipo) |
+| 文件系统 (GB) | 63.96                                               |
+| 内存大小 (MB) | 5060                                                |
+| 地址长度 (位) | 64-bit                                              |
+| CPU (核)      | 4                                                   |
+
+#### 安装步骤
+
+![t001.png](pic/t001.png)
+![t002.png](pic/t002.png)
+![t003.png](pic/t003.png)
+![t004.png](pic/t004.png)
+![t005.png](pic/t005.png)
+![t006.png](pic/t006.png)
+![t007.png](pic/t007.png)
+![t008.png](pic/t008.png)
+![t009.png](pic/t009.png)
+![t010.png](pic/t010.png)
+![t011.png](pic/t011.png)
+![t012.png](pic/t012.png)
+![t013.png](pic/t013.png)
+
+
+
+
+### 访问oem
+
+ https://192.168.14.154:7301/em
+
+ https://192.168.14.154:7102/console
+
+ ![](pic/t014.png)
+
+ ![](pic/t015.png)
+
+ ![t016.png](pic/t016.png)
+
+ ![t017.png](pic/t017.png)
+
+
+### 手动添加新目标
+
+1. 设置->添加目标->手动添加目标->添加主机 
+2. 192.168.56.201机器上创建目录/u01/app/oracle/agent12c
+3. 点击命名的身份证明右边的➕号，并行执行如下命令赋予oracle sudo权限。
+
+```bash
+visudo
+root    ALL=(ALL)       ALL
+oracle  ALL=(ALL)   NOPASSWORD:ALL
+```
+
+
+![t018.png](pic/t018.png)
+![t019.png](pic/t019.png)
+![t020.png](pic/t020.png)
+![t021.png](pic/t021.png)
+![t022.png](pic/t022.png)
+
+
+### 自动添加当前服务器的目标
+
+![t023.png](pic/t023.png)
+![t024.png](pic/t024.png)
+
+
+### 添加数据库
+
+设置->添加目标->手动添加目标
+
+![t025.png](pic/t025.png)
+![t026.png](pic/t026.png)
+![t027.png](pic/t027.png)
+![t028.png](pic/t028.png)
+![t029.png](pic/t029.png)
+![t030.png](pic/t030.png)
+![t031.png](pic/t031.png)
 
 ## Cloud Control 12cR5 静默安装
 
@@ -1878,6 +1971,8 @@ $AGENT_HOME/bin/emctl start agent
 
 ## 问题操作总结
 
+在图形化或静默安装之前先执行以下操作。
+
 ```sql
 cat > $ORACLE_HOME/network/admin/sqlnet.ora << ENDF
 # sqlnet.ora Network Configuration File: /u01/app/oracle/product/12.2.0/db_1/network/admin/sqlnet.ora
@@ -1910,7 +2005,6 @@ ENDF
 常用命令
 
 ```bash
+sqlplus sys/WLS3Gg5_2@emrep
 sqlplus sysman/WLS3Gg5_2@emrep
 ```
-
-<https://blog.51cto.com/recyclebin/2382702>
