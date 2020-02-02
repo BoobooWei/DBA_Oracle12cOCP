@@ -1847,7 +1847,7 @@ Export config of OMS is successful.
 /u01/app/oracle/middleware_booboo/oms/bin/emctl start oms
 ```
 
-
+由于我的虚拟机内存和cpu都较小，已启动资源使用率就100%。因此无法启动成功。建议安装oem选择4核16G的服务器。
 
 ### 8. 访问oem
 
