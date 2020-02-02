@@ -38,58 +38,13 @@ In this practice you will set a tablespace fullness threshold so as to be warned
 
 Access the  orcl database as the SYS user (with the oracle_4U password, connect as SYSDBA) and perform the necessary tasks through Enterprise Manager Cloud Control or through SQL*Plus. All scripts for this practice are in the $LABS/P8 directory.
 
-1. Using the DBMS_SERVER_ALERT.SET_THRESHOLD procedure, reset the database-wide threshold values for the Tablespace Space Usage metric. Connect to a SQL*Plus session and execute the following procedure:
-
-   ```sql
-   $ . oraenv
-   ORACLE_SID = [orcl] ? orcl
-   The Oracle base for
-   ORACLE_HOME=/u01/app/oracle/product/12.1.0/dbhome_1 is
-   /u01/app/oracle
-   $ cd $LABS/P8
-   $ sqlplus / as sysdba
-   …
-   Connected to:
-   …
-   SQL> exec DBMS_SERVER_ALERT.SET_THRESHOLD(-
-   > dbms_server_alert.tablespace_pct_full,-
-   > NULL,NULL,NULL,NULL,1,1,NULL,-
-   > dbms_server_alert.object_type_tablespace,NULL);
-   PL/SQL procedure successfully completed.
-   SQL>
-   ```
-
+1. Using the DBMS_SERVER_ALERT.SET_THRESHOLD procedure, reset the database-wide threshold values for the Tablespace Space Usage metric. Connect to a SQL*Plus session and execute the following procedure.
 
 
 2. From your SQL*Plus session, check the database-wide threshold values for the Tablespace Space Usage metric by using the following command (output formatted for clarity):
 
-   ```sql
-   SQL> SELECT warning_value,critical_value
-   2	FROM	dba_thresholds
-   3	WHERE	metrics_name='Tablespace Space Usage'
-   4	AND	object_name IS NULL;
-
-   WARNING_VALUE CRITICAL_VALUE
-	 ----------- --------------
-   85	97
-   ```
-
-
 
 3. Create a new tablespace called TBSALERT with a 120 MB file called tbsalert.dbf. Make sure that this tablespace is locally managed and uses Automatic Segment Space Management. Do *not* make it auto-extensible, and do *not* specify any thresholds for this tablespace.
-
-   ```sql
-   SQL> CREATE TABLESPACE tbsalert
-   2	DATAFILE '/u01/app/oracle/oradata/orcl/tbsalert.dbf'
-   3	SIZE 120M REUSE LOGGING EXTENT MANAGEMENT LOCAL
-   4	SEGMENT SPACE MANAGEMENT AUTO; Tablespace created.
-   SQL> SELECT autoextensible FROM dba_data_files
-   2	WHERE tablespace_name='TBSALERT';
-   
-   AUT
-   --- NO
-   ```
-
 
 
 4.  In Enterprise Manager Cloud Control, navigate to the orcl database home page. Then Select **Administration** > **Storage** > **Tablespaces**.
@@ -130,7 +85,8 @@ Access the  orcl database as the SYS user (with the oracle_4U password, connect 
 
    ```sql
    cd $LABS/P8
-   sqlplus sys/oracle@booboopdb1 as sysdba
+   sqlplus / as sysdba
+   conn sys/oracle@booboopdb1 as sysdba
    begin
    DBMS_SERVER_ALERT.SET_THRESHOLD(
     metrics_id=>dbms_server_alert.tablespace_pct_full,
@@ -150,46 +106,41 @@ Access the  orcl database as the SYS user (with the oracle_4U password, connect 
 2. 在SQL*Plus会话中，使用以下命令检查表空间使用度量的数据库范围阈值(为清晰起见，输出格式化):
 
    ```sql
-   select object_name,metrics_name, WARNING_OPERATOR,status from dba_thresholds ;
+   select * from dba_thresholds where object_name is null;
    ```
 
-   查询结果：
+   查询结果：默认 `warnning：85%；critical：97%`
 
    ```sql
-   SYS@booboopdb1>exec print_table('select object_name,metrics_name, WARNING_OPERATOR,status from dba_thresholds')
-   OBJECT_NAME		      : TEMP
+   SYS@booboo>exec print_table('select * from dba_thresholds where object_name is null');
    METRICS_NAME		      : Tablespace Space Usage
-   WARNING_OPERATOR	      : DO NOT CHECK
+   WARNING_OPERATOR	      : GE
+   WARNING_VALUE		      : 85
+   CRITICAL_OPERATOR	      : GE
+   CRITICAL_VALUE		      : 97
+   OBSERVATION_PERIOD	      : 1
+   CONSECUTIVE_OCCURRENCES       : 1
+   INSTANCE_NAME		      : database_wide
+   OBJECT_TYPE		      : TABLESPACE
+   OBJECT_NAME		      :
    STATUS			      : VALID
-   -----------------
-   OBJECT_NAME		      : UNDOTBS1
-   METRICS_NAME		      : Tablespace Space Usage
-   WARNING_OPERATOR	      : DO NOT CHECK
-   STATUS			      : VALID
-   -----------------
-   OBJECT_NAME		      : UNDOTBS1_TEMP
-   METRICS_NAME		      : Tablespace Space Usage
-   WARNING_OPERATOR	      : DO NOT CHECK
-   STATUS			      : INVALID
-   -----------------
-
-   PL/SQL procedure successfully completed.
    ```
 
 
 
-3. 在SQL*Plus会话中，使用以下命令检查表空间使用度量的数据库范围阈值(为清晰起见，输出格式化):
+3. 使用名为`tbsalert.dbf`的120 MB文件创建一个名为`TBSALERT`的新表空间。确保这个表空间是本地管理的，并使用自动段空间管理。不能自动扩展，不要为这个表空间指定任何阈值。
 
    ```sql
    CREATE TABLESPACE tbsalert
    	DATAFILE '/u01/app/oracle/oradata/booboo/booboopdb1/tbsalert.dbf'
    	SIZE 120M REUSE LOGGING EXTENT MANAGEMENT LOCAL
    	SEGMENT SPACE MANAGEMENT AUTO;
+
    SELECT autoextensible FROM dba_data_files
    	WHERE tablespace_name='TBSALERT';
    ```
 
-   执行结果：
+   执行结果为`NO`，说明该表空间文件不会自动增长。
 
    ```sql
    AUT
@@ -197,8 +148,211 @@ Access the  orcl database as the SYS user (with the oracle_4U password, connect 
    NO
    ```
 
-   说明该表空间文件不会自动增长。
 
-4. dfd
+
+4. 登陆企业云管理 Enterprise Manager Cloud Control,访问 booboopdb1数据库的网页，然后选择 管理>存储>表空间。
+
+5. 输入用户名密码登陆`sys/oracle as sysdba`
+
+6. 点击表空间 TBSALERT，编辑该表空间，设置它的警告值为55%，严重级别为70%。
+
+7. 返回SQL*Plus，检查新的阈值配置是否已经生效:
+
+   ```sql
+   SYS@booboo>conn sys/oracle@booboopdb1 as sysdba
+   Connected.
+   SYS@booboopdb1>exec print_table(q'[select * from dba_thresholds where object_name='TBSALERT']');
+   METRICS_NAME		      : Tablespace Space Usage
+   WARNING_OPERATOR	      : GE
+   WARNING_VALUE		      : 55
+   CRITICAL_OPERATOR	      : GE
+   CRITICAL_VALUE		      : 70
+   OBSERVATION_PERIOD	      : 2
+   CONSECUTIVE_OCCURRENCES       : 1
+   INSTANCE_NAME		      : database_wide
+   OBJECT_TYPE		      : TABLESPACE
+   OBJECT_NAME		      : TBSALERT
+   STATUS			      : VALID
+   ```
+
+8. 在SQL*Plus会话中，从`DBA_ALERT_HISTORY`中查询`TBSALERT`表空间的`REASON` 和 `RESOLUTION`列。
+
+   ```sql
+   select REASON,RESOLUTION from DBA_ALERT_HISTORY where object_name = 'TBSALERT';
+   ```
+
+   执行结果：
+
+   ```sql
+   SYS@booboopdb1>exec print_table(q'[select REASON,RESOLUTION from DBA_ALERT_HISTORY where object_name = 'TBSALERT']')
+   REASON			      : Threshold is updated on metrics "Tablespace Space Usage"
+   RESOLUTION		      : cleared
+   ```
+
+
+
+9. 执行`$LABS/P8/seg_advsr_setup.sh`脚本，在`TBSALERT`表空间中创建和填充新表。
+
+   ```bash
+   LAB=/home/oracle/labs
+   # 根据自己的pdb连接方式修改脚本
+   vim $LAB/P8/seg_advsr_setup.sh
+   sqlplus / as sysdba << EOF
+   alter system set disk_asynch_io = FALSE scope = spfile;
+   shutdown immediate
+   startup
+   show parameter disk_asynch_io;
+   exit;
+   EOF
+
+   # 批量建表和插入数据
+   vim $LAB/P8/seg_advsr_setup02.sh
+   sqlplus / as sysdba << EOF
+   connect sys/oracle@booboopdb1 as sysdba
+   set echo on
+   create table employees1 tablespace tbsalert as select * from hr.employees;
+   create table employees2 tablespace tbsalert as select * from hr.employees;
+   create table employees3 tablespace tbsalert as select * from hr.employees;
+   create table employees4 tablespace tbsalert as select * from hr.employees;
+   create table employees5 tablespace tbsalert as select * from hr.employees;
+
+   alter table employees1 enable row movement;
+   alter table employees2 enable row movement;
+   alter table employees3 enable row movement;
+   alter table employees4 enable row movement;
+   alter table employees5 enable row movement;
+
+   BEGIN
+   FOR i in 1..10 LOOP
+      insert into employees1 select * from employees1;
+      insert into employees2 select * from employees2;
+      insert into employees3 select * from employees3;
+      insert into employees4 select * from employees4;
+      insert into employees5 select * from employees5;
+      commit;
+    END LOOP;
+   END;
+   /
+   insert into employees1 select * from employees1;
+   insert into employees2 select * from employees2;
+   insert into employees3 select * from employees3;
+   commit;
+   exit;
+   EOF
+   ```
+
+10. 使用Enterprise Manager Cloud Control或`SQL*Plus`检查`TBSALERT`表空间的填充级别。目前的水平应该在`60%`左右。等待几分钟，检查`TBSALERT`表空间是否达到警告级别。
+
+   ```sql
+   --使用sql查询表空间使用占比，其中125829120 为表空间总大小
+   select sum(bytes) *100 /125829120 from dba_extents where tablespace_name='TBSALERT';
+   --查询指定表空间的总大小
+   SELECT
+       tablespace_name, sum(bytes)
+   FROM
+       dba_data_files
+   where tablespace_name='TBSALERT'
+   group by tablespace_name;
+   --查询每个表空间的总大小，使用占比，空闲占比
+   select t1.tablespace_name,t1.tablespace_total_bytes,t2.tablespace_used_bytes,
+   t1.tablespace_total_bytes - t2.tablespace_used_bytes tablespace_free_bytes,
+   t2.tablespace_used_bytes / t1.tablespace_total_bytes tablespace_used_ratio,
+   (t1.tablespace_total_bytes - t2.tablespace_used_bytes) / t1.tablespace_total_bytes tablespace_free_ratio
+   from
+   (SELECT tablespace_name, sum(bytes) tablespace_total_bytes
+   FROM dba_data_files group by tablespace_name) t1
+   join
+   (select tablespace_name, sum(bytes) tablespace_used_bytes from dba_extents group by tablespace_name) t2
+   on t1.tablespace_name = t2.tablespace_name;
+   ```
+
+   执行结果
+
+   ```sql
+   SYS@booboopdb1>select sum(bytes) *100 /125829120 from dba_extents where tablespace_name='TBSALERT';
+
+   SUM(BYTES)*100/125829120
+   ------------------------
+   		      60
+   ```
+
+	查看告警记录
+
+	```sql
+	select reason from dba_outstanding_alerts where object_name='TBSALERT';
+	```
+
+11. 在您的`SQL*Plus`会话中，执行以下插入以向`TBSALERT`添加更多数据。稍等片刻，通过`SQL*Plus`和Enterprise Manager Cloud Control中的查询查看临界级别。确认TBSALERT使用率应该在`75%`左右。
+
+    ```sql
+    --执行插入
+    insert into employees4 select * from employees4;
+    commit;
+    insert into employees5 select * from employees5;
+    commit;
+    --查看表空间占比
+    select sum(bytes) *100 /125829120 from dba_extents where tablespace_name='TBSALERT';
+    --查看告警记录
+    select reason from dba_outstanding_alerts where object_name='TBSALERT';
+    ```
+
+
+
+12. 在`SQL*Plus`会话中，执行以下`delete`语句来删除`TBSALERT`表中的行。这些陈述需要几分钟才能完成。然后退出`SQL*Plus`会话。
+
+    ```sql
+    delete employees1;
+    commit;
+    delete employees2;
+    commit;
+    delete employees3;
+    commit;
+    ```
+
+
+
+13. 在Enterprise Manager Cloud Control中运行`TBSALERT`表空间的`Segment Advisor`。确保您在不受时间限制的综合模式下运行Advisor工具。接受并执行其建议。建议实施后，检查`TBSALERT`的使用率是否低于`55%`。
+
+
+
+14. 等待几分钟，检查`TBSALERT`表空间没有未完成的警报。导航到**Oracle数据库** > **监控** > **意外事件管理器** > **无事件事件** 。
+
+15. 检索`TBSALERT`表空间使用度量在过去24小时内的历史记录。
+
+16. 验证`TBSALERT`表空间的使用率已降低到阈值以下，因为空间已被回收。在企业管理云控制中，导航到**管理** > **存储** > **表空间**。
+
+17. 作为`SYS`用户登录到`SQL*Plus`。在SQL*Plus中，重置TBSALERT表空间使用度量，退出。
+
+    ```sql
+    EXEC DBMS_SERVER_ALERT.SET_THRESHOLD(9000,NULL,NULL,NULL,NULL,1,1,NULL,5,'TBSALERT')
+    SELECT warning_value,critical_value
+    FROM	dba_thresholds
+    WHERE metrics_name='Tablespace Space Usage'
+    AND	object_name='TBSALERT';
+    ```
+
+
+
+18. **注意:这是一个强制性的清理步骤**。检查，然后执行脚本`$LABS/P8/seg_advsr_cleanup.sh`来删除`TBSALERT`表空间。
+
+    ```bash
+    $ cat seg_advsr_cleanup.sh
+    #!/bin/sh
+    # For training only, execute as oracle OS user
+
+
+    sqlplus /nolog <<EOF
+    connect / as sysdba
+    alter system set disk_asynch_io = TRUE scope = spfile;
+    shutdown immediate;
+    startup
+    alter session set container=booboopdb1;
+    drop tablespace tbsalert including contents and datafiles;
+    exit
+    EOF
+
+    ```
+
+
 
 ### KnowledgePoint

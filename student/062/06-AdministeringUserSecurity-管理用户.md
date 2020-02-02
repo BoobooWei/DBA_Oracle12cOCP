@@ -306,7 +306,7 @@ In this practice, you create the following users and assign appropriate profiles
 
 2. 通过SQL脚本``P6script.sql``为另一位新的人力资源职员Rachel Pandya创建一个账户`RPANDYA`。
 
-```bash
+  ```bash
   cat > /home/oracle/P6script.sql << ENDF
   create user "RPANDYA" identified by "newuser"
   profile "HRPROFILE"
@@ -350,9 +350,7 @@ In this practice, you create the following users and assign appropriate profiles
   SQL*Plus: Release 12.2.0.1.0 Production on Fri Jan 31 03:01:10 2020
 
   Copyright (c) 1982, 2016, Oracle.  All rights reserved.
-
-
-  Connected to:
+Connected to:
   Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
 
   Enter value for username: JGOODMAN
@@ -390,7 +388,6 @@ In this practice, you create the following users and assign appropriate profiles
    ERROR:
    ORA-28001: the password has expired
 
-
    Changing password for DHAMBY
    New password:
    Retype new password:
@@ -418,7 +415,7 @@ In this practice, you create the following users and assign appropriate profiles
                   *
    ERROR at line 1:
    ORA-01031: insufficient privileges
-   ```
+  ```
 
 
 
@@ -434,7 +431,6 @@ In this practice, you create the following users and assign appropriate profiles
    ERROR:
    ORA-28001: the password has expired
 
-
    Changing password for JGOODMAN
    New password:
    Retype new password:
@@ -448,7 +444,7 @@ In this practice, you create the following users and assign appropriate profiles
    EMPLOYEE_ID FIRST_NAME		 LAST_NAME		   EMAIL
    ----------- -------------------- ------------------------- -------------------------
    PHONE_NUMBER	     HIRE_DATE JOB_ID	      SALARY COMMISSION_PCT MANAGER_ID DEPARTMENT_ID
-   -------------------- --------- ---------- ---------- -------------- ---------- -------------
+  -------------------- --------- ---------- ---------- -------------- ---------- -------------
    	197 Kevin		 Feeney 		   KFEENEY
    650.507.9822	     23-MAY-06 SH_CLERK 	3000			   124		  50
 
@@ -468,12 +464,12 @@ In this practice, you create the following users and assign appropriate profiles
    JGOODMAN@booboopdb1>select * from hr.EMPLOYEES where EMPLOYEE_ID=197;
 
    EMPLOYEE_ID FIRST_NAME		 LAST_NAME		   EMAIL
-   ----------- -------------------- ------------------------- -------------------------
+----------- -------------------- ------------------------- -------------------------
    PHONE_NUMBER	     HIRE_DATE JOB_ID	      SALARY COMMISSION_PCT MANAGER_ID DEPARTMENT_ID
-   -------------------- --------- ---------- ---------- -------------- ---------- -------------
+-------------------- --------- ---------- ---------- -------------- ---------- -------------
    	197 Kevin		 Feeney 		   KFEENEY
    650.507.9822	     23-MAY-06 SH_CLERK 	3000			   124		  50
-   ```
+  ```
 
 
 
@@ -490,8 +486,6 @@ In this practice, you create the following users and assign appropriate profiles
 
    ERROR:
    ORA-28001: the password has expired
-
-
    Changing password for RPANDYA
    New password:
    Retype new password:
@@ -503,6 +497,7 @@ In this practice, you create the following users and assign appropriate profiles
    RPANDYA@booboopdb1>SELECT salary FROM hr.employees WHERE EMPLOYEE_ID=197;
 
        SALARY
+
    ----------
          3000
 
@@ -540,3 +535,5 @@ In this practice, you create the following users and assign appropriate profiles
 #### 数据库安全指南
 
 [数据库安全指南](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/dbseg/release-changes.html#GUID-256DEEBF-8FBE-4641-BAE3-D23D53ADFB44)
+
+   ```

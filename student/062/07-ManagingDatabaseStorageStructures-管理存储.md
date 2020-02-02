@@ -351,12 +351,8 @@ In this practice, you create a script to create the INVENTORY tablespace that wi
    SQL*Plus: Release 12.2.0.1.0 Production on Sat Feb 1 00:34:47 2020
 
    Copyright (c) 1982, 2016, Oracle.  All rights reserved.
-
-
    Connected to:
    Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
-
-
    PL/SQL procedure successfully completed.
 
    SYS@booboopdb1>CREATE TABLE x
@@ -432,7 +428,6 @@ In this practice, you create a script to create the INVENTORY tablespace that wi
    ERROR at line 1:
    ORA-01653: unable to extend table SYS.X by 128 in tablespace INVENTORY
 
-
    SYS@booboopdb1>COMMIT;
 
    Commit complete.
@@ -463,11 +458,8 @@ In this practice, you create a script to create the INVENTORY tablespace that wi
 
    Copyright (c) 1982, 2016, Oracle.  All rights reserved.
 
-
    Connected to:
    Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
-
-
    PL/SQL procedure successfully completed.
 
    SYS@booboopdb1>CREATE TABLE x
