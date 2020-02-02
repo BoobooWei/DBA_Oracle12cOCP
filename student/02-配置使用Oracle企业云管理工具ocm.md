@@ -85,12 +85,52 @@ root    ALL=(ALL)       ALL
 oracle  ALL=(ALL)   NOPASSWD:ALL
 ```
 
-
 ![t018.png](pic/t018.png)
 ![t019.png](pic/t019.png)
 ![t020.png](pic/t020.png)
 ![t021.png](pic/t021.png)
 ![t022.png](pic/t022.png)
+
+```bash
+SYS@booboo>alter user dbsnmp account unlock;
+
+User altered.
+
+SYS@booboo>alter user dbsnmp identified by oracle;
+
+User altered.
+
+SYS@booboo>exec print_table(q'[select * from dba_users where username='DBSNMP']')
+USERNAME		      : DBSNMP
+USER_ID 		      : 54
+PASSWORD		      :
+ACCOUNT_STATUS		      : OPEN
+LOCK_DATE		      :
+EXPIRY_DATE		      : 31-jul-2020 22:33:20
+DEFAULT_TABLESPACE	      : SYSAUX
+TEMPORARY_TABLESPACE	      : TEMP
+LOCAL_TEMP_TABLESPACE	      : TEMP
+CREATED 		      : 26-jan-2017 14:23:26
+PROFILE 		      : DEFAULT
+INITIAL_RSRC_CONSUMER_GROUP   : DEFAULT_CONSUMER_GROUP
+EXTERNAL_NAME		      :
+PASSWORD_VERSIONS	      : 11G 12C
+EDITIONS_ENABLED	      : N
+AUTHENTICATION_TYPE	      : PASSWORD
+PROXY_ONLY_CONNECT	      : N
+COMMON			      : YES
+LAST_LOGIN		      :
+ORACLE_MAINTAINED	      : Y
+INHERITED		      : NO
+DEFAULT_COLLATION	      : USING_NLS_COMP
+IMPLICIT		      : NO
+ALL_SHARD		      : NO
+-----------------
+
+PL/SQL procedure successfully completed.
+```
+
+
 
 
 ### 自动添加当前服务器的目标
