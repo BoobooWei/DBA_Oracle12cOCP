@@ -30,9 +30,9 @@
 
 [11-ImplementingOracleDatabaseAuditing-管理审计.md](11-ImplementingOracleDatabaseAuditing-管理审计.md)
 
-[12-BackupandRecovery:Concepts-备份恢复概念.md](12-BackupandRecovery:Concepts-备份恢复概念.md)
+[12-BackupandRecoveryConcepts-备份恢复概念.md](12-BackupandRecoveryConcepts-备份恢复概念.md)
 
-[13-BackupandRecovery:Configuration-备份恢复配置.md](13-BackupandRecovery:Configuration-备份恢复配置.md)
+[13-BackupandRecoveryConfiguration-备份恢复配置.md](13-BackupandRecoveryConfiguration-备份恢复配置.md)
 
 [14-PerformingDatabaseBackups-执行备份.md](14-PerformingDatabaseBackups-执行备份.md)
 
@@ -44,7 +44,7 @@
 
 [18-ManagingPerformance-管理性能.md](18-ManagingPerformance-管理性能.md)
 
-[19-ManagingPerformance:SQLTuning-SQL调优.md](19-ManagingPerformance:SQLTuning-SQL调优.md)
+[19-ManagingPerformanceSQLTuning-SQL调优.md](19-ManagingPerformanceSQLTuning-SQL调优.md)
 
 [20-UsingDatabaseResourceManager-资源管理.md](20-UsingDatabaseResourceManager-资源管理.md)
 
