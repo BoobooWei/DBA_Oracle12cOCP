@@ -68,11 +68,9 @@ Access the  orcl database as the SYS user (with the oracle_4U password, connect 
    2	FROM	dba_thresholds
    3	WHERE	metrics_name='Tablespace Space Usage'
    4	AND	object_name IS NULL;
-   ```
-
 
    WARNING_VALUE CRITICAL_VALUE
-------------- --------------
+	 ----------- --------------
    85	97
    ```
 
@@ -87,8 +85,7 @@ Access the  orcl database as the SYS user (with the oracle_4U password, connect 
    4	SEGMENT SPACE MANAGEMENT AUTO; Tablespace created.
    SQL> SELECT autoextensible FROM dba_data_files
    2	WHERE tablespace_name='TBSALERT';
-
-
+   
    AUT
    --- NO
    ```

@@ -76,13 +76,13 @@
 ### 手动添加新目标
 
 1. 设置->添加目标->手动添加目标->添加主机 
-2. 192.168.56.201机器上创建目录/u01/app/oracle/agent12c
+2. 192.168.14.155 机器上创建目录/u01/app/oracle/agent12c
 3. 点击命名的身份证明右边的➕号，并行执行如下命令赋予oracle sudo权限。
 
 ```bash
 visudo
 root    ALL=(ALL)       ALL
-oracle  ALL=(ALL)   NOPASSWORD:ALL
+oracle  ALL=(ALL)   NOPASSWD:ALL
 ```
 
 
