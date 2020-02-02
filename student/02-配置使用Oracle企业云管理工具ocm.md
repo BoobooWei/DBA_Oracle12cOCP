@@ -86,10 +86,15 @@ oracle  ALL=(ALL)   NOPASSWD:ALL
 ```
 
 ![t018.png](pic/t018.png)
-![t019.png](pic/t019.png)
-![t020.png](pic/t020.png)
-![t021.png](pic/t021.png)
-![t022.png](pic/t022.png)
+![s001.png](pic/s001.png)
+![s002.png](pic/s002.png)
+![s003.png](pic/s003.png)
+![s004.png](pic/s004.png)
+![s005.png](pic/s005.png)
+![s006.png](pic/s006.png)
+![s007.png](pic/s007.png)
+![s008.png](pic/s008.png)
+
 
 ```bash
 SYS@booboo>alter user dbsnmp account unlock;
