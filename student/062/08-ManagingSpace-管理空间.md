@@ -356,3 +356,6 @@ Access the  orcl database as the SYS user (with the oracle_4U password, connect 
 
 
 ### KnowledgePoint
+
+1. 调用存储过程DBMS_SERVER_ALERT.SET_THRESHOLD设置告警
+2. 通过企业云管理的图形化界面来设置告警
