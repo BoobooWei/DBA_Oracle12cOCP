@@ -40,24 +40,31 @@
 > SQL开发工程师
 
 [Oracle SQL Developer可访问性指南](https://docs.oracle.com/en/database/oracle/sql-developer/19.2/sqdac/index.html)
+
 [Oracle SQL Developer安装指南](https://docs.oracle.com/en/database/oracle/sql-developer/19.2/rptig/index.html)
+
 [Oracle SQL L Developer用户指南](https://docs.oracle.com/en/database/oracle/sql-developer/19.2/rptug/index.html)
+
 [Oracle SQLcl用户指南](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/19.2/sqcug/index.html)
 
 > 数据建模工程师
 
 [Oracle SQL Developer数据建模器可访问性指南](https://docs.oracle.com/en/database/oracle/sql-developer-data-modeler/19.2/dmdac/index.html)
+
 [Oracle SQL Developer数据建模器用户指南](https://docs.oracle.com/en/database/oracle/sql-developer-data-modeler/19.2/dmdug/index.html)
 
 > 数据挖掘工程师
 
 [Oracle Data Miner安装和管理指南](https://docs.oracle.com/en/database/oracle/sql-developer/19.2/dmrig/index.html)
+
 [Oracle Data Miner发行说明](https://docs.oracle.com/en/database/oracle/sql-developer/19.2/dmrrn/index.html)
+
 [Oracle Data Miner用户指南](https://docs.oracle.com/en/database/oracle/sql-developer/19.2/dmrug/index.html)
 
 > TimesTen内存数据库
 
 [Oracle SQL Developer Oracle TimesTen内存数据库支持发行说明](https://docs.oracle.com/database/timesten-18.1/TTSDR/toc.htm)
+
 [Oracle SQL Developer Oracle TimesTen内存数据库支持用户指南](https://docs.oracle.com/database/timesten-18.1/TTSDV/toc.htm)
 
 ##  老师讲义说明
