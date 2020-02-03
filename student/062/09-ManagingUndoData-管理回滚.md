@@ -4,7 +4,19 @@
 >
 > 2020.01.29 BoobooWei
 
-[toc]
+<!-- MDTOC maxdepth:6 firsth1:1 numbering:0 flatten:0 bullets:1 updateOnSave:1 -->
+
+- [实践9:管理回滚](#实践9管理回滚)   
+   - [实践9:概览](#实践9概览)   
+   - [实践9-1:管理Undo数据](#实践9-1管理undo数据)   
+      - [Overview](#overview)   
+      - [Task](#task)   
+      - [Practice](#practice)   
+      - [KnowledgePoint](#knowledgepoint)   
+         - [配置数据库以支持48小时保留闪回操作](#配置数据库以支持48小时保留闪回操作)   
+         - [如何估算Oracle数据库所需的UNDO表空间的大小](#如何估算oracle数据库所需的undo表空间的大小)   
+
+<!-- /MDTOC -->
 
 ## 实践9:概览
 
@@ -122,5 +134,3 @@ In this practice, you first view your system activity regarding undo, and then y
 How To Size UNDO Tablespace For Automatic Undo Management (文档 ID 262066.1)
 
 [评估undo 表空间大小](https://blog.csdn.net/congjiu2607/article/details/100364186)
-
-

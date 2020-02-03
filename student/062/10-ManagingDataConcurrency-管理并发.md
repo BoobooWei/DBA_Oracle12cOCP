@@ -4,7 +4,17 @@
 >
 > 2020.01.29 BoobooWei
 
-[toc]
+<!-- MDTOC maxdepth:6 firsth1:1 numbering:0 flatten:0 bullets:1 updateOnSave:1 -->
+
+- [实践10:管理并发](#实践10管理并发)   
+   - [实践10:概览](#实践10概览)   
+   - [实践10-1:解决锁冲突](#实践10-1解决锁冲突)   
+      - [Overview](#overview)   
+      - [Task](#task)   
+      - [Practice](#practice)   
+      - [KnowledgePoint](#knowledgepoint)   
+
+<!-- /MDTOC -->
 
 ## 实践10:概览
 
@@ -35,7 +45,7 @@ Using Enterprise Manager, you detect the cause of the lock conflict, and then re
 3. Using EM Express, navigate to the Current Findings tab of the Performance Hub page and determine which session is causing the locking conflict.
 4. Using Cloud Control, find the details of the blocking session.
 5. What was the last SQL statement that the blocking session executed?
-6. Resolve the conflict in favor of the user who complained, by killing the *blocking* session. 
+6. Resolve the conflict in favor of the user who complained, by killing the *blocking* session.
 7. Return to the SQL*Plus command window, and note that SMAVRIS’s update has now completed successfully. Issue a ROLLBACK command in this session and exit.
 8. Try issuing a SQL select statement in the NGREENBERG session. What do you see?
 9. Close all open SQL sessions by entering exit, and then close the terminal windows.
@@ -49,20 +59,20 @@ Using Enterprise Manager, you detect the cause of the lock conflict, and then re
    会话1
 
    ```sql
-   sqlplus ngreenberg/oracle_4U@emrep 
+   sqlplus ngreenberg/oracle_4U@emrep
    show user
    select employee_id,salary,phone_number from hr.employees where employee_id = 110;
    update hr.employees set phone_number='650.555.1212' where employee_id = 110;
    ```
 	会话2
    ```sql
-   sqlplus smavris/oracle_4U@emrep 
+   sqlplus smavris/oracle_4U@emrep
    show user
    select employee_id,salary,phone_number from hr.employees where employee_id = 110;
    update hr.employees set salary=8300 where employee_id = 110;
    ```
 
-   
+
 
 2. 在单独的终端窗口中，通过执行如下所示的SQL语句，尝试在单独的会话中更新相同的行。不要担心会话似乎“挂起”——这是您试图创建的条件。
 
@@ -72,7 +82,7 @@ Using Enterprise Manager, you detect the cause of the lock conflict, and then re
 
    ![](pic/1004.png)
 
-   
+
 
 4. 使用云控制，查找阻塞会话的详细信息。
 
@@ -97,59 +107,59 @@ Using Enterprise Manager, you detect the cause of the lock conflict, and then re
    ALTER SYSTEM KILL SESSION '720,45135' immediate;
    ```
 
-   
+
 
 7. 返回到SQL*Plus命令窗口，注意SMAVRIS的更新现在已经成功完成。
 
    ```sql
    [oracle@ocm ~]$ sqlplus smavris/oracle_4U@emrep
-   
+
    SQL*Plus: Release 12.2.0.1.0 Production on Mon Feb 3 16:55:27 2020
-   
+
    Copyright (c) 1982, 2016, Oracle.  All rights reserved.
-   
+
    Last Successful login time: Mon Feb 03 2020 16:25:05 +08:00
-   
+
    Connected to:
    Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
-   
+
    SQL> select employee_id,salary,phone_number from hr.employees where employee_id = 110;
-   
+
    EMPLOYEE_ID	SALARY PHONE_NUMBER
    ----------- ---------- --------------------
    	110	  8300 515.124.4269
-   
+
    SQL> update hr.employees set phone_number='650.555.1212' where employee_id = 110;
-   
+
    1 row updated.
-   
+
    SQL> select employee_id,salary,phone_number from hr.employees where employee_id = 110;
-   
+
    EMPLOYEE_ID	SALARY PHONE_NUMBER
    ----------- ---------- --------------------
    	110	  8300 650.555.1212
    ```
 
-   
+
 
 8. 尝试在NGREENBERG会话中发出SQL select语句。你看到了什么?
 
    ```sql
    [oracle@ocm ~]$ sqlplus ngreenberg/oracle_4U@emrep
-   
+
    SQL*Plus: Release 12.2.0.1.0 Production on Mon Feb 3 16:55:18 2020
-   
+
    Copyright (c) 1982, 2016, Oracle.  All rights reserved.
-   
+
    Last Successful login time: Mon Feb 03 2020 16:25:18 +08:00
-   
+
    Connected to:
    Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
-   
+
    SQL> update hr.employees set phone_number='650.555.1212' where employee_id = 110;
-   
+
    1 row updated.
-   
+
    SQL> select employee_id,salary,phone_number from hr.employees where employee_id = 110;
    select employee_id,salary,phone_number from hr.employees where employee_id = 110
              *
@@ -171,15 +181,15 @@ Using Enterprise Manager, you detect the cause of the lock conflict, and then re
 
    ```sql
    sqlplus sys/WLS3Gg5_2@emrep as sysdba
-   
+
    --查看阻塞会话和被阻塞会话
    select object_name,machine,s.sid,s.serial#,s.username from v$locked_object l,dba_objects o ,v$session s where l.object_id=o.object_id and l.session_id=s.sid;
-   
+
    exec print_table('select object_name,machine,s.* from v$locked_object l,dba_objects o ,v$session s where l.object_id=o.object_id and l.session_id=s.sid')
-   
+
    --生成kill阻塞会话的语句
    select 'ALTER SYSTEM KILL SESSION '||chr(39)||s.sid||','||s.serial#||chr(39)|| ' immediate;' from v$locked_object l,dba_objects o ,v$session s where l.object_id=o.object_id and l.session_id=s.sid;
-   
+
    --被阻塞会话的事件特征
    EVENT#			      : 284
    EVENT			      : enq: TX - row lock contention
@@ -401,5 +411,3 @@ Using Enterprise Manager, you detect the cause of the lock conflict, and then re
    EXTERNAL_NAME		      :
    PLSQL_DEBUGGER_CONNECTED      : FALSE
    ```
-
-   
