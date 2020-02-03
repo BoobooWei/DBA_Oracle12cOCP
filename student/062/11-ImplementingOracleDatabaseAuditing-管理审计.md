@@ -4,7 +4,27 @@
 >
 > 2020.01.29 BoobooWei
 
-[toc]
+<!-- MDTOC maxdepth:6 firsth1:1 numbering:0 flatten:0 bullets:1 updateOnSave:1 -->
+
+- [实践11:管理审计](#实践11管理审计)   
+   - [实践11:概览](#实践11概览)   
+   - [实践11-1:启用统一的审计](#实践11-1启用统一的审计)   
+      - [Overview](#overview)   
+      - [Task](#task)   
+      - [Practice](#practice)   
+      - [KnowledgePoint](#knowledgepoint)   
+   - [实践11-2:创建审计用户](#实践11-2创建审计用户)   
+      - [Overview](#overview)   
+      - [Task](#task)   
+      - [Practice](#practice)   
+      - [KnowledgePoint](#knowledgepoint)   
+   - [实践11-3:创建审计策略](#实践11-3创建审计策略)   
+      - [Overview](#overview)   
+      - [Task](#task)   
+      - [Practice](#practice)   
+      - [KnowledgePoint](#knowledgepoint)   
+
+<!-- /MDTOC -->
 
 ## 实践11:概览
 
@@ -51,7 +71,7 @@ In this practice, you enable unified auditing.
 
 ### Task
 
-1. Shut down all Oracle processes of all instances. 
+1. Shut down all Oracle processes of all instances.
 2. Enable the unified auditing feature.
 3. Restart the processes.
 
@@ -62,18 +82,18 @@ In this practice, you enable unified auditing.
    ```bash
    # 关闭监听
    lsnrctl stop
-   
+
    # 关闭OMS服务
    export OMS_HOME=/u01/app/oracle/middleware_booboo/oms
    $OMS_HOME/bin/emctl stop oms
-   
+
    # 关闭数据库实例
    ps -ef|grep pmon
    sqlplus / as sysdba << EOF
    shutdown immediate
    exit
    EOF
-   
+
    # 确认实例关闭
    ps -ef|grep pmon
    ```
@@ -83,11 +103,11 @@ In this practice, you enable unified auditing.
    ```bash
    [oracle@ocm ~]$ # 关闭监听
    [oracle@ocm ~]$ lsnrctl stop
-   
+
    LSNRCTL for Linux: Version 12.2.0.1.0 - Production on 03-FEB-2020 19:37:54
-   
+
    Copyright (c) 1991, 2016, Oracle.  All rights reserved.
-   
+
    Connecting to (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=ocm)(PORT=1521)))
    The command completed successfully
    [oracle@ocm ~]$ cd /u01/software/
@@ -139,7 +159,7 @@ In this practice, you enable unified auditing.
   /usr/bin/ar d /u01/app/oracle/product/12.2.0/db_1/rdbms/lib/libknlopt.a kzanang.o
   /usr/bin/ar cr /u01/app/oracle/product/12.2.0/db_1/rdbms/lib/libknlopt.a /u01/app/oracle/product/12.2.0/db_1/rdbms/lib/kzaiang.o
   chmod 755 /u01/app/oracle/product/12.2.0/db_1/bin
-  
+
    - Linking Oracle
   rm -f /u01/app/oracle/product/12.2.0/db_1/rdbms/lib/oracle
   /u01/app/oracle/product/12.2.0/db_1/bin/orald  -o /u01/app/oracle/product/12.2.0/db_1/rdbms/lib/oracle -m64 -z noexecstack -Wl,--disable-new-dtags -L/u01/app/oracle/product/12.2.0/db_1/rdbms/lib/ -L/u01/app/oracle/product/12.2.0/db_1/lib/ -L/u01/app/oracle/product/12.2.0/db_1/lib/stubs/   -Wl,-E /u01/app/oracle/product/12.2.0/db_1/rdbms/lib/opimai.o /u01/app/oracle/product/12.2.0/db_1/rdbms/lib/ssoraed.o /u01/app/oracle/product/12.2.0/db_1/rdbms/lib/ttcsoi.o -Wl,--whole-archive -lperfsrv12 -Wl,--no-whole-archive /u01/app/oracle/product/12.2.0/db_1/lib/nautab.o /u01/app/oracle/product/12.2.0/db_1/lib/naeet.o /u01/app/oracle/product/12.2.0/db_1/lib/naect.o /u01/app/oracle/product/12.2.0/db_1/lib/naedhs.o /u01/app/oracle/product/12.2.0/db_1/rdbms/lib/config.o  -ldmext -lserver12 -lodm12 -lofs -lcell12 -lnnet12 -lskgxp12 -lsnls12 -lnls12  -lcore12 -lsnls12 -lnls12 -lcore12 -lsnls12 -lnls12 -lxml12 -lcore12 -lunls12 -lsnls12 -lnls12 -lcore12 -lnls12 -lclient12  -lvsn12 -lcommon12 -lgeneric12 -lknlopt `if /usr/bin/ar tv /u01/app/oracle/product/12.2.0/db_1/rdbms/lib/libknlopt.a | grep xsyeolap.o > /dev/null 2>&1 ; then echo "-loraolap12" ; fi` -lskjcx12 -lslax12 -lpls12  -lrt -lplp12 -ldmext -lserver12 -lclient12  -lvsn12 -lcommon12 -lgeneric12 `if [ -f /u01/app/oracle/product/12.2.0/db_1/lib/libavserver12.a ] ; then echo "-lavserver12" ; else echo "-lavstub12"; fi` `if [ -f /u01/app/oracle/product/12.2.0/db_1/lib/libavclient12.a ] ; then echo "-lavclient12" ; fi` -lknlopt -lslax12 -lpls12  -lrt -lplp12 -ljavavm12 -lserver12  -lwwg  `cat /u01/app/oracle/product/12.2.0/db_1/lib/ldflags`    -lncrypt12 -lnsgr12 -lnzjs12 -ln12 -lnl12 -lngsmshd12 -lnro12 `cat /u01/app/oracle/product/12.2.0/db_1/lib/ldflags`    -lncrypt12 -lnsgr12 -lnzjs12 -ln12 -lnl12 -lngsmshd12 -lnnzst12 -lzt12 -lztkg12 -lmm -lsnls12 -lnls12  -lcore12 -lsnls12 -lnls12 -lcore12 -lsnls12 -lnls12 -lxml12 -lcore12 -lunls12 -lsnls12 -lnls12 -lcore12 -lnls12 -lztkg12 `cat /u01/app/oracle/product/12.2.0/db_1/lib/ldflags`    -lncrypt12 -lnsgr12 -lnzjs12 -ln12 -lnl12 -lngsmshd12 -lnro12 `cat /u01/app/oracle/product/12.2.0/db_1/lib/ldflags`    -lncrypt12 -lnsgr12 -lnzjs12 -ln12 -lnl12 -lngsmshd12 -lnnzst12 -lzt12 -lztkg12   -lsnls12 -lnls12  -lcore12 -lsnls12 -lnls12 -lcore12 -lsnls12 -lnls12 -lxml12 -lcore12 -lunls12 -lsnls12 -lnls12 -lcore12 -lnls12 `if /usr/bin/ar tv /u01/app/oracle/product/12.2.0/db_1/rdbms/lib/libknlopt.a | grep "kxmnsd.o" > /dev/null 2>&1 ; then echo " " ; else echo "-lordsdo12 -lserver12"; fi` -L/u01/app/oracle/product/12.2.0/db_1/ctx/lib/ -lctxc12 -lctx12 -lzx12 -lgx12 -lctx12 -lzx12 -lgx12 -lordimt12 -lclsra12 -ldbcfg12 -lhasgen12 -lskgxn2 -lnnzst12 -lzt12 -lxml12 -lgeneric12 -locr12 -locrb12 -locrutl12 -lhasgen12 -lskgxn2 -lnnzst12 -lzt12 -lxml12 -lgeneric12  -lgeneric12 -lorazip -loraz -llzopro5 -lorabz2 -lipp_z -lipp_bz2 -lippdcemerged -lippsemerged -lippdcmerged  -lippsmerged -lippcore  -lippcpemerged -lippcpmerged  -lsnls12 -lnls12  -lcore12 -lsnls12 -lnls12 -lcore12 -lsnls12 -lnls12 -lxml12 -lcore12 -lunls12 -lsnls12 -lnls12 -lcore12 -lnls12 -lsnls12 -lunls12  -lsnls12 -lnls12  -lcore12 -lsnls12 -lnls12 -lcore12 -lsnls12 -lnls12 -lxml12 -lcore12 -lunls12 -lsnls12 -lnls12 -lcore12 -lnls12 -lasmclnt12 -lcommon12 -lcore12  -laio -lons  -lfthread12   `cat /u01/app/oracle/product/12.2.0/db_1/lib/sysliblist` -Wl,-rpath,/u01/app/oracle/product/12.2.0/db_1/lib -lm    `cat /u01/app/oracle/product/12.2.0/db_1/lib/sysliblist` -ldl -lm   -L/u01/app/oracle/product/12.2.0/db_1/lib `test -x /usr/bin/hugeedit -a -r /usr/lib64/libhugetlbfs.so && test -r /u01/app/oracle/product/12.2.0/db_1/rdbms/lib/shugetlbfs.o && echo -Wl,-zcommon-page-size=2097152 -Wl,-zmax-page-size=2097152 -lhugetlbfs`
@@ -150,30 +170,30 @@ In this practice, you enable unified auditing.
   chmod 6751 /u01/app/oracle/product/12.2.0/db_1/bin/oracle
   ```
 
-  
+
 
 3. 重新启动进程。
 
   ```bash
   # 启动监听
   lsnrctl start
-  
+
   # 启动数据库实例
   sqlplus / as sysdba << EOF
   startup
   exit
   EOF
-  
+
   # 启动 OMS < take 10 minutes >
   export OMS_HOME=/u01/app/oracle/middleware_booboo/oms
   $OMS_HOME/bin/emctl start oms
-  
+
   # 检查统一审计功能是否开启
   sqlplus / as sysdba << EOF
   select value from v$option where parameter = 'Unified Auditing';
   exit
   EOF
-  
+
   ```
 
   运行结果
@@ -181,19 +201,19 @@ In this practice, you enable unified auditing.
   ```bash
   [oracle@ocm lib]$ # 启动监听
   [oracle@ocm lib]$ lsnrctl start
-  
+
   LSNRCTL for Linux: Version 12.2.0.1.0 - Production on 03-FEB-2020 19:49:11
-  
+
   Copyright (c) 1991, 2016, Oracle.  All rights reserved.
-  
+
   Starting /u01/app/oracle/product/12.2.0/db_1/bin/tnslsnr: please wait...
-  
+
   TNSLSNR for Linux: Version 12.2.0.1.0 - Production
   System parameter file is /u01/app/oracle/product/12.2.0/db_1/network/admin/listener.ora
   Log messages written to /u01/app/oracle/diag/tnslsnr/ocm/listener/alert/log.xml
   Listening on: (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=ocm)(PORT=1521)))
   Listening on: (DESCRIPTION=(ADDRESS=(PROTOCOL=ipc)(KEY=EXTPROC1521)))
-  
+
   Connecting to (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=ocm)(PORT=1521)))
   STATUS of the LISTENER
   ------------------------
@@ -217,15 +237,15 @@ In this practice, you enable unified auditing.
   > startup
   > exit
   > EOF
-  
+
   SQL*Plus: Release 12.2.0.1.0 Production on Mon Feb 3 19:49:54 2020
-  
+
   Copyright (c) 1982, 2016, Oracle.  All rights reserved.
-  
+
   Connected to an idle instance.
-  
+
   SQL> ORACLE instance started.
-  
+
   Total System Global Area  838860800 bytes
   Fixed Size		    8798312 bytes
   Variable Size		  490737560 bytes
@@ -244,10 +264,12 @@ In this practice, you enable unified auditing.
   WebTier Successfully Started
   Oracle Management Server Successfully Started
   Oracle Management Server is Up
-  
+  SQL> exec print_table(q'[select parameter,value from v$option where parameter='Unified Auditing']')
+PARAMETER		      : Unified Auditing
+VALUE			      : TRUE
   ```
 
-  
+
 
 ### KnowledgePoint
 
@@ -312,7 +334,13 @@ Unified auditing has been enabled in the orcl database. Preferred SYSDBA credent
    ![](pic/1101.png)
 
    ```sql
-   dd
+   CREATE USER "AUDMGR" PROFILE "DEFAULT" IDENTIFIED BY "oracle_4U" DEFAULT TABLESPACE "SYSAUX" TEMPORARY TABLESPACE "TEMP" ACCOUNT UNLOCK
+   GRANT "AUDIT_ADMIN" TO "AUDMGR"
+   GRANT "CONNECT" TO "AUDMGR";
+
+   CREATE USER "AUDVWR" PROFILE "DEFAULT" IDENTIFIED BY "oracle_4U" DEFAULT TABLESPACE "SYSAUX" TEMPORARY TABLESPACE "TEMP" ACCOUNT UNLOCK
+   GRANT "AUDIT_VIEWER" TO "AUDVWR"
+   GRANT "CONNECT" TO "AUDVWR";
    ```
 
 ### KnowledgePoint
@@ -370,7 +398,7 @@ AUDMGR用户已经创建。HR上具有DML特权的几个用户已存在，例如
   AUDIT POLICY jobs_audit_upd;
   ```
 
-  
+
 
 3. 查看有关审计策略的信息。
 
@@ -382,7 +410,7 @@ AUDMGR用户已经创建。HR上具有DML特权的几个用户已存在，例如
   FROM audit_unified_enabled_policies;
   ```
 
-  
+
 
 4. 通过连接具有更新` HR.JOBS`中的行权限的用户来测试审计策略。
 
@@ -393,7 +421,7 @@ AUDMGR用户已经创建。HR上具有DML特权的几个用户已存在，例如
    select * from hr.jobs where job_title = 'President';
    update hr.jobs set max_salary = 50000 where JOB_ID = 'AD_PRES';
    exit
-   
+
    # 查看审计记录
    sqlplus audmgr/oracle_4U@emrep
    col unified_audit_policies format a25
@@ -404,12 +432,12 @@ AUDMGR用户已经创建。HR上具有DML特权的几个用户已存在，例如
    object_schema, object_name
    from unified_audit_trail
    where dbusername = 'NGREENBERG';
-   
+
    # 手动刷新审计记录
    EXEC DBMS_AUDIT_MGMT.FLUSH_UNIFIED_AUDIT_TRAIL;
    ```
 
-   
+
 
 ### KnowledgePoint
 
