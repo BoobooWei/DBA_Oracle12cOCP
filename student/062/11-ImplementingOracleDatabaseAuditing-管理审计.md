@@ -164,7 +164,7 @@ In this practice, you enable unified auditing.
   exit
   EOF
   
-  # 启动 OMS
+  # 启动 OMS < take 10 minutes >
   export OMS_HOME=/u01/app/oracle/middleware_booboo/oms
   $OMS_HOME/bin/emctl start oms
   
@@ -259,9 +259,16 @@ Practice 11-2: Creating Audit Users
 
 In this practice you will create audit users: one account to administer the audit settings and another account to be used by the external auditor. These additional users are optional, but are a good practice that provides a clear separation of duties required in many businesses.
 
+在此实践中，您将创建审计用户:
+
+* 一个帐户用于管理审计设置
+* 另一个帐户用于外部审计人员,这些额外的用户是可选的，但这是一个很好的实践，它提供了许多业务中所需的职责的明确分离。
+
  **Assumptions**
 
 Unified auditing has been enabled in the orcl database. Preferred SYSDBA credentials have been set.
+
+数据库中已经启用了统一审计,已设置了首选SYSDBA凭据。
 
 ### Task
 
@@ -269,6 +276,44 @@ Unified auditing has been enabled in the orcl database. Preferred SYSDBA credent
 2. Create a database user to be used by any person that needs to view the audit data. Name this user AUDVWR with the password oracle_4U and assign the AUDIT_VIEWER role to this user.
 
 ### Practice
+
+1. 创建一个数据库用户作为审计设置和策略的管理员。命名用户AUDMGR ，密码oracle_4U，并将AUDIT_ADMIN角色分配给这个用户。使用Enterprise Manager云控制执行此任务。
+
+   | **Step** | **Window/Page Description** | **Choices or Values**                                        |
+   | -------- | --------------------------- | ------------------------------------------------------------ |
+   | a.       | Cloud Control               | Login:  User: **ADMIN**  Password: **oracle_4U**             |
+   | b.       | Enterprise Summary          | Navigate to the **emrep** database home page.                |
+   | c.       | orcl database home          | Click **Security >  Users**.                                 |
+   | d.       | Database Login              | Select  Credential: **Preferred**  Preferred Credential Name **SYSDBA Database Credentials**  Click **Login**. |
+   | e.       | Users                       | Click **Create**.                                            |
+   | f.       | Create User :General tab    | Enter  Name: **AUDMGR**  Password: **oracle_4U**  Default Tablespace: **SYSAUX** Temporary Tablespace: **TEMP** Click the **Roles** tab. |
+   | g.       | Create User :Roles  tab     | Click **Edit List.**                                         |
+   | h.       | Modify Roles                | Select **AUDIT_ADMIN**.  Move to **Selected Roles**. Click **OK**. |
+   | i.       | Create User :Roles  tab     | Click **Show SQL**.  Click **Return**.                       |
+   | j.       | Create User :Roles  tab     | Click **OK**.                                                |
+   | k.       | Users                       | An update message is displayed.                              |
+
+2. 创建一个数据库用户，供需要查看审计数据的任何人使用。将此用户命名为AUDVWR，使用密码oracle_4U，并将AUDIT_VIEWER角色分配给该用户。
+
+   | **Step** | **Window/Page Description** | **Choices or Values**                                        |
+   | -------- | --------------------------- | ------------------------------------------------------------ |
+   | a.       | Cloud Control               | Login:  User: **AUDVWR**  Password: **oracle_4U**            |
+   | b.       | Enterprise Summary          | Navigate to the **emrep** database home page.                |
+   | c.       | orcl database home          | Click **Security >  Users**.                                 |
+   | d.       | Database Login              | Select  Credential: **Preferred**  Preferred Credential Name **SYSDBA Database Credentials**  Click **Login**. |
+   | e.       | Users                       | Click **Create**.                                            |
+   | f.       | Create User :General tab    | Enter  Name: **AUDVWR**  Password: **oracle_4U**  Default Tablespace: **SYSAUX** Temporary Tablespace: **TEMP** Click the **Roles** tab. |
+   | g.       | Create User :Roles  tab     | Click **Edit List.**                                         |
+   | h.       | Modify Roles                | Select **AUDIT_VIEWER**.  Move to **Selected Roles**. Click **OK**. |
+   | i.       | Create User :Roles  tab     | Click **Show SQL**.  Click **Return**.                       |
+   | j.       | Create User :Roles  tab     | Click **OK**.                                                |
+   | k.       | Users                       | An update message is displayed.                              |
+
+   ![](pic/1101.png)
+
+   ```sql
+   dd
+   ```
 
 ### KnowledgePoint
 
@@ -282,11 +327,14 @@ In this practice, as the AUDMGR user you will create an audit policy to monitor 
 
 HR.JOBS table and apply it to multiple users.
 
- 
+在此实践中，作为AUDMGR用户，您将创建一个审计策略来监视`HR.JOBS`。并将其应用于多个用户。
 
 **Assumptions**
 
 The AUDMGR user has been created. Several users with DML privileges on HR.JOBS have been created.
+
+假设
+AUDMGR用户已经创建。HR上具有DML特权的几个用户已存在，例如用户ngreenberg 和 smavris 。
 
 ### Task
 
@@ -297,4 +345,77 @@ The AUDMGR user has been created. Several users with DML privileges on HR.JOBS h
 
 ### Practice
 
+1. 调用`SQL*Plus`并作为AUDMGR用户连接到数据库。创建一个名为JOBS_AUDIT_UPD的策略，用于审计` HR.JOBS`的所有可审计语句。
+
+   ```sql
+   sqlplus audmgr/oracle_4U@emrep
+   CREATE AUDIT POLICY jobs_audit_upd ACTIONS update ON hr.jobs;
+   SELECT audit_option, audit_option_type, object_schema, object_name
+   FROM audit_unified_policies
+   WHERE policy_name = 'JOBS_AUDIT_UPD';
+   ```
+
+   问题：如果您有多个具有相同用户和数据的数据库，例如QA和开发数据库，您如何确保该策略适用于所有数据库?
+   回答：这里展示了两种方法:
+
+   1)创建SQL脚本并在其他数据库中运行脚本。
+
+   2)使用云控制在多个数据库中运行。
+
+   第三个选项是在应用更改之后从生产数据库重新创建其他数据库。这项技术超出了本课程的范围。
+
+2. 将策略分配给所有用户。
+
+  ```sql
+  AUDIT POLICY jobs_audit_upd;
+  ```
+
+  
+
+3. 查看有关审计策略的信息。
+
+  ```sql
+  column POLICY_NAME format A20
+  column USER_NAME format A20
+  SELECT policy_name, enabled_opt,
+  user_name, success, failure
+  FROM audit_unified_enabled_policies;
+  ```
+
+  
+
+4. 通过连接具有更新` HR.JOBS`中的行权限的用户来测试审计策略。
+
+   ```sql
+   # 模拟用户操作
+   sqlplus ngreenberg/oracle_4U@emrep
+   desc hr.jobs
+   select * from hr.jobs where job_title = 'President';
+   update hr.jobs set max_salary = 50000 where JOB_ID = 'AD_PRES';
+   exit
+   
+   # 查看审计记录
+   sqlplus audmgr/oracle_4U@emrep
+   col unified_audit_policies format a25
+   col action_name format a10
+   col object_schema format a10
+   col object_name format a10
+   select unified_audit_policies, action_name,
+   object_schema, object_name
+   from unified_audit_trail
+   where dbusername = 'NGREENBERG';
+   
+   # 手动刷新审计记录
+   EXEC DBMS_AUDIT_MGMT.FLUSH_UNIFIED_AUDIT_TRAIL;
+   ```
+
+   
+
 ### KnowledgePoint
+
+1. 开启统一的审计需要停服编译
+2. 创建审计用户，授予管理角色**AUDIT_ADMIN**和查看角色**AUDIT_VIEWER**
+3. 创建审计策略`CREATE AUDIT POLICY jobs_audit_upd ACTIONS update ON hr.jobs;`
+4. 应用审计策略`AUDIT POLICY jobs_audit_upd;`
+5. 查看审计记录`unified_audit_trail`
+6. 手动刷新审计记录`EXEC DBMS_AUDIT_MGMT.FLUSH_UNIFIED_AUDIT_TRAIL;`
