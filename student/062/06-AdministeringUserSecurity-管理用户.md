@@ -408,6 +408,7 @@ Connected to:
    -------------------- --------- ---------- ---------- -------------- ---------- -------------
    	197 Kevin		 Feeney 		   KFEENEY
    650.507.9822	     23-MAY-06 SH_CLERK 	3000			   124		  50
+   ```
 
 
    DHAMBY@booboopdb1>delete from hr.EMPLOYEES where EMPLOYEE_ID=197;
@@ -535,5 +536,3 @@ Connected to:
 #### 数据库安全指南
 
 [数据库安全指南](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/dbseg/release-changes.html#GUID-256DEEBF-8FBE-4641-BAE3-D23D53ADFB44)
-
-   ```
