@@ -4,7 +4,7 @@
 >
 > 2020.01.29 BoobooWei
 
-[toc]
+[TOC]
 
 ## 实践14:概览
 
@@ -51,13 +51,21 @@ Practices for lesson 13 have been successfully completed.
 
 2. 导航到数据库主页。
 
+   ![](pic/14001.png)
+
 3. 选择**管理>存储>控制文件**。
+
+   ![](pic/14002.png)
 
 4. 使用指定的凭据登录到数据库。
 
 5. 在控制文件页面，单击**备份到跟踪文件**。
 
+   ![](pic/14003.png)
+
 6. 将显示一条更新消息。点击**确定**。
+
+   ![](pic/14004.png)
 
 7. 您还可以通过执行SQL命令来执行一个控制文件。以**DBA1**用户身份登录SQL*Plus，执行**ALTER** **DATABASE** **BACKUP** **CONTROLFILE跟踪**命令。
 
@@ -104,10 +112,25 @@ In this practice you configure automatic backups of the control file and server 
 ### Practice
 
 1. 返回企业管理器云控制中的数据库主页。
+
 2. 选择**可用性>备份和恢复>备份设置**。
+
+   ![](pic/14005.png)
+
 3. 在备份设置页面，单击**策略**选项卡。
+
+   ![](pic/14006.png)
+
 4. 选择**随着每个备份和数据库结构更改自动备份控制文件和服务器参数文件(SPFILE) **。
+
+   ![](pic/14007.png)
+
 5. 滚动到页面底部。在**主机身份证明**部分，选择**新建**。在用户名字段中输入**oracle**。在password中输入操作系统密码并确认密码字段。单击**Test**以确保正确输入了值。（如果已经配置过了，就选择**已命名**）
+
+   ![](pic/14008.png)
+
+   ![](pic/14009.png)
+
 6. 点击**应用**。
 
 ### KnowledgePoint
@@ -138,15 +161,44 @@ In this practice, you back up your entire database, including the archived redo 
 ### Practice
 
 1. 在Enterprise Manager Cloud Control中，选择**可用性 > 备份和恢复 > 调度备份**。
+
+   ![](pic/14010.png)
+
+   ![](pic/14011.png)
+
 2. 在自定义备份部分，选择**整个数据库**。确认主机凭据已设置为oracle用户名和密码。单击**调度定制备份**。
+
+   ![](pic/14012.png)
+
 3. 在备份类型部分，选择**完全备份**和 **作为增量备份策略的基础**。
+
 4. 在备份模式部分，选择**联机备份**。
+
 5. 在高级部分，选择**同时备份磁盘上的所有归档日志**和 **成功备份磁盘上的所有归档日志后将其从磁盘删除**，点击**下一步**。
+
+   ![](pic/14013.png)
+
 6. 在设置页面，选择**磁盘**作为备份目的地。点击**下一步**。
+
+   ![](pic/14014.png)
+
 7. 在调度页面上，接受默认设置。点击**下一步**。
+
+   ![](pic/14015.png)
+
 8. 在复查页面上，审查RMAN脚本，然后单击**提交作业**。
+
+   ![](pic/14016.png)
+
 9. 将显示一条确认消息。单击**查看作业**。
+
+   ![](pic/14017.png)
+
 10. 单击页面右侧的Refresh图标，直到看到任务成功完成。
+
+    ![](pic/14018.png)
+
+    ![](pic/14019.png)
 
 ### KnowledgePoint
 
@@ -163,7 +215,9 @@ Enterprise Manager Cloud Control中关于备份的操作个人理解为是RMAN�
 3. 创建一个完整的数据库备份
 
    ```sql
-   
+   backup incremental level 0 cumulative device type disk tag '%TAG' database;
+   backup device type disk tag '%TAG' archivelog all not backed up delete all input;
    ```
 
-   
+   [**AutoGetRmanBackupScripts.sh**](https://github.com/BoobooWei/booboo_oracle/blob/master/scripts/AutoGetRmanBackupScripts.sh)
+
