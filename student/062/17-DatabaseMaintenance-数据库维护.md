@@ -10,6 +10,16 @@
 
 Practices for Lesson 17: Overview
 
+**Background:** You want to proactively monitor your orcl database so that common problems can be fixed before they affect users. Users, developers, and unanticipated changes in the way applications are used can bring serious performance problems. As DBA you are seldom informed about what changed, you are instead told there is a generic problem. At that point you must find the problem based often on misleading information from users.
+
+In this scenario, a developer is providing scripts for you to run to provision changes to an application. These supplied scripts create a problem so that you can familiarize yourself with the tools that are available. Examine each script to satisfy yourself that the script is doing what you have been told.
+
+These practices have been scripted because delays in performing the tasks can have a large effect on the results you see due to the short time that the workload runs.
+
+背景:您希望主动监控数据库，以便在常见问题影响用户之前修复它们。用户、开发人员和应用程序使用方式的意外变化可能带来严重的性能问题。作为DBA，您很少被告知发生了什么变化，而是被告知存在一个通用问题。此时，您必须根据来自用户的误导信息发现问题。
+在此场景中，开发人员为您提供脚本，以运行对应用程序的供应更改。这些提供的脚本会产生一个问题，以便您能够熟悉可用的工具。检查每个脚本，以确保脚本正在执行所告知的操作。
+这些实践已经编写了脚本，因为由于工作负载运行的时间很短，执行任务的延迟会对您看到的结果产生很大的影响。
+
 ## 实践17-1:数据库维护
 
 Practice 17-1: Database Maintenance
@@ -17,6 +27,89 @@ Practice 17-1: Database Maintenance
 ### Overview
 
 ### Task
+
+1. A new tablespace is being added to hold the new tables. The first script creates a new locally managed tablespace called TBSSPC with a data file named`/u01/app/oracle/oradata/orcl/tbsspc01.dbf `of 50 MB. Ensure that the TBSSPC tablespace does not use Automatic Segment Space Management (ASSM). The **lab_17_01_01.sh** script performs these tasks. Examine the script and then execute it. 
+
+2. The `lab_17_01_02.sh` script adds a new user. The script creates the `SPCT` user, identified by `oracle_4U`, assigns the TBSSPC tablespace as the default tablespace, assigns the TEMP tablespace as the temporary tablespace, and grants the CONNECT, RESOURCE, and DBA roles to the SPCT user. Execute the **lab_17_01_02.sh** script to perform these tasks. 
+
+3. The test workload that is provided runs only a few minutes. In order to get meaningful data, the time between Automatic Workload Repository (AWR) snapshots should be reduced. Use the `DBMS_ADVISOR` package to set the database activity time to 30 minutes. The test script, running as the SPCT user, drops and creates the SPCT table and gathers statistics for this table. It also creates a snapshot in AWR. Execute the **lab_17_01_03.sh** script to perform these tasks.
+
+4. Run the workload script. This creates an activity to be analyzed. Execute the **lab_17_01_04.sh** script to perform these tasks. DO NOT wait for the script to finish continue to the next step.
+
+5. Watch the activity in the Active Session Graph on the Cloud Control Performance Home page until the script completes.
+
+   | **Step** | **Window/Page Description** | **Choices or Values**                                        |
+   | -------- | --------------------------- | ------------------------------------------------------------ |
+   | a.       | Cloud Control               | Login  User: **ADMIN**  Password: **oracle_4U**              |
+   | b.       | Summary                     | Navigate to the **orcl** database home page.                 |
+   | c.       | orcl database home          | Click **Performance** > **Performance Home.**                |
+   | d.       | Database Login              | Credentials: Select **Preferred.**  Preferred Credential Name: **SYSDBA Database Credentials**  Click **Login.** |
+   | e.       | Database Instance: orcl     | Verify that the refresh rate is set to Real  Time:  15 Second Refresh  Watch the **Average Active Session** graph until It has peaked and returned to the previous low level. |
+
+6. After the spike has finished, return to the terminal window to execute the
+
+   lab_17_01_05.sh script.
+
+7.  Find and examine the ADDM Performance Analysis and findings.
+
+   | **Step** | **Window/Page Description**                   | **Choices or Values**                                        |
+   | -------- | --------------------------------------------- | ------------------------------------------------------------ |
+   | a.       | Database Instance: orcl                       | Click **Performance >  Advisors Home**                       |
+   | b.       | Advisors Central                              | In the result  section, click the latest ADDM  report.       |
+   | c.       | Automatic Database Diagnostic  Monitor (ADDM) | Notice the findings. Click each finding.  Review the Detail  findings. |
+
+   d.  Look at the **Performance Analysis** findings in order of their impact. There are several access paths to this information. 
+
+   e.  Looking at the Performance Analysis section, you see that the first finding has a high percentage (in this example, 98.9 percent) impact on the system. So your first step is to look at this finding in more detail. Click the link in the Finding column. In the Recommendations Rationale, you find a statement “waiting for event ‘Buffer Busy Waits’”.
+
+   f.   Return to the ADDM Performance Analysis page and investigate the other ADDM findings in order of severity. Look at the **Buffer Busy** findings in particular by clicking the link in the Finding column. For one of the Buffer Busy results, you should see that there is read-and-write contention on your SPCT table. The recommended action is to use the Automatic Segment Space Management (ASSM) feature for your SPCT table. The Rationale shows that there is a hot data block that belongs to the SPCT.SPCT table.
+
+   The findings may appear in a different order than shown. If you do not see results similar to the ones outlined in the preceding screenshot, you may need to restart this practice. If you still do not see the expected results, you may need to adjust the load by modifying the lab_17_01_04.sh and lab_17_01_04.sql scripts. Ask your instructor for assistance if this is the case. Take care not to increase the load too much or you will slow your system down too much.
+
+8. decide to implement the recommendation to use Automated Segment Space Management. To do this, you must re-create the object. Create a new, locally managed tablespace, called TBSSPC2 with a 50 MB data file. Ensure that the TBSSPC2 tablespace uses the Automatic Segment Space Management feature. Then execute the **lab_17_01_07.sh** script to drop the SPCT table, re-create the table in the new tablespace, gather statistics, and to take a new snapshot.
+
+   | **Step** | **Window/Page**  **Description** | **Choices or Values**                                        |
+   | -------- | -------------------------------- | ------------------------------------------------------------ |
+   | a.       | Cloud Control                    | Click **Administration > Storage >  Tablespaces**            |
+   | b.       | Tablespaces                      | Click **Create.**                                            |
+   | c.       | Create Tablespace                | Enter  Name: **TBSSPC2**  In the Datafiles section, click  **Add.** |
+   | d.       | Add Datafile                     | Enter  File Name: **tbsspc02.dbf**  File Size: **50  MB**  Verify Automatically extend data  file when full  is NOT  checked  Click **Continue.** |
+   | e.       | Create Tablespace                | Click the **Storage** tab.                                   |
+   | f.       | Create Tablespace: Storage tab   | Verify  Extent Allocation: **Automatic**                     |
+   |          |                                  | Segment Space Management: **Automatic**  Click **Show SQL**. |
+   | g.       | Show SQL                         | Examine the  SQL Statement.  It should be:  CREATE SMALLFILE TABLESPACE "TBSSPC2"  DATAFILE  '/u01/app/oracle/oradata/orcl/tbsspc02.dbf'  SIZE 50M LOGGING EXTENT  MANAGEMENT LOCAL SEGMENT SPACE  MANAGEMENT AUTO  Click **Return**. |
+   | h.       | Create Tablespace: Storage tab   | Click **OK**.                                                |
+   | i.       | Tablespaces                      |                                                              |
+
+9. Execute your workload again. (Use the **lab_17_01_04.sh** script.) DO NOT wait for the script to complete continue to next task.
+
+10.  Return to Enterprise Manager Cloud Control. On the orcl Performance Home page, review the Average Active Session graph. View performance data in real time with a 15- second refresh cycle. After a while, you should see a spike on the Average Active Sessions graph. **Hint:** This is that same procedure that you used in Task 5.
+
+   After the spike is finished, execute the **lab_17_01_05.sh** script again. This script forces the creation of a new snapshot and gathers statistics on the table in the workload test.
+
+   a.  Invoke Enterprise Manager as the **D****BA1** user in the **SYSDBA** role for your **orcl**
+
+   database.
+
+   b.  Select **Performance Home** in the **Performance** menu. Watch for the spike in the Active Sessions chart to complete.
+
+   c.  After the spike is finished, run the **lab_17_01_05.sh** script to force the creation of a new snapshot and gather statistics on your SPCT table.
+
+   **Note:** You may have to press Enter after the PL/SQL procedures from step 9 have completed in order to see the command prompt again.
+
+11. Review the ADDM from the **Advisor Home** link.
+
+    | **Step** | **Window/Page Description**                   | **Choices or Values**                          |
+    | -------- | --------------------------------------------- | ---------------------------------------------- |
+    | a.       | Cloud Control                                 | Click **Performance >  Advisors Home.**        |
+    | b.       | Advisor Central                               | Click the latest ADDM  report.                 |
+    | c.       | Automatic Database Diagnostic  Monitor (ADDM) | Review the ADDM Performance  Analysis section. |
+
+    You see that the impact value for the Buffer Busy finding (indicating read-and-write contention) has been greatly reduced or is no longer there. By moving the ADDM table to the locally managed TBSSPC2 tablespace, which uses the Automatic Autoextend Segment feature, you obviously fixed the root cause of the contention problem.
+
+    **Note:** You may see additional Buffer Busy findings (at a lower impact percentage) and other further recommendations that could improve performance, but you are not going to pursue them at this time.
+
+12. Execute the **lab_17_01_11.sh** script to clean up your environment so that this practice will not affect other practices.
 
 ### Practice
 
