@@ -200,6 +200,95 @@ In this practice, you back up your entire database, including the archived redo 
 
     ![](pic/14019.png)
 
+    ```bash
+    RMAN>  list backup;
+    
+    
+    List of Backup Sets
+    ===================
+    
+    
+    BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+    ------- ---- -- ---------- ----------- ------------ ---------------
+    1       Incr 0  1.75G      DISK        00:00:46     04-FEB-20      
+            BP Key: 1   Status: AVAILABLE  Compressed: NO  Tag: BACKUP_EMCDB_00000_020420052546
+            Piece Name: /u01/app/oracle/fast_recovery_area/EMCDB/96710507BCB024C7E0553CE49B3EAF97/backupset/2020_02_04/o1_mf_nnnd0_BACKUP_EMCDB_00000_0_h3lg4z3h_.bkp
+      List of Datafiles in backup set 1
+      Container ID: 3, PDB Name: EMREP
+      File LV Type Ckp SCN    Ckp Time  Abs Fuz SCN Sparse Name
+      ---- -- ---- ---------- --------- ----------- ------ ----
+      9    0  Incr 3452953    04-FEB-20              NO    /u01/app/oracle/oradata/booboo/booboopdb1/system01.dbf
+      10   0  Incr 3452953    04-FEB-20              NO    /u01/app/oracle/oradata/booboo/booboopdb1/sysaux01.dbf
+      11   0  Incr 3452953    04-FEB-20              NO    /u01/app/oracle/oradata/booboo/booboopdb1/undotbs01.dbf
+      12   0  Incr 3452953    04-FEB-20              NO    /u01/app/oracle/oradata/booboo/booboopdb1/users01.dbf
+      25   0  Incr 3452953    04-FEB-20              NO    /u01/app/oracle/oradata/booboo/booboopdb1/mgmt_ecm_depot1.dbf
+      26   0  Incr 3452953    04-FEB-20 3452975      NO    /u01/app/oracle/oradata/booboo/booboopdb1/mgmt.dbf
+      27   0  Incr 3452953    04-FEB-20              NO    /u01/app/oracle/oradata/booboo/booboopdb1/mgmt_deepdive.dbf
+    
+    BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+    ------- ---- -- ---------- ----------- ------------ ---------------
+    2       Incr 0  1.13G      DISK        00:00:22     04-FEB-20      
+            BP Key: 2   Status: AVAILABLE  Compressed: NO  Tag: BACKUP_EMCDB_00000_020420052546
+            Piece Name: /u01/app/oracle/fast_recovery_area/EMCDB/backupset/2020_02_04/o1_mf_nnnd0_BACKUP_EMCDB_00000_0_h3lg6po0_.bkp
+      List of Datafiles in backup set 2
+      File LV Type Ckp SCN    Ckp Time  Abs Fuz SCN Sparse Name
+      ---- -- ---- ---------- --------- ----------- ------ ----
+      1    0  Incr 3453177    04-FEB-20              NO    /u01/app/oracle/oradata/booboo/system01.dbf
+      3    0  Incr 3453177    04-FEB-20              NO    /u01/app/oracle/oradata/booboo/sysaux01.dbf
+      4    0  Incr 3453177    04-FEB-20              NO    /u01/app/oracle/oradata/booboo/undotbs01.dbf
+      7    0  Incr 3453177    04-FEB-20              NO    /u01/app/oracle/oradata/booboo/users01.dbf
+    
+    BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+    ------- ---- -- ---------- ----------- ------------ ---------------
+    3       Incr 0  512.22M    DISK        00:00:11     04-FEB-20      
+            BP Key: 3   Status: AVAILABLE  Compressed: NO  Tag: BACKUP_EMCDB_00000_020420052546
+            Piece Name: /u01/app/oracle/fast_recovery_area/EMCDB/93219DF8F4031975E0553CE49B3EAF97/backupset/2020_02_04/o1_mf_nnnd0_BACKUP_EMCDB_00000_0_h3lg7htl_.bkp
+      List of Datafiles in backup set 3
+      Container ID: 2, PDB Name: PDB$SEED
+      File LV Type Ckp SCN    Ckp Time  Abs Fuz SCN Sparse Name
+      ---- -- ---- ---------- --------- ----------- ------ ----
+      5    0  Incr 1441296    03-NOV-19              NO    /u01/app/oracle/oradata/booboo/pdbseed/system01.dbf
+      6    0  Incr 1441296    03-NOV-19              NO    /u01/app/oracle/oradata/booboo/pdbseed/sysaux01.dbf
+      8    0  Incr 1441296    03-NOV-19              NO    /u01/app/oracle/oradata/booboo/pdbseed/undotbs01.dbf
+    
+    BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+    ------- ---- -- ---------- ----------- ------------ ---------------
+    4       Full    17.94M     DISK        00:00:01     04-FEB-20      
+            BP Key: 4   Status: AVAILABLE  Compressed: NO  Tag: TAG20200204T172727
+            Piece Name: /u01/app/oracle/fast_recovery_area/EMCDB/autobackup/2020_02_04/o1_mf_s_1031506047_h3lg805t_.bkp
+      SPFILE Included: Modification time: 04-FEB-20
+      SPFILE db_unique_name: EMCDB
+      Control File Included: Ckp SCN: 3453270      Ckp time: 04-FEB-20
+    
+    BS Key  Size       Device Type Elapsed Time Completion Time
+    ------- ---------- ----------- ------------ ---------------
+    5       91.75M     DISK        00:00:00     04-FEB-20      
+            BP Key: 5   Status: AVAILABLE  Compressed: NO  Tag: BACKUP_EMCDB_00000_020420052546
+            Piece Name: /u01/app/oracle/fast_recovery_area/EMCDB/backupset/2020_02_04/o1_mf_annnn_BACKUP_EMCDB_00000_0_h3lg8359_.bkp
+    
+      List of Archived Logs in backup set 5
+      Thrd Seq     Low SCN    Low Time  Next SCN   Next Time
+      ---- ------- ---------- --------- ---------- ---------
+      1    32      3399092    04-FEB-20 3415518    04-FEB-20
+      1    33      3415518    04-FEB-20 3415523    04-FEB-20
+      1    34      3415523    04-FEB-20 3415528    04-FEB-20
+      1    35      3415528    04-FEB-20 3415533    04-FEB-20
+      1    36      3415533    04-FEB-20 3415538    04-FEB-20
+      1    37      3415538    04-FEB-20 3453307    04-FEB-20
+    
+    BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+    ------- ---- -- ---------- ----------- ------------ ---------------
+    6       Full    17.94M     DISK        00:00:00     04-FEB-20      
+            BP Key: 6   Status: AVAILABLE  Compressed: NO  Tag: TAG20200204T172732
+            Piece Name: /u01/app/oracle/fast_recovery_area/EMCDB/autobackup/2020_02_04/o1_mf_s_1031506052_h3lg84pn_.bkp
+      SPFILE Included: Modification time: 04-FEB-20
+      SPFILE db_unique_name: EMCDB
+      Control File Included: Ckp SCN: 3453372      Ckp time: 04-FEB-20
+    
+    ```
+
+    
+
 ### KnowledgePoint
 
 在Enterprise Manager Cloud Control中，通过调度备份进行数据库在线热备之全库备份
