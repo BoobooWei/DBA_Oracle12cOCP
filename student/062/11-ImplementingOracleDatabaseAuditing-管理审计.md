@@ -437,6 +437,14 @@ AUDMGR用户已经创建。HR上具有DML特权的几个用户已存在，例如
    EXEC DBMS_AUDIT_MGMT.FLUSH_UNIFIED_AUDIT_TRAIL;
    ```
 
+   运行结果
+
+   ```sql
+   UNIFIED_AUDIT_POLICIES	  ACTION_NAM OBJECT_SCH OBJECT_NAM
+   ------------------------- ---------- ---------- ----------
+   JOBS_AUDIT_UPD		  UPDATE     HR 	JOBS
+   JOBS_AUDIT_UPD		  UPDATE     HR 	JOBS
+   ```
 
 
 ### KnowledgePoint
