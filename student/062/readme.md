@@ -8,7 +8,11 @@
 >
 > Edition 2.0 | December 2014 | D89300
 
+## 练习中的脚本
 
+[lab.zip](https://pan.baidu.com/s/1DZ-L7LOMZITc6F3a9H77DQ)
+
+##  练习内容
 
 [02-ExploringOracleDatabaseArchitecture-数据架构.md](02-ExploringOracleDatabaseArchitecture-数据架构.md)
 

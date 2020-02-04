@@ -52,11 +52,11 @@ Practice 17-1: Database Maintenance
 
 7.  Find and examine the ADDM Performance Analysis and findings.
 
-   | **Step** | **Window/Page Description**                   | **Choices or Values**                                        |
-   | -------- | --------------------------------------------- | ------------------------------------------------------------ |
-   | a.       | Database Instance: orcl                       | Click **Performance >  Advisors Home**                       |
-   | b.       | Advisors Central                              | In the result  section, click the latest ADDM  report.       |
-   | c.       | Automatic Database Diagnostic  Monitor (ADDM) | Notice the findings. Click each finding.  Review the Detail  findings. |
+| **Step** | **Window/Page Description**                   | **Choices or Values**                                        |
+| -------- | --------------------------------------------- | ------------------------------------------------------------ |
+| a.       | Database Instance: orcl                       | Click **Performance >  Advisors Home**                       |
+| b.       | Advisors Central                              | In the result  section, click the latest ADDM  report.       |
+| c.       | Automatic Database Diagnostic  Monitor (ADDM) | Notice the findings. Click each finding.  Review the Detail  findings. |
 
    d.  Look at the **Performance Analysis** findings in order of their impact. There are several access paths to this information. 
 
@@ -113,6 +113,507 @@ Practice 17-1: Database Maintenance
 
 ### Practice
 
+1. 添加了一个新的表空间来容纳新表。第一个脚本使用一个名为/u01/app/oracle/oradata/orcl/tbsspc01的数据文件创建一个名为TBSSPC的新本地管理表空间。确保TBSSPC表空间不使用自动段空间管理(ASSM)。lab_17_01_01.sh脚本执行这些任务。检查脚本，然后执行它。
+
+   ```bash
+   [oracle@ocm P17]$ pwd
+   /u01/software/labs/P17
+   [oracle@ocm P17]$ ll
+   total 32
+   -rw-r--r-- 1 oracle oinstall 603 Jan 22  2013 lab_17_01_01.sh
+   -rw-r--r-- 1 oracle oinstall 521 Jan 22  2013 lab_17_01_02.sh
+   -rw-r--r-- 1 oracle oinstall 694 Jan 22  2013 lab_17_01_03.sh
+   -rw-r--r-- 1 oracle oinstall 483 Jan 23  2013 lab_17_01_04.sh
+   -rw-r--r-- 1 oracle oinstall 345 Jan 22  2013 lab_17_01_04.sql
+   -rw-r--r-- 1 oracle oinstall 522 Jan 22  2013 lab_17_01_05.sh
+   -rw-r--r-- 1 oracle oinstall 616 Jan 22  2013 lab_17_01_07.sh
+   -rw-r--r-- 1 oracle oinstall 476 Jan 22  2013 lab_17_01_11.sh
+   
+   [oracle@ocm P17]$ cat P17/lab_17_01_01.sh
+   cd $LABS/P17
+   
+   . $LABS/set_db.sh
+   sqlplus dba1/oracle@emrep as sysdba << END
+   
+   set echo on
+   
+   drop tablespace TBSSPC including contents and datafiles;
+   
+   CREATE SMALLFILE TABLESPACE "TBSSPC"
+   DATAFILE '/u01/app/oracle/oradata/booboo/tbsspc01.dbf' SIZE 50M
+   AUTOEXTEND ON NEXT 10M MAXSIZE 200M
+   LOGGING
+   EXTENT MANAGEMENT LOCAL
+   SEGMENT SPACE MANAGEMENT MANUAL;
+   
+   exit;
+   END
+   
+   [oracle@ocm labs]$ export LABS=/u01/software/labs
+   [oracle@ocm labs]$ bash P17/lab_17_01_01.sh
+   The Oracle base remains unchanged with value /u01/app/oracle
+   
+   SQL*Plus: Release 12.2.0.1.0 Production on Wed Feb 5 02:36:50 2020
+   
+   Copyright (c) 1982, 2016, Oracle.  All rights reserved.
+   
+   Last Successful login time: Wed Feb 05 2020 02:34:23 +08:00
+   
+   Connected to:
+   Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
+   
+   SQL> SQL> SQL> drop tablespace TBSSPC including contents and datafiles
+   *
+   ERROR at line 1:
+   ORA-00959: tablespace 'TBSSPC' does not exist
+   
+   
+   SQL> SQL>   2    3    4    5    6  
+   Tablespace created.
+   
+   SQL> SQL> Disconnected from Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
+   ```
+
+   
+
+2. lab_17_01_02.sh脚本添加了一个新用户。该脚本创建由oracle_4U标识的SPCT用户，将TBSSPC表空间指定为默认表空间，将临时表空间指定为临时表空间，并将连接、资源和DBA角色授予SPCT用户。执行lab_17_01_02.sh脚本来执行这些任务。
+
+   ```bash
+   [oracle@ocm labs]$ cd $LABS/P17
+   
+   . $LABS/set_db.sh
+   
+   sqlplus dba1/oracle@emrep as sysdba << END
+   
+   set echo on
+   
+   drop user spct cascade;
+   
+   create user spct identified by oracle_4U account unlock
+   default tablespace TBSSPC
+   temporary tablespace temp;
+   
+   grant connect, resource, dba to spct;
+   
+   exit;
+   END
+   
+   [oracle@ocm labs]$ bash P17/lab_17_01_02.sh
+   The Oracle base remains unchanged with value /u01/app/oracle
+   
+   SQL*Plus: Release 12.2.0.1.0 Production on Wed Feb 5 02:37:22 2020
+   
+   Copyright (c) 1982, 2016, Oracle.  All rights reserved.
+   
+   Last Successful login time: Wed Feb 05 2020 02:36:50 +08:00
+   
+   Connected to:
+   Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
+   
+   SQL> SQL> SQL> SQL> drop user spct cascade
+             *
+   ERROR at line 1:
+   ORA-01918: user 'SPCT' does not exist
+   
+   
+   SQL> SQL>   2    3  
+   User created.
+   
+   SQL> SQL> 
+   Grant succeeded.
+   
+   SQL> SQL> Disconnected from Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
+   ```
+
+   
+
+3. 提供的测试工作负载只运行几分钟。为了获得有意义的数据，应该缩短自动工作负载存储库(AWR)快照之间的时间。使用DBMS_ADVISOR包将数据库活动时间设置为30分钟。作为SPCT用户运行的测试脚本删除并创建SPCT表，并收集此表的统计信息。它还在AWR中创建快照。执行lab_17_01_03.sh脚本来执行这些任务。
+
+   ```SQL
+   [oracle@ocm P17]$ cat lab_17_01_03.sh 
+   # Oracle Database 12c: Administration Workshop
+   # Oracle Server Technologies - Curriculum Development
+   #
+   # ***Training purposes only***
+   # ***Not appropriate for production use***
+   #
+   # Start this script as OS user: oracle
+   #   This script supports the ADDM practice 
+   
+   cd $LABS/P17
+   
+   . $LABS/set_db.sh
+   
+   sqlplus dba1/oracle@emrep as sysdba  << EOF
+   
+   set echo on
+   
+   exec dbms_advisor.set_default_task_parameter('ADDM','DB_ACTIVITY_MIN',30);
+   
+   connect spct/oracle_4U@emrep
+   
+   drop table spct purge;
+   create table spct(id number, name varchar2(2000));
+   
+   exec DBMS_STATS.GATHER_TABLE_STATS(-
+   ownname=>'SPCT', tabname=>'SPCT',-
+   estimate_percent=>DBMS_STATS.AUTO_SAMPLE_SIZE);
+   
+   exec DBMS_WORKLOAD_REPOSITORY.CREATE_SNAPSHOT();
+   
+   exit;
+   EOF
+   
+   
+   [oracle@ocm labs]$ bash P17/lab_17_01_03.sh
+   The Oracle base remains unchanged with value /u01/app/oracle
+   
+   SQL*Plus: Release 12.2.0.1.0 Production on Wed Feb 5 02:43:47 2020
+   
+   Copyright (c) 1982, 2016, Oracle.  All rights reserved.
+   
+   Last Successful login time: Wed Feb 05 2020 02:41:32 +08:00
+   
+   Connected to:
+   Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
+   
+   SQL> SQL> SQL> SQL> 
+   PL/SQL procedure successfully completed.
+   
+   SQL> SQL> Connected.
+   SQL> SQL> drop table spct purge
+              *
+   ERROR at line 1:
+   ORA-00942: table or view does not exist
+   
+   
+   SQL> 
+   Table created.
+   
+   SQL> SQL> > > 
+   PL/SQL procedure successfully completed.
+   
+   SQL> SQL> 
+   PL/SQL procedure successfully completed.
+   
+   SQL> SQL> Disconnected from Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
+   ```
+
+   
+
+4. 运行工作负载脚本。这将创建要分析的活动。执行lab_17_01_04.sh脚本来执行这些任务。不要等待脚本完成，继续下一步。
+
+   ```bash
+   [oracle@ocm P17]$ cat lab_17_01_04.sh
+   # Oracle Database 12c: Administration Workshop
+   # Oracle Server Technologies - Curriculum Development
+   #
+   # ***Training purposes only***
+   # ***Not appropriate for production use***
+   #
+   # Start this script as OS user: oracle
+   #   This script supports the ADDM practice 
+   
+   #!/bin/bash
+   
+   cd $LABS/P17
+   
+   . $LABS/set_db.sh
+   
+   . $LABS/wkfctrfunc
+    
+   users=12
+   cpufactor $users
+   
+   x=1
+   y=$newval
+   UNPW="spct/oracle_4U@emrep"
+   
+   while [ $x -le $y ]
+   do
+       sqlplus -s $UNPW @lab_17_01_04.sql &
+       x=`expr $x + 1`
+   done
+   [oracle@ocm P17]$ cat lab_17_01_04.sql
+   -- Oracle Database 12c: Administration Workshop
+   -- Oracle Server Technologies - Curriculum Development
+   --
+   -- ***Training purposes only***
+   -- ***Not appropriate for production use***
+   --
+   --   This script supports the ADDM practice 
+   
+   
+   declare
+   t number;
+   begin
+   for t in 1..20000 loop
+   insert into spct values (Null,'a');
+   commit;
+   end loop;
+   end;
+   /
+   exit
+   
+   [oracle@ocm labs]$ bash P17/lab_17_01_04.sh
+   The Oracle base remains unchanged with value /u01/app/oracle
+   ```
+
+   
+
+5. 在云控制性能主页上查看活动会话图中的活动，直到脚本完成。
+
+   ![](pic/1701.png)
+
+   ![](pic/1702.png)
+
+6. 当spike完成后，返回到终端窗口执行lab_17_01_05.sh脚本。
+
+   ```bash
+   [oracle@ocm P17]$ cat lab_17_01_05.sh 
+   # Oracle Database 12c: Administration Workshop
+   # Oracle Server Technologies - Curriculum Development
+   #
+   # ***Training purposes only***
+   # ***Not appropriate for production use***
+   #
+   # Start this script as OS user: oracle
+   #   This script supports the ADDM practice 
+   
+   cd $LABS/P17
+   
+   . $LABS/set_db.sh
+   
+   sqlplus spct/oracle_4U@emrep  << END
+   
+   set echo on
+   
+   exec DBMS_WORKLOAD_REPOSITORY.CREATE_SNAPSHOT();
+   
+   exec DBMS_STATS.GATHER_TABLE_STATS(-
+   ownname=>'SPCT', tabname=>'SPCT',-
+   estimate_percent=>DBMS_STATS.AUTO_SAMPLE_SIZE);
+   
+   exit;
+   END
+   
+   [oracle@ocm labs]$ bash P17/lab_17_01_05.sh 
+   The Oracle base remains unchanged with value /u01/app/oracle
+   
+   SQL*Plus: Release 12.2.0.1.0 Production on Wed Feb 5 03:01:18 2020
+   
+   Copyright (c) 1982, 2016, Oracle.  All rights reserved.
+   
+   Last Successful login time: Wed Feb 05 2020 02:47:19 +08:00
+   
+   Connected to:
+   Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
+   
+   SQL> SQL> SQL> SQL> 
+   PL/SQL procedure successfully completed.
+   
+   SQL> SQL> > > 
+   PL/SQL procedure successfully completed.
+   
+   SQL> SQL> Disconnected from Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
+   ```
+
+   
+
+7. 查找和检查ADDM性能分析和结果。
+
+   ![](pic/1703.png)
+
+   ![](pic/1704.png)
+
+   ![](pic/1705.png)
+
+   返回ADDM性能分析页面并研究其他ADDM按严重程度排序。
+
+   通过单击查看缓冲区繁忙的结果查找列中的链接。
+
+   对于一个繁忙的缓冲区结果，您应该看到这一点在SPCT表上存在读写争用。建议的操作是
+
+   使用SPCT表的自动段空间管理(ASSM)功能。
+
+   ![](pic/1706.png)
+
+8. 决定实施建议使用自动段空间管理。为此，必须重新创建对象。创建一个新的本地管理的表空间，名为TBSSPC2，其数据文件大小为50 MB。确保TBSSPC2表空间使用自动段空间管理特性。然后执行lab_17_01_07.sh脚本删除SPCT表，在新的表空间中重新创建表，收集统计信息，并获取新的快照。 
+
+   ``` bash
+   [oracle@ocm P17]$ cat lab_17_01_07.sh 
+   # Oracle Database 12c: Administration Workshop
+   # Oracle Server Technologies - Curriculum Development
+   #
+   # ***Training purposes only***
+   # ***Not appropriate for production use***
+   #
+   # Start this script as OS user: oracle
+   #   This script supports the ADDM practice 
+   
+   cd $LABS/P17
+   
+   . $LABS/set_db.sh
+   
+   sqlplus spct/oracle_4U@emrep << END
+   
+   set echo on
+   
+   drop table spct purge;
+   
+   create table SPCT(id number, name varchar2(2000)) tablespace TBSSPC2;
+   
+   exec DBMS_STATS.GATHER_TABLE_STATS(-
+   ownname=>'SPCT', tabname=>'SPCT',-
+   estimate_percent=>DBMS_STATS.AUTO_SAMPLE_SIZE);
+   
+   exec DBMS_WORKLOAD_REPOSITORY.CREATE_SNAPSHOT();
+   
+   exit;
+   END
+   
+   
+   sqlplus dba1/oracle@emrep as sysdba  << EOF
+   CREATE SMALLFILE TABLESPACE "TBSSPC2" 
+   DATAFILE '/u01/app/oracle/oradata/booboo/booboopdb1/tbsspc02.dbf' 
+   SIZE 50M LOGGING EXTENT MANAGEMENT LOCAL 
+   SEGMENT SPACE MANAGEMENT AUTO;
+   EOF
+   
+   [oracle@ocm labs]$ bash P17/lab_17_01_07.sh 
+   The Oracle base remains unchanged with value /u01/app/oracle
+   
+   SQL*Plus: Release 12.2.0.1.0 Production on Wed Feb 5 03:23:37 2020
+   
+   Copyright (c) 1982, 2016, Oracle.  All rights reserved.
+   
+   Last Successful login time: Wed Feb 05 2020 03:01:18 +08:00
+   
+   Connected to:
+   Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
+   
+   SQL> SQL> SQL> SQL> 
+   Table dropped.
+   
+   SQL> SQL> 
+   Table created.
+   
+   SQL> SQL> > > 
+   PL/SQL procedure successfully completed.
+   
+   SQL> SQL> 
+   PL/SQL procedure successfully completed.
+   
+   SQL> SQL> Disconnected from Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
+   ```
+
+   
+
+9. 再次执行工作负载。(使用lab_17_01_04.sh脚本。)不要等待脚本完成，继续下一个任务。
+
+   ```bash
+   [oracle@ocm labs]$ bash P17/lab_17_01_04.sh 
+   The Oracle base remains unchanged with value /u01/app/oracle
+   ```
+
+    
+
+10. 回到企业经理云控制。在性能主页上，查看平均活动会话图。以15秒的刷新周期实时查看性能数据。一段时间后，您应该会在平均活动会话图上看到一个峰值。提示:这与您在Task 5中使用的过程相同。 
+
+    当spike完成后，返回到终端窗口执行lab_17_01_05.sh脚本。
+
+    ```bash
+    PL/SQL procedure successfully completed.
+    
+    
+    [oracle@ocm labs]$ bash P17/lab_17_01_05.sh 
+    The Oracle base remains unchanged with value /u01/app/oracle
+    
+    SQL*Plus: Release 12.2.0.1.0 Production on Wed Feb 5 03:28:56 2020
+    
+    Copyright (c) 1982, 2016, Oracle.  All rights reserved.
+    
+    Last Successful login time: Wed Feb 05 2020 03:25:50 +08:00
+    
+    Connected to:
+    Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
+    
+    SQL> SQL> SQL> SQL> 
+    PL/SQL procedure successfully completed.
+    
+    SQL> SQL> > > 
+    PL/SQL procedure successfully completed.
+    
+    SQL> SQL> Disconnected from Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
+    ```
+
+    ![](pic/1707.png)
+
+
+11. 从Advisor主页链接查看ADDM。 
+
+    您可以看到Busy查找缓冲区的影响值(表示读写)争用)已大大减少或不再存在。将ADDM表移动到
+
+    本地管理的TBSSPC2表空间，它使用自动自动扩展段显然，您已经修复了争用问题的根源。
+
+    注意:您可能会看到额外的缓冲区繁忙的结果(在较低的影响百分比)和其他可以提高性能的建议。
+    ![](pic/1708.png)
+
+    ![](pic/1709.png)
+
+12. 执行lab_17_01_11.sh脚本来清理您的环境，这样就不会影响其他实践。 
+
+    ```bash
+    [oracle@ocm P17]$ cat lab_17_01_11.sh 
+    # Oracle Database 12c: Administration Workshop
+    # Oracle Server Technologies - Curriculum Development
+    #
+    # ***Training purposes only***
+    # ***Not appropriate for production use***
+    #
+    # Start this script as OS user: oracle
+    #   This script supports the ADDM practice 
+    
+    cd $LABS/P17
+    
+    . $LABS/set_db.sh
+    
+    sqlplus dba1/oracle@emrep as sysdba  << END
+    drop user spct cascade;
+    
+    drop tablespace tbsspc including contents and datafiles;
+    
+    drop tablespace tbsspc2 including contents and datafiles;
+    
+    exit;
+    END
+    
+    [oracle@ocm labs]$ bash P17/lab_17_01_11.sh 
+    The Oracle base remains unchanged with value /u01/app/oracle
+    
+    SQL*Plus: Release 12.2.0.1.0 Production on Wed Feb 5 03:42:41 2020
+    
+    Copyright (c) 1982, 2016, Oracle.  All rights reserved.
+    
+    Last Successful login time: Wed Feb 05 2020 02:43:47 +08:00
+    
+    Connected to:
+    Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
+    
+    SQL> 
+    User dropped.
+    
+    SQL> SQL> 
+    Tablespace dropped.
+    
+    SQL> SQL> 
+    Tablespace dropped.
+    
+    SQL> SQL> Disconnected from Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
+    ```
+
+    
+
 ### KnowledgePoint
 
 ## 实践17-2:修改PDB数据库名称
@@ -135,8 +636,6 @@ SHUTDOWN IMMEDIATE
 STARTUP OPEN
 show pdbs
 ```
-
-
 
 运行结果
 
@@ -494,3 +993,7 @@ SQL> show pdbs;
 
 ```
 
+## 总结
+
+1. 主动监控数据库
+2. PDB和CDB的数据库名变更
