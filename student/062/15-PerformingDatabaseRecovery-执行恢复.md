@@ -4,7 +4,7 @@
 >
 > 2020.01.29 BoobooWei
 
-[toc]
+[TOC]
 
 ## 实践15:概览
 
@@ -38,24 +38,24 @@ In this practice, you recover from the loss of a data file belonging to the EXAM
 
 6. Use Enterprise Manager  Cloud Control to troubleshoot the error  and recover  the data file. Launch Enterprise Manager Cloud  Control and log in as the **ADMIN** user.  
 
-  | 步骤 | 操作                                                         |
-  | ---- | ------------------------------------------------------------ |
-  | a.   | Launch Enterprise Manager Cloud Control and log in as the **ADMIN** user. |
-  | b.   | Navigate to the orcl database home page.                     |
-  | c.   | Log in with your saved  database credentials.                |
-  | d.   | Expand **Oracle Database**. Select  **Monitoring** > **Incident Manager**. Note  that there is a  critical error listed, indicating a data failure. |
-  | e.   | Expand **Availability**. Select **Backup & Recovery** > **Perform Recovery**. |
-  | f.   | Specify a named host credential, or enter **oracle** as the username and your OS |
-  | g.   | Click the “**Database Failures**” link.                      |
-  | i.   | Click “**Continue with Advise**.”                            |
-  | j.   | Review the RMAN script that will be used to restore the file and perform recovery. Click **Continue**. |
-  | k.   | Review the information, and then click “**Submit Recovery Job**.” |
-  | l.   | A processing page appears, and then the Job Activity page appears. Click the job name link. |
-  | m.   | On the Job Run page, verify that the status is “Succeeded.” Then return to the **orcl** database home page. |
-  | n.   | Return to your SQL*Plus session. Once again query the **HR.REGIONS** table to verify that the data file has been restored and recovered. Exit from SQL*Plus. |
-  | o.   | Return to Enterprise Manager Cloud Control. Expand **Oracle Database**. Select **Monitoring** > **Incident Manager**. Select the data failure incident and click **Clear**. |
-  | p.   | Select “Clear and do not send e-mail or page notifications.” Click **OK** to confirm. |
-  | q.   | Return to the **orcl** database home page.                   |
+| 步骤 | 操作                                                         |
+| ---- | ------------------------------------------------------------ |
+| a.   | Launch Enterprise Manager Cloud Control and log in as the **ADMIN** user. |
+| b.   | Navigate to the orcl database home page.                     |
+| c.   | Log in with your saved  database credentials.                |
+| d.   | Expand **Oracle Database**. Select  **Monitoring** > **Incident Manager**. Note  that there is a  critical error listed, indicating a data failure. |
+| e.   | Expand **Availability**. Select **Backup & Recovery** > **Perform Recovery**. |
+| f.   | Specify a named host credential, or enter **oracle** as the username and your OS |
+| g.   | Click the “**Database Failures**” link.                      |
+| i.   | Click “**Continue with Advise**.”                            |
+| j.   | Review the RMAN script that will be used to restore the file and perform recovery. Click **Continue**. |
+| k.   | Review the information, and then click “**Submit Recovery Job**.” |
+| l.   | A processing page appears, and then the Job Activity page appears. Click the job name link. |
+| m.   | On the Job Run page, verify that the status is “Succeeded.” Then return to the **orcl** database home page. |
+| n.   | Return to your SQL*Plus session. Once again query the **HR.REGIONS** table to verify that the data file has been restored and recovered. Exit from SQL*Plus. |
+| o.   | Return to Enterprise Manager Cloud Control. Expand **Oracle Database**. Select **Monitoring** > **Incident Manager**. Select the data failure incident and click **Clear**. |
+| p.   | Select “Clear and do not send e-mail or page notifications.” Click **OK** to confirm. |
+| q.   | Return to the **orcl** database home page.                   |
 
 
 
@@ -251,11 +251,25 @@ In this practice, you recover from the loss of a data file belonging to the EXAM
 
 6. 使用Enterprise Manager Cloud Control对错误进行故障排除并恢复数据文件。启动企业管理器云控制，以**ADMIN**用户登录。
 
-   
+   ![](pic/1501.png)
+
+   ![1502.png](pic/1502.png)
+   ![1503.png](pic/1503.png)
+   ![1504.png](pic/1504.png)
+   ![1505.png](pic/1505.png)
+   ![1506.png](pic/1506.png)
+   ![1507.png](pic/1507.png)
+   ![1508.png](pic/1508.png)
 
 ### KnowledgePoint
 
 1. 某个表空间无意中被删除
 2. 通过控制体进行恢复
 3. 通过rman手动恢复
+   ```sql
+   sql 'EMREP' 'alter database datafile 28 offline';
+   restore ( datafile 28 );
+   recover datafile 28;
+   sql 'EMREP' 'alter database datafile 28 online';
+   ```
 
