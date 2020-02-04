@@ -21,7 +21,6 @@
 [Oracle数据库12 *c*版本2 管理](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/administration.html)
 
 * [数据库管理员指南12 c版本2（12.2）](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/index.html)
-
 * [数据库安装指南 适用于Linux的12 c版本2（12.2）](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/ladbi/index.html)
 * [数据库网络服务管理员指南12 c版本2（12.2）](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/netag/index.html)
 * [数据库升级指南12 *c*版本2（12.2）](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/upgrd/index.html)
@@ -29,6 +28,7 @@
 * [数据库安全指南12 c版本2（12.2）](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/dbseg/index.html)
 * [数据库性能调优指南12 *c*版本2（12.2）](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/tgdba/index.html)
 * [SQL *PLUS®用户指南和参考 发行版2（12.2）](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/sqpug/index.html)
+* [数据库工具](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/sutil/index.html)
 
 
 

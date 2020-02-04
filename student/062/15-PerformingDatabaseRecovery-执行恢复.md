@@ -4,7 +4,17 @@
 >
 > 2020.01.29 BoobooWei
 
-[TOC]
+<!-- MDTOC maxdepth:6 firsth1:1 numbering:0 flatten:0 bullets:1 updateOnSave:1 -->
+
+- [实践15:执行恢复](#实践15执行恢复)   
+   - [实践15:概览](#实践15概览)   
+   - [实践15-1:从数据文件丢失中恢复](#实践15-1从数据文件丢失中恢复)   
+      - [Overview](#overview)   
+      - [Task](#task)   
+      - [Practice](#practice)   
+      - [KnowledgePoint](#knowledgepoint)   
+
+<!-- /MDTOC -->
 
 ## 实践15:概览
 
@@ -64,47 +74,14 @@ In this practice, you recover from the loss of a data file belonging to the EXAM
 1. 以**HR**用户身份登录SQL*Plus，查询**REGIONS**表。
 
    ```sql
-   sqlplus hr/hr@emrep 
+   sqlplus hr/hr@emrep
    SELECT * FROM regions;
    ```
-
-   执行结果
-
-   ```sql
-   [oracle@ocm trace]$ sqlplus hr/hr@emrep
-   
-   SQL*Plus: Release 12.2.0.1.0 Production on Tue Feb 4 18:20:09 2020
-   
-   Copyright (c) 1982, 2016, Oracle.  All rights reserved.
-   
-   Last Successful login time: Tue Feb 04 2020 18:19:24 +08:00
-   
-   Connected to:
-   Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
-   
-   SQL> SELECT * FROM regions;
-   
-    REGION_ID REGION_NAME
-   ---------- -------------------------
-   	 1 Europe
-   	 2 Americas
-   	 3 Asia
-   	 4 Middle East and Africa
-   ```
-
-   
 
 2. 现在使用SYSDBA角色的DBA1用户连接。
 
    ```sql
    conn dba1/oracle as sysdba
-   ```
-
-   执行结果
-
-   ```sql
-   SQL> conn dba1/oracle as sysdba
-   Connected.
    ```
 
 3. 执行` $LABS/P15/lab_15_01_03.sql`创建一个存储过程，待后续使用。
@@ -132,14 +109,14 @@ In this practice, you recover from the loss of a data file belonging to the EXAM
                  }
         }
     /
-   
+
    --Create a PL/SQL wrapper function to call the java stored procedure
    --
    CREATE OR REPLACE PROCEDURE execcmd (S1 VARCHAR2)
       AS LANGUAGE JAVA
       name 'ExecuteCmd.main(java.lang.String[])';
    /
-   
+
    --Grant the JVM permission to interface with the operating system. Notice the first
    --   grants give the JVM permission to call rm,ls and kill. You will have to add any OS commands
    --   that you want executed using this format.
@@ -149,34 +126,13 @@ In this practice, you recover from the loss of a data file belonging to the EXAM
    exec dbms_java.grant_permission( 'SYSTEM', 'SYS:java.io.FilePermission', '<<ALL FILES>>', 'execute' )
    exec dbms_java.grant_permission( 'SYSTEM','SYS:java.lang.RuntimePermission', 'writeFileDescriptor', '' )
    exec dbms_java.grant_permission( 'SYSTEM','SYS:java.lang.RuntimePermission', 'readFileDescriptor', '' )
-   
+
    create public synonym execcmd for execcmd;
-   
+
    grant execute on execcmd to public;
    ```
 
-   运行结果
-
-   ```sql
-   SQL> conn dba1/oracle as sysdba
-   Connected.
-   SQL> @/u01/software/labs/P15/lab_15_01_03.sql
-   Connected.
-   Java created.
-   Procedure created.
-   PL/SQL procedure successfully completed.
-   PL/SQL procedure successfully completed.
-   PL/SQL procedure successfully completed.
-   PL/SQL procedure successfully completed.
-   PL/SQL procedure successfully completed.
-   PL/SQL procedure successfully completed.
-   Synonym created.
-   Grant succeeded.
-   ```
-
-   
-
-4. 执行` $LABS/P15/lab_15_01_04.sql`，此脚本通过删除数据文件来模拟数据库环境中的故障。 
+4. 执行` $LABS/P15/lab_15_01_04.sql`，此脚本通过删除数据文件来模拟数据库环境中的故障。
 
    > 执行前确保已经创建了 EXAMPLE 的表空间；且hr.region表使用的是该表空间。
 
@@ -186,7 +142,7 @@ In this practice, you recover from the loss of a data file belonging to the EXAM
    --set feed off
    set echo off
    --set termout off
-   
+
    DECLARE
            v_cmd varchar2(300);
    BEGIN
@@ -204,37 +160,69 @@ In this practice, you recover from the loss of a data file belonging to the EXAM
             execute immediate 'alter system checkpoint';
     END;
     /
-   
+
    PROMPT "Data file deleted. Wait a couple minutes before proceeding."
    PROMPT "Database should be open."
-   
+
    exit
    ```
-
-   运行结果
-
-   ```sql
-   SQL> @/u01/software/labs/P15/lab_15_01_04.sql
-   
-   PL/SQL procedure successfully completed.
-   
-   "Data file deleted. Wait a couple minutes before proceeding."
-   "Database should be open."
-   Disconnected from Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
-   ```
-
-   
 
 5. 再次调用SQL*Plus并作为**HR**用户登录。再次查询区域表。
 
    ```sql
-   sqlplus hr/hr@emrep 
+   sqlplus hr/hr@emrep
    SELECT * FROM regions;
    ```
 
-   执行结果
+   1-5执行结果
 
    ```sql
+   [oracle@ocm trace]$ sqlplus hr/hr@emrep
+
+   SQL*Plus: Release 12.2.0.1.0 Production on Tue Feb 4 18:20:09 2020
+
+   Copyright (c) 1982, 2016, Oracle.  All rights reserved.
+
+   Last Successful login time: Tue Feb 04 2020 18:19:24 +08:00
+
+   Connected to:
+   Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
+
+   SQL> SELECT * FROM regions;
+
+    REGION_ID REGION_NAME
+   ---------- -------------------------
+   	 1 Europe
+   	 2 Americas
+   	 3 Asia
+   	 4 Middle East and Africa
+
+   SQL> conn dba1/oracle as sysdba
+   Connected.
+
+   SQL> conn dba1/oracle as sysdba
+   Connected.
+   SQL> @/u01/software/labs/P15/lab_15_01_03.sql
+   Connected.
+   Java created.
+   Procedure created.
+   PL/SQL procedure successfully completed.
+   PL/SQL procedure successfully completed.
+   PL/SQL procedure successfully completed.
+   PL/SQL procedure successfully completed.
+   PL/SQL procedure successfully completed.
+   PL/SQL procedure successfully completed.
+   Synonym created.
+   Grant succeeded.
+
+   SQL> @/u01/software/labs/P15/lab_15_01_04.sql
+
+   PL/SQL procedure successfully completed.
+
+   "Data file deleted. Wait a couple minutes before proceeding."
+   "Database should be open."
+   Disconnected from Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
+
    SQL> select * from hr.regions;
    select * from hr.regions
    *
@@ -247,7 +235,7 @@ In this practice, you recover from the loss of a data file belonging to the EXAM
    Additional information: 3
    ```
 
-   
+
 
 6. 使用Enterprise Manager Cloud Control对错误进行故障排除并恢复数据文件。启动企业管理器云控制，以**ADMIN**用户登录。
 
@@ -272,4 +260,3 @@ In this practice, you recover from the loss of a data file belonging to the EXAM
    recover datafile 28;
    sql 'EMREP' 'alter database datafile 28 online';
    ```
-
