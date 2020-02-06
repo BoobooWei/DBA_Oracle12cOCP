@@ -267,7 +267,7 @@ no rows selected
 
 注意：虽然发起的关闭是 transactional ，但是在Oracle12c中，关闭PDB时使用的却是`alter pluggable database all close immediate`。因此不会等待PDB的事务提交即立刻关闭数据库。
 
-## 实践2-3：关闭数据库实例abort
+## 实践2-3:关闭数据库实例abort
 
 ### Overview
 
@@ -302,3 +302,60 @@ no rows selected
 ### KnowledgePoint
 
 关闭速度非常快。
+
+## 实践2-4:隐藏列 invisible
+
+oracle 12c 新特性之不可见字段
+
+在Oracle 11g R1中，Oracle以不可见索引和虚拟字段的形式引入了一些不错的增强特性。继承前者并发扬光大，Oracle 12c 中引入了不可见字段思想。在之前的版本中，为了隐藏重要的数据字段以避免在通用查询中显示，我们往往会创建一个视图来隐藏所需信息或应用某些安全条件。
+在12c中，你可以在表中创建不可见字段。当一个字段定义为不可见时，这一字段就默认不会出现在通用查询中，除非在SQL语句或条件中有显式的提及这一字段，或是在表定义中有DESCRIBED。要添加或是修改一个不可见字段是非常容易的，反之亦然。
+
+```sql
+CREATE TABLE test_p (prod_id number(4),
+Prod_name varchar2 (20),
+Category_id number(30),
+Quantity_on_hand number (3) INVISIBLE);
+
+desc test_p
+alter table test_p add constraint test_01  unique (Quantity_on_hand);
+alter table test_p modify(Quantity_on_hand visible);
+alter table test_p modify(Quantity_on_hand sible);
+```
+
+## 实践2-5:存储过程DR和IR
+
+如何防止对CREATE_TEST存储过程具有EXECUTE特权的用户将值插入他们没有任何特权的表中？
+
+Create the CREATE_TEST procedure with invoker rights.
+
+oracle存储过程分两种，DR(Definer's Rights ) Procedure和IR(Invoker's Rights ) Procedure。
+定义存储过程时，通过指定AUTHID 属性，定义DR Procedure 和IR Procedure
+
+1. 定义者权限：定义者权限PL/SQL程序单元是以这个程序单元拥有者的特权来执行它的，也就是说，任何具有这个PL/SQL程序单元执行权的用户都可以访问程序中的对象。所有具有执行权的用户都有相同的访问权限，在定义者权限下，执行的用户操作的schema为定义者，所操作的对象是定义者在编译时指定的对象。在定义者(definer)权限下，当前用户的权限为角色无效情况下所拥有的权限。
+
+   ```sql
+   CREATE OR REPLACE procedure DEMO(ID in NUMBER) 
+   AUTHID DEFINER as
+   ...
+   BEGIN
+   ...
+   ND DEMO
+   ```
+
+   
+
+2. 调用者权限：调用者权限是指当前用户（而不是程序的创建者）执行PL/SQL程序体的权限。这意味着不同的用户对于某个对象具有的权限很可能是不同的，这个思想的提出，解决了不同用户更新不同表的方法。在调用者权限下，执行的用户操作的schema为当前用户，所操作的对象是当前模式下的对象。在调用者(invoker)权限下，当前用户的权限为当前所拥有的权限(含角色)。
+
+   ```sql
+   CREATE OR REPLACE procedure DEMO(ID in NUMBER) 
+   AUTHID CURRENT_USER  as
+   ...
+   BEGIN
+   ...
+   ND DEMO
+   ```
+
+ORACLE默认为定义者权限，定义者权限在存储过程中ROLE无效，需要显示授权，例如在存储过程中调用其他用户的表，但是定义存储过程的当前用户没有显示访问该表的权限，即使当前用户具有dba角色，编译过程中也会出现权限不足的问题，因为role无效。
+
+## 实践2-6:
+
