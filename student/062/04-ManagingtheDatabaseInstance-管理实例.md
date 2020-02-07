@@ -119,25 +119,25 @@ In this practice, you use SQL*Plus to view and change instance parameters.
 
    ```sql
    SYS@booboo>exec print_table(q'[select * from V$SYSTEM_PARAMETER WHERE name='job_queue_processes']')
-NUM			      		    : 3106
-NAME			      	    : job_queue_processes
-TYPE			      	    : 3
-VALUE			      	    : 1000
-DISPLAY_VALUE		      : 1000
-DEFAULT_VALUE		      : 4000
-ISDEFAULT		      	  : FALSE
-ISSES_MODIFIABLE	    : FALSE
-ISSYS_MODIFIABLE	    : IMMEDIATE
-ISPDB_MODIFIABLE	    : TRUE
-ISINSTANCE_MODIFIABLE	: TRUE
-ISMODIFIED		      	: FALSE
-ISADJUSTED		      	: FALSE
-ISDEPRECATED		      : FALSE
-ISBASIC 		      	  : FALSE
-DESCRIPTION		      	: maximum number of job queue slave processes
-UPDATE_COMMENT		    :
-HASH			     	      : 1663833312
-CON_ID			        	: 0
+	UM			      		    : 3106
+	AME			      	    : job_queue_processes
+	YPE			      	    : 3
+	ALUE			      	    : 1000
+	ISPLAY_VALUE		      : 1000
+	EFAULT_VALUE		      : 4000
+	SDEFAULT		      	  : FALSE
+	SSES_MODIFIABLE	    : FALSE
+	SSYS_MODIFIABLE	    : IMMEDIATE
+	SPDB_MODIFIABLE	    : TRUE
+	SINSTANCE_MODIFIABLE	: TRUE
+	SMODIFIED		      	: FALSE
+	SADJUSTED		      	: FALSE
+	SDEPRECATED		      : FALSE
+	SBASIC 		      	  : FALSE
+	ESCRIPTION		      	: maximum number of job queue slave processes
+	PDATE_COMMENT		    :
+	ASH			     	      : 1663833312
+	ON_ID			        	: 0
    ```
 
    
@@ -157,7 +157,7 @@ CON_ID			        	: 0
 
 [11g 参数文件](https://github.com/BoobooWei/booboo_oracle/blob/master/D-体系结构和存储引擎-03-物理结构_参数文件parameter_files.md)
 
-[12c 参数文件]( https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/creating-and-configuring-an-oracle-database.html#GUID-7302C60F-E96E-4202-AC81-25A6C93EEFA3  )
+[12c 参数文件](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/creating-and-configuring-an-oracle-database.html#GUID-7302C60F-E96E-4202-AC81-25A6C93EEFA3)
 
 - [*《 Oracle数据库SQL语言参考》*](https://www.oracle.com/pls/topic/lookup?ctx=en/database/oracle/oracle-database/12.2/admin&id=SQLRF00902)中有关该`ALTER` `SYSTEM`命令的 信息
 -  [在CDB中使用ALTER SYSTEM SET语句]( https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/administering-a-cdb-with-sql-plus.html#GUID-E47348D6-5350-4890-ACD6-7BA1C1DD4E95 )
