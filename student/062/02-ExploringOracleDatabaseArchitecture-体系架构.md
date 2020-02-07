@@ -931,3 +931,31 @@ DBMS_REDACT.UPDATE_FULL_REDACTION_VALUES（
 | `BLOB_VALUE`                     | `BLOB`                        |            | 对BLOB列进行完全修订的修订结果                     |
 | `CLOB_VALUE`                     | `CLOB`                        |            | 对CLOB列进行完全修订的修订结果                     |
 | `NCLOB_VALUE`                    | `NCLOB`                       |            | 对NCLOB列进行完全修订的修订结果                    |
+
+## 实践2-10:RMAN VALIDATE
+
+
+
+### KnowledgePoint
+
+[VALIDATE](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/rcmrf/VALIDATE.html#GUID-ECE57997-40CE-4029-A434-320441D2AD1E)
+
+#### 目的
+
+使用该`VALIDATE`命令检查损坏的块和丢失的文件，或确定是否可以还原备份集。
+
+如果`VALIDATE`在验证期间检测到问题，则RMAN会显示该问题并触发执行故障评估。如果检测到故障，则RMAN将其记录到自动化诊断系统信息库。您可以`LIST` `FAILURE`用来查看失败。
+
+#### 先决条件
+
+目标数据库必须已安装或打开。
+
+#### 使用说明
+
+`VALIDATE`命令中的选项在语义上等效于命令中的选项`BACKUP` `VALIDATE`。`BACKUP VALIDATE`但是，与`VALIDATE`可以不同的是，它可以检查单个备份集和数据块。
+
+该`VALIDATE`命令在验证期间不会跳过任何块。如果RMAN由于未使用的块压缩而未读取块，并且如果该块已损坏，则RMAN不会检测到损坏。损坏的未使用块无害。
+
+在物理损坏中，数据库根本无法识别该块。在逻辑损坏中，块的内容在逻辑上不一致。默认情况下，该`VALIDATE`命令仅检查物理损坏。您也可以指定`CHECK LOGICAL`检查逻辑损坏。RMAN填充`V$DATABASE_BLOCK_CORRUPTION` 查看其发现。
+
+块损坏可分为块间损坏和块内损坏。在块内损坏中，损坏发生在块本身内，并且可以是物理或逻辑损坏。在块间损坏中，损坏发生在块之间，并且只能是逻辑损坏。该`VALIDATE`命令仅检查块内损坏。
