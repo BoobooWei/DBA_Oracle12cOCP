@@ -29,6 +29,8 @@
 * [数据库性能调优指南12 *c*版本2（12.2）](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/tgdba/index.html)
 * [SQL *PLUS®用户指南和参考 发行版2（12.2）](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/sqpug/index.html)
 * [数据库工具](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/sutil/index.html)
+* [Schema Demo](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/comsc/lot.html)
+* [Schema Demo Github](https://github.com/oracle/db-sample-schemas)
 
 
 
