@@ -4,30 +4,34 @@
 >
 > 2020.01.29 BoobooWei
 
-<!-- MDTOC maxdepth:6 firsth1:1 numbering:0 flatten:0 bullets:0 updateOnSave:1 -->
+<!-- MDTOC maxdepth:6 firsth1:1 numbering:0 flatten:0 bullets:1 updateOnSave:1 -->
 
-[实践6:管理用户](#实践6管理用户)   
-&emsp;[实践6:概览](#实践6概览)   
-&emsp;[实践6-1:创建用户和配置文件](#实践6-1创建用户和配置文件)   
-&emsp;&emsp;[Overview](#overview)   
-&emsp;&emsp;[Task](#task)   
-&emsp;&emsp;[Practice](#practice)   
-&emsp;&emsp;[KnowledgePoint](#knowledgepoint)   
-&emsp;[实践6-2:创建角色](#实践6-2创建角色)   
-&emsp;&emsp;[Overview](#overview)   
-&emsp;&emsp;[Task](#task)   
-&emsp;&emsp;[Practice](#practice)   
-&emsp;&emsp;[KnowledgePoint](#knowledgepoint)   
-&emsp;[实践6-3:创建和配置用户](#实践6-3创建和配置用户)   
-&emsp;&emsp;[Overview](#overview)   
-&emsp;&emsp;[Task](#task)   
-&emsp;&emsp;[Practice](#practice)   
-&emsp;&emsp;[KnowledgePoint](#knowledgepoint)   
-&emsp;&emsp;&emsp;[EM Express 创建和管理用户帐户](#em-express-创建和管理用户帐户)   
-&emsp;&emsp;&emsp;[数据库安全指南](#数据库安全指南)   
+- [实践6:管理用户](#实践6管理用户)   
+   - [实践6:概览](#实践6概览)   
+   - [实践6-1:创建用户和配置文件](#实践6-1创建用户和配置文件)   
+      - [Overview](#overview)   
+      - [Task](#task)   
+      - [Practice](#practice)   
+      - [KnowledgePoint](#knowledgepoint)   
+   - [实践6-2:创建角色](#实践6-2创建角色)   
+      - [Overview](#overview)   
+      - [Task](#task)   
+      - [Practice](#practice)   
+      - [KnowledgePoint](#knowledgepoint)   
+   - [实践6-3:创建和配置用户](#实践6-3创建和配置用户)   
+      - [Overview](#overview)   
+      - [Task](#task)   
+      - [Practice](#practice)   
+      - [KnowledgePoint](#knowledgepoint)   
+         - [EM Express 创建和管理用户帐户](#em-express-创建和管理用户帐户)   
+         - [数据库安全指南](#数据库安全指南)   
+   - [实践6-4:使用安全的应用程序角色](#实践6-4使用安全的应用程序角色)   
+      - [Overview](#overview)   
+      - [Task](#task)   
+      - [Practice](#practice)   
+      - [KnowledgePoint](#knowledgepoint)   
 
 <!-- /MDTOC -->
-
 
 ## 实践6:概览
 
@@ -539,13 +543,13 @@ Connected to:
 
 
 
-## 实践6-4:使用安全的应用程序角色 
+## 实践6-4:使用安全的应用程序角色
 
 [官方文档](https://www.oracle.com/technetwork/cn/tutorials/approles-085081-zhs.html)
 
 ### Overview
 
-在本教程中，您将学习如何使用“安全的应用程序角色”防止将角色授予未授权用户。 
+在本教程中，您将学习如何使用“安全的应用程序角色”防止将角色授予未授权用户。
 
 ### Task
 
@@ -553,7 +557,7 @@ Connected to:
 
 1. 创建用户并设置表访问权限
 2. 将创建一个数据库角色，并将该角色授予 Karen 而不是 Louise
-3. 创建并使用一个安全的应用程序角色 
+3. 创建并使用一个安全的应用程序角色
 
 ### Practice
 
@@ -561,16 +565,16 @@ Connected to:
 
    ```sql
    connect dba1/oracle@emrep
-   
+
    drop user "LOUISE.DORAN@OSRD.COM" cascade;
    drop user "KAREN.PARTNERS@OSRD.COM" cascade;
-   
+
    create user "LOUISE.DORAN@OSRD.COM" identified by welcome1;
    create user "KAREN.PARTNERS@OSRD.COM" identified by welcome1;
-   
+
    grant connect, create session to "LOUISE.DORAN@OSRD.COM";
    grant connect, create session to "KAREN.PARTNERS@OSRD.COM";
-   
+
    connect hr/hr@emrep
    update employees set email='LOUISE.DORAN@OSRD.COM' where email='LDORAN';
    update employees set email='KAREN.PARTNERS@OSRD.COM' where email='KPARTNER';
@@ -584,31 +588,31 @@ Connected to:
 
    ```sql
    connect oe/oe@emrep
-   
+
    revoke select on oe.orders from public;
    revoke select on oe.customers from public;
-   
-   
+
+
    connect hr/hr@emrep
    grant select on hr.employees to public;
-   
+
    connect dba1/oracle@emrep
    drop role ots_role;
    create role ots_role;
-   
+
    connect oe/oe@emrep
    grant select on oe.orders to ots_role;
    grant select on oe.customers to ots_role;
-   
+
    connect dba1/oracle@emrep
    grant ots_role to "KAREN.PARTNERS@OSRD.COM";
    alter user "KAREN.PARTNERS@OSRD.COM" default role none;
-   
+
    grant ots_role to "LOUISE.DORAN@OSRD.COM";
    alter user "LOUISE.DORAN@OSRD.COM" default role none;
    ```
 
-   设置 Karen 的角色并对 oe.orders 表执行 select 
+   设置 Karen 的角色并对 oe.orders 表执行 select
 
    ```sql
    connect "KAREN.PARTNERS@OSRD.COM"/welcome1@emrep;
@@ -625,7 +629,7 @@ Connected to:
 
    ![](pic/0618.png)
 
-   由于 Louise 未被授予`ots_role`，因此她没有该角色中定义的表的访问权限。 但她只需知道该角色的名称 `ots_role` 和命令`set role`便可以自行解决此“问题”。 换言之，她非常轻松地获得了她不应知道的信息的访问权限。 
+   由于 Louise 未被授予`ots_role`，因此她没有该角色中定义的表的访问权限。 但她只需知道该角色的名称 `ots_role` 和命令`set role`便可以自行解决此“问题”。 换言之，她非常轻松地获得了她不应知道的信息的访问权限。
 
    ```sql
    connect "LOUISE.DORAN@OSRD.COM"/welcome1@emrep;
@@ -635,9 +639,9 @@ Connected to:
 
    ![](pic/0619.png)
 
-   
 
-3. 创建并使用一个安全的应用程序角色 
+
+3. 创建并使用一个安全的应用程序角色
 
    删除原来的ot_role,重新创建一个使用安全应用程序的角色
 
@@ -649,22 +653,22 @@ Connected to:
 
    注意：`IDENTIFIED USING <name>`  此处的name可以自定义名称，本质上时一个存储过程的名称，后续需要定义该存储过程。
 
-   您需要授予 oe.orders 和 oe.customers 的 select 访问权限。 然后，向每个用户授予此角色并将他们的配置文件设置为 none。 
+   您需要授予 oe.orders 和 oe.customers 的 select 访问权限。 然后，向每个用户授予此角色并将他们的配置文件设置为 none。
 
    ```sql
    connect oe/oe@emrep
    grant select on oe.orders to ots_role;
    grant select on oe.customers to ots_role;
-   
+
    connect dba1/oracle@emrep
    grant ots_role to "KAREN.PARTNERS@OSRD.COM";
    alter user "KAREN.PARTNERS@OSRD.COM" default role none;
-   
+
    grant ots_role to "LOUISE.DORAN@OSRD.COM";
    alter user "LOUISE.DORAN@OSRD.COM" default role none;
    ```
 
-   现在，您可以创建安全性应用程序角色过程。 
+   现在，您可以创建安全性应用程序角色过程。
 
    ```sql
    connect dba1/oracle@emrep
@@ -672,7 +676,7 @@ Connected to:
    as                            
     v_user          varchar2(50);                           
     v_manager_id    number :=1;
-                                 
+
      begin                          
       v_user := (sys_context ('userenv', 'session_user'));                         
       select manager_id into v_manager_id from hr.employees where email=v_user;                       
@@ -681,7 +685,7 @@ Connected to:
         dbms_session.set_role('ots_role');                        
         else null;                        
        end if;
-                                 
+
       exception                          
       when no_data_found then v_manager_id:=0;                           
    end sec_roles;                           
@@ -692,9 +696,9 @@ Connected to:
 
    ![](pic/0620.png)
 
-   
 
-   您需要授予此过程的执行权限。 
+
+   您需要授予此过程的执行权限。
 
    ```sql
    connect dba1/oracle@emrep
@@ -710,7 +714,7 @@ Connected to:
    connect "KAREN.PARTNERS@OSRD.COM"/welcome1@emrep;
    execute dba1.sec_roles;
    select sales_rep_id, order_total from oe.orders where rownum < 3 order by order_total desc;
-   
+
    connect "LOUISE.DORAN@OSRD.COM"/welcome1@emrep;
    execute dba1.sec_roles;
    select sales_rep_id, order_total from oe.orders where rownum < 3 order by order_total desc;
@@ -720,21 +724,21 @@ Connected to:
 
    ![](pic/0622.png)
 
-4. 执行以下步骤清理环境 
+4. 执行以下步骤清理环境
 
    ```sql
    connect dba1/oracle@emrep
    drop role ots_role;
    drop procedure sec_roles;
    drop user "KAREN.PARTNERS@OSRD.COM" cascade;
-   drop user "LOUISE.DORAN@OSRD.COM" cascade; 
+   drop user "LOUISE.DORAN@OSRD.COM" cascade;
    connect hr/hr@emrep
    update employees set email='LDORAN' where email='LOUISE.DORAN@OSRD.COM';
    update employees set email='KPARTNER' where email='KAREN.PARTNERS@OSRD.COM';                           
    exit;
    ```
 
-   
+
 
 ### KnowledgePoint
 
@@ -749,4 +753,3 @@ Oracle9*i* 向数据库角色引入了一个称为“安全应用程序角色”
 一旦授予了安全应用程序角色，用户必须有权执行与该角色相关的程序包以便使其激活。在本例中，approles_package 由数据库管理员或安全官使用 PL/SQL 进行定义。该程序包可以执行任何次数的安全检查，包括在 Oracle Application Context 中定义的应用程序特定的参数，从而使其难于规避。
 
 这是保护角色的最安全的方式，因为数据库制定的决策基于您的安全策略的实现，而且这些定义存储在一个中心位置，而不是存储在您所有的应用程序中。这还提供了其他好处：如果该策略需要更新，则在数据库中只能进行一次。此外，无论用户如何连接到数据库，结果都是相同的，因为该策略是绑定到该角色的。
-
