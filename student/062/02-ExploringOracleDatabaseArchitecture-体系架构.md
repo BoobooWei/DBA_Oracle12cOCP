@@ -4,7 +4,47 @@
 >
 > 2020.01.29 BoobooWei
 
-[TOC]
+<!-- MDTOC maxdepth:6 firsth1:1 numbering:0 flatten:0 bullets:1 updateOnSave:1 -->
+
+- [实践2:体系结构](#实践2体系结构)   
+   - [实践2:概览](#实践2概览)   
+   - [实践2-1:探索Oracle数据库体系结构](#实践2-1探索oracle数据库体系结构)   
+   - [实践2-2:关闭数据库实例transactional](#实践2-2关闭数据库实例transactional)   
+      - [Overview](#overview)   
+      - [Task](#task)   
+      - [Practice](#practice)   
+      - [KnowledgePoint](#knowledgepoint)   
+   - [实践2-3:关闭数据库实例abort](#实践2-3关闭数据库实例abort)   
+      - [Overview](#overview)   
+      - [Task](#task)   
+      - [Practice](#practice)   
+      - [KnowledgePoint](#knowledgepoint)   
+   - [实践2-4:隐藏列 invisible](#实践2-4隐藏列-invisible)   
+   - [实践2-5:存储过程DR和IR](#实践2-5存储过程dr和ir)   
+   - [实践2-6:参数DB_8K_CACHE_SIZE](#实践2-6参数db_8k_cache_size)   
+   - [实践2-7:参数ENABLE_DDL_LOGGING](#实践2-7参数enable_ddl_logging)   
+      - [KnowledgePoint](#knowledgepoint)   
+   - [实践2-8:Oracle Data Redaction](#实践2-8oracle-data-redaction)   
+      - [Overview](#overview)   
+      - [Task](#task)   
+      - [Practice](#practice)   
+      - [KnowledgePoint](#knowledgepoint)   
+   - [实践2-9:REDACTION_VALUES_FOR_TYPE_FULL](#实践2-9redaction_values_for_type_full)   
+      - [Overview](#overview)   
+      - [Task](#task)   
+      - [Practice](#practice)   
+      - [KnowledgePoint](#knowledgepoint)   
+         - [简介](#简介)   
+         - [工作原理](#工作原理)   
+         - [DBMS_REDACT.REDACTION_VALUES_FOR_TYPE_FULL](#dbms_redactredaction_values_for_type_full)   
+         - [BINARY_DOUBLE_VALUE](#binary_double_value)   
+   - [实践2-10:RMAN VALIDATE](#实践2-10rman-validate)   
+      - [KnowledgePoint](#knowledgepoint)   
+         - [目的](#目的)   
+         - [先决条件](#先决条件)   
+         - [使用说明](#使用说明)   
+
+<!-- /MDTOC -->
 
 ## 实践2:概览
 
@@ -98,7 +138,7 @@ Thu Feb  6 16:19:20 CST 2020
 
 观察日志
 ```bash
-[oracle@oracle01 ~]$ adrci 
+[oracle@oracle01 ~]$ adrci
 
 ADRCI: Release 12.2.0.1.0 - Production on Thu Feb 6 16:18:05 2020
 
@@ -286,7 +326,7 @@ no rows selected
    Thu Feb  6 18:13:24 CST 2020
    ```
 
-   
+
 
 2. 查看日志
 
@@ -334,7 +374,7 @@ oracle存储过程分两种，DR(Definer's Rights ) Procedure和IR(Invoker's Rig
 1. 定义者权限：定义者权限PL/SQL程序单元是以这个程序单元拥有者的特权来执行它的，也就是说，任何具有这个PL/SQL程序单元执行权的用户都可以访问程序中的对象。所有具有执行权的用户都有相同的访问权限，在定义者权限下，执行的用户操作的schema为定义者，所操作的对象是定义者在编译时指定的对象。在定义者(definer)权限下，当前用户的权限为角色无效情况下所拥有的权限。
 
    ```sql
-   CREATE OR REPLACE procedure DEMO(ID in NUMBER) 
+   CREATE OR REPLACE procedure DEMO(ID in NUMBER)
    AUTHID DEFINER as
    ...
    BEGIN
@@ -342,12 +382,12 @@ oracle存储过程分两种，DR(Definer's Rights ) Procedure和IR(Invoker's Rig
    ND DEMO
    ```
 
-   
+
 
 2. 调用者权限：调用者权限是指当前用户（而不是程序的创建者）执行PL/SQL程序体的权限。这意味着不同的用户对于某个对象具有的权限很可能是不同的，这个思想的提出，解决了不同用户更新不同表的方法。在调用者权限下，执行的用户操作的schema为当前用户，所操作的对象是当前模式下的对象。在调用者(invoker)权限下，当前用户的权限为当前所拥有的权限(含角色)。
 
    ```sql
-   CREATE OR REPLACE procedure DEMO(ID in NUMBER) 
+   CREATE OR REPLACE procedure DEMO(ID in NUMBER)
    AUTHID CURRENT_USER  as
    ...
    BEGIN
@@ -396,7 +436,7 @@ PL/SQL procedure successfully completed.
 
 * ISSYS_MODIFIABLE	      : IMMEDIATE
 * 指示参数是否可以更改`ALTER SYSTEM`以及更改何时生效：`IMMEDIATE`- `ALTER SYSTEM`无论用于启动实例的参数文件的类型如何，都可以更改参数。更改将立即生效。
-	 DESCRIPTION		      : Size of cache for 8K buffers 8K缓冲区的缓存大小 
+	 DESCRIPTION		      : Size of cache for 8K buffers 8K缓冲区的缓存大小
 
 ## 实践2-7:参数ENABLE_DDL_LOGGING
 
@@ -469,7 +509,7 @@ drwxr-x--- 2 oracle oinstall   21 Feb  2 19:57 debug
 drwxr-x--- 2 oracle oinstall    6 Dec  8 16:30 hcs
 drwxr-x--- 2 oracle oinstall    6 Dec  8 16:30 imdb
 drwxr-x--- 2 oracle oinstall    6 Dec  8 16:30 test
-[oracle@ocm log]$ head ddl_emcdb.log 
+[oracle@ocm log]$ head ddl_emcdb.log
 2020-02-07T19:31:14.248644+08:00
 diag_adl:drop procedure print_table
 2020-02-07T19:32:01.698631+08:00
@@ -480,7 +520,7 @@ IS
  l_columnvalue VARCHAR2(4000);
  l_status  INTEGER;
  l_desctbl  dbms_sql.desc_tab;
-[oracle@ocm log]$ head ddl/log.xml 
+[oracle@ocm log]$ head ddl/log.xml
 <msg time='2020-02-07T19:31:14.248+08:00' org_id='oracle' comp_id='rdbms'
  msg_id='opiexe:4695:2946163730' type='UNKNOWN' group='diag_adl'
  level='16' host_id='ocm' host_addr='192.168.14.154'
@@ -510,7 +550,7 @@ https://docs.oracle.com/en/database/oracle/oracle-database/12.2/refrn/ENABLE_DDL
 | Range of values     | `true | false`                  |
 | Basic               | No                              |
 
-* `ENABLE_DDL_LOGGING` enables or disables the writing of a subset of data definition language (DDL) statements to a DDL log. 
+* `ENABLE_DDL_LOGGING` enables or disables the writing of a subset of data definition language (DDL) statements to a DDL log.
 * DDL日志是与警报日志具有相同格式和基本行为的文件，但它仅包含数据库发出的DDL语句。仅当RDBMS组件创建DDL日志，并且`ENABLE_DDL_LOGGING`初始化参数设置为`true`。当此参数设置`false`为时，DDL语句不包含在任何日志中。
 * 对于数据库发出的每个DDL语句，DDL日志均包含一个日志记录。DDL日志包含在IPS事件包中。
 * 有两个DDL日志包含相同的信息。一个是XML文件，另一个是文本文件。DDL日志存储在`log/ddl`ADR主目录的子目录中。
@@ -561,9 +601,9 @@ Oracle Data Redaction 提供了一种简单方法来快速编写应用程序中�
     ----------------------------------------- -------- ----------------------------
     REGION_ID				   NOT NULL NUMBER
     REGION_NAME				   NOT NULL VARCHAR2(25)
-   
+
    SQL> select * from regions;
-   
+
     REGION_ID REGION_NAME
    ---------- -------------------------
    	 1 Europe
@@ -571,12 +611,12 @@ Oracle Data Redaction 提供了一种简单方法来快速编写应用程序中�
    	 3 Asia
    	 4 Middle East and Africa
    	 5 192.168.1.1
-   	 
+
    SQL> grant select on regions to hr;
    SQL> grant select on regions to scott;
    ```
 
-   
+
 
 2. 登陆到企业云管理平台，点击 **安全 > 数据编辑 > 创建策略**
 
@@ -599,16 +639,16 @@ Oracle Data Redaction 提供了一种简单方法来快速编写应用程序中�
 
    ```sql
    BEGIN
-   
-   	 BEGIN  DBMS_REDACT.ADD_POLICY  (OBJECT_SCHEMA => 'DBA1',  object_name => 'REGIONS',  policy_name => 'dba1_regions_exp',  expression => 'SYS_CONTEXT(''USERENV'', ''SESSION_USER'') = ''SCOTT'''); END; 
-   
-   	BEGIN  DBMS_REDACT.ALTER_POLICY  (OBJECT_SCHEMA => 'DBA1',  object_name => 'REGIONS',  policy_name => 'dba1_regions_exp',  action => DBMS_REDACT.ADD_COLUMN,  column_name => '"REGION_NAME"',  function_type => DBMS_REDACT.REGEXP , regexp_pattern         => (\d{1,3}\.\d{1,3}\.\d{1,3})\.\d{1,3},regexp_replace_string  => \1.999,regexp_position        => 1,regexp_occurrence      => 1,regexp_match_parameter => i);  END; 
-   
+
+   	 BEGIN  DBMS_REDACT.ADD_POLICY  (OBJECT_SCHEMA => 'DBA1',  object_name => 'REGIONS',  policy_name => 'dba1_regions_exp',  expression => 'SYS_CONTEXT(''USERENV'', ''SESSION_USER'') = ''SCOTT'''); END;
+
+   	BEGIN  DBMS_REDACT.ALTER_POLICY  (OBJECT_SCHEMA => 'DBA1',  object_name => 'REGIONS',  policy_name => 'dba1_regions_exp',  action => DBMS_REDACT.ADD_COLUMN,  column_name => '"REGION_NAME"',  function_type => DBMS_REDACT.REGEXP , regexp_pattern         => (\d{1,3}\.\d{1,3}\.\d{1,3})\.\d{1,3},regexp_replace_string  => \1.999,regexp_position        => 1,regexp_occurrence      => 1,regexp_match_parameter => i);  END;
+
    END;
    /
    ```
 
-   
+
 
 3. 使用scott用户访问dba1的regions表，查看是否生效
 
@@ -617,7 +657,7 @@ Oracle Data Redaction 提供了一种简单方法来快速编写应用程序中�
    Connected.
    SQL> column region_name format a25
    SQL> select * from dba1.regions;
-   
+
     REGION_ID REGION_NAME
    ---------- -------------------------
    	 1
@@ -636,7 +676,7 @@ Oracle Data Redaction 提供了一种简单方法来快速编写应用程序中�
        Connected.
        SQL> column region_name format a25
        SQL> select * from dba1.regions;
-       
+
     REGION_ID REGION_NAME
     ```
 ---------- -------------------------
@@ -688,43 +728,43 @@ Oracle Data Redaction 提供了一种简单方法来快速编写应用程序中�
    SQL>SQL> conn / as sysdba
    Connected.
    SQL> alter session set container=emrep;
-   
+
    Session altered.
-   
+
    SQL> select number_value from redaction_values_for_type_full;
-   
+
    NUMBER_VALUE
    ------------
    	   0
-   
+
    SQL> exec dbms_redact.update_full_redaction_values(-1)
-   
+
    PL/SQL procedure successfully completed.
-   
+
    SQL> select number_value from redaction_values_for_type_full;
-   
+
    NUMBER_VALUE
    ------------
    	  -1
-   
+
     select number_value from redaction_values_for_type_full;
-   
+
    NUMBER_VALUE
    ------------
    	   0
-   
+
    SQL> exec dbms_redact.update_full_redaction_values(-1)
-   
+
    PL/SQL procedure successfully completed.
-   
+
    SQL> select number_value from redaction_values_for_type_full;
-   
+
    NUMBER_VALUE
    ------------
    	  -1
    ```
 
-   
+
 
 2. 登陆云管理控制台添加策略
 
@@ -734,15 +774,15 @@ Oracle Data Redaction 提供了一种简单方法来快速编写应用程序中�
 
    ```sql
    BEGIN
-   
-   	 BEGIN  DBMS_REDACT.ADD_POLICY  (OBJECT_SCHEMA => 'DBA1',  object_name => 'EMPLOYEES',  policy_name => 'dba1_employees_exp',  expression => 'SYS_CONTEXT(''USERENV'', ''SESSION_USER'') = ''SCOTT'''); END; 
-   
-   	BEGIN  DBMS_REDACT.ALTER_POLICY  (OBJECT_SCHEMA => 'DBA1',  object_name => 'EMPLOYEES',  policy_name => 'dba1_employees_exp',  action => DBMS_REDACT.ADD_COLUMN,  column_name => '"SALARY"',  function_type => DBMS_REDACT.FULL );  END; 
-   
+
+   	 BEGIN  DBMS_REDACT.ADD_POLICY  (OBJECT_SCHEMA => 'DBA1',  object_name => 'EMPLOYEES',  policy_name => 'dba1_employees_exp',  expression => 'SYS_CONTEXT(''USERENV'', ''SESSION_USER'') = ''SCOTT'''); END;
+
+   	BEGIN  DBMS_REDACT.ALTER_POLICY  (OBJECT_SCHEMA => 'DBA1',  object_name => 'EMPLOYEES',  policy_name => 'dba1_employees_exp',  action => DBMS_REDACT.ADD_COLUMN,  column_name => '"SALARY"',  function_type => DBMS_REDACT.FULL );  END;
+
    END;
    ```
 
-   
+
 
 3. 使用scott用户测试是否策略生效。
 
@@ -763,9 +803,9 @@ Oracle Data Redaction 提供了一种简单方法来快速编写应用程序中�
     COMMISSION_PCT 				    NUMBER(2,2)
     MANAGER_ID					    NUMBER(6)
     DEPARTMENT_ID					    NUMBER(4)
-   
+
    SQL> select employee_id,first_name,salary from dba1.employees where rownum < 5;
-   
+
    EMPLOYEE_ID FIRST_NAME		     SALARY
    ----------- -------------------- ----------
    	198 Donald			  0
@@ -785,7 +825,7 @@ Oracle Data Redaction 提供了一种简单方法来快速编写应用程序中�
    ORACLE instance shut down.
    SQL> startup
    ORACLE instance started.
-   
+
    Total System Global Area  838860800 bytes
    Fixed Size		    8798312 bytes
    Variable Size		  490737560 bytes
@@ -793,10 +833,10 @@ Oracle Data Redaction 提供了一种简单方法来快速编写应用程序中�
    Redo Buffers		    7974912 bytes
    Database mounted.
    Database opened.
-   
+
    ```
 
-   
+
 
 5. 使用scott用户测试是否策略生效。
 
@@ -804,18 +844,18 @@ Oracle Data Redaction 提供了一种简单方法来快速编写应用程序中�
    SQL> conn scott/tiger@emrep;
    Connected.
    SQL> select employee_id,first_name,salary from dba1.employees where rownum < 5;
-   
+
    EMPLOYEE_ID FIRST_NAME		     SALARY
    ----------- -------------------- ----------
    	198 Donald			 -1
    	199 Douglas			 -1
    	200 Jennifer			 -1
    	201 Michael			 -1
-   
+
    SQL> conn hr/hr@emrep;
    Connected.
    SQL> select employee_id,first_name,salary from dba1.employees where rownum < 5;
-   
+
    EMPLOYEE_ID FIRST_NAME		     SALARY
    ----------- -------------------- ----------
    	198 Donald		       2600
@@ -844,7 +884,7 @@ Oracle Database 12c 在执行查询时应用保护。存储的数据保持不变
 - Oracle Label Security — 允许向表记录添加用户定义的值。与 VPD 相结合，可以更精细地控制访问用户和访问内容。
 - Database Vault — 数据编辑不能防止特权用户（如 DBA）访问受保护的数据。为解决此问题，您可以利用 Database Vault。
 
- 
+
 
 从许可角度来说，Oracle Data Masking 仅适用于企业版数据库，且需要 Advanced Security 许可。
 
@@ -863,7 +903,7 @@ Oracle Database 12c 在执行查询时应用保护。存储的数据保持不变
 #### DBMS_REDACT.REDACTION_VALUES_FOR_TYPE_FULL
 
 * [DBMS_REDACT](https://docs.oracle.com/database/121/ARPLS/d_redact.htm#ARPLS73800)
-* [REDACTION_VALUES_FOR_TYPE_FULL](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/refrn/REDACTION_VALUES_FOR_TYPE_FULL.html#GUID-7C9711A8-C3FA-413E-90A4-5E875FFAB870) 
+* [REDACTION_VALUES_FOR_TYPE_FULL](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/refrn/REDACTION_VALUES_FOR_TYPE_FULL.html#GUID-7C9711A8-C3FA-413E-90A4-5E875FFAB870)
 
 DBMS_REDACT.REDACTION_VALUES_FOR_TYPE_FULL 此过程将修改“数据修订”策略的默认显示值以进行完整修订。
 
@@ -906,7 +946,7 @@ DBMS_REDACT.UPDATE_FULL_REDACTION_VALUES（
 | `clob_val`      | 修改`CLOB`数据类型列的默认值                     |
 | `nclob_val`     | 修改`NCLOB`数据类型列的默认值                    |
 
- 
+
 
 例外情况
 
