@@ -61,7 +61,7 @@ In this practice, you create the INVENTORY user to own the new Inventory applica
 
 1.	Mandatory task: Create the INVENTORY user with a password of oracle_4U.
 2.  Create a profile named HRPROFILE that allows only 15 minutes idle time.
-3.	Set the RESOURCE_LIMIT initialization parameter to TRUE so that your profile limits are enforced.
+	.	Set the RESOURCE_LIMIT initialization parameter to TRUE so that your profile limits are enforced.
 
 ### Practice
 
@@ -172,7 +172,7 @@ In this practice, you create the HRCLERK and HRMANAGER roles that will be used i
 ### Task
 
 1.	Create the role named HRCLERK with SELECT and UPDATE permissions on all the HR schema tables.
-2.	Create the role named HRMANAGER with INSERT and DELETE permissions on all the HR tables. Grant the HRCLERK role to the HRMANAGER role.
+	.	Create the role named HRMANAGER with INSERT and DELETE permissions on all the HR tables. Grant the HRCLERK role to the HRMANAGER role.
 
 ### Practice
 
@@ -536,3 +536,217 @@ Connected to:
 #### 数据库安全指南
 
 [数据库安全指南](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/dbseg/release-changes.html#GUID-256DEEBF-8FBE-4641-BAE3-D23D53ADFB44)
+
+
+
+## 实践6-4:使用安全的应用程序角色 
+
+[官方文档](https://www.oracle.com/technetwork/cn/tutorials/approles-085081-zhs.html)
+
+### Overview
+
+在本教程中，您将学习如何使用“安全的应用程序角色”防止将角色授予未授权用户。 
+
+### Task
+
+本教程介绍了 OSRD 的两位员工（即 Karen Partners 和 Louise Doran）如何尝试获取 oe.orders 表中的信息。 角色“ots_role”中定义了该表的访问权限。 由于 Karen 是 Louise 的经理，因此 Karen 将能够访问 oe.orders 中的信息，而 Louise 却不能。
+
+1. 创建用户并设置表访问权限
+2. 将创建一个数据库角色，并将该角色授予 Karen 而不是 Louise
+3. 创建并使用一个安全的应用程序角色 
+
+### Practice
+
+1. 创建用户并设置表访问权限
+
+   ```sql
+   connect dba1/oracle@emrep
+   
+   drop user "LOUISE.DORAN@OSRD.COM" cascade;
+   drop user "KAREN.PARTNERS@OSRD.COM" cascade;
+   
+   create user "LOUISE.DORAN@OSRD.COM" identified by welcome1;
+   create user "KAREN.PARTNERS@OSRD.COM" identified by welcome1;
+   
+   grant connect, create session to "LOUISE.DORAN@OSRD.COM";
+   grant connect, create session to "KAREN.PARTNERS@OSRD.COM";
+   
+   connect hr/hr@emrep
+   update employees set email='LOUISE.DORAN@OSRD.COM' where email='LDORAN';
+   update employees set email='KAREN.PARTNERS@OSRD.COM' where email='KPARTNER';
+   ```
+
+   ![](pic/0617.png)
+
+   ![](pic/0616.png)
+
+2. 将创建一个数据库角色，并将该角色授予 Karen 而不是 Louise
+
+   ```sql
+   connect oe/oe@emrep
+   
+   revoke select on oe.orders from public;
+   revoke select on oe.customers from public;
+   
+   
+   connect hr/hr@emrep
+   grant select on hr.employees to public;
+   
+   connect dba1/oracle@emrep
+   drop role ots_role;
+   create role ots_role;
+   
+   connect oe/oe@emrep
+   grant select on oe.orders to ots_role;
+   grant select on oe.customers to ots_role;
+   
+   connect dba1/oracle@emrep
+   grant ots_role to "KAREN.PARTNERS@OSRD.COM";
+   alter user "KAREN.PARTNERS@OSRD.COM" default role none;
+   
+   grant ots_role to "LOUISE.DORAN@OSRD.COM";
+   alter user "LOUISE.DORAN@OSRD.COM" default role none;
+   ```
+
+   设置 Karen 的角色并对 oe.orders 表执行 select 
+
+   ```sql
+   connect "KAREN.PARTNERS@OSRD.COM"/welcome1@emrep;
+   set role ots_role;
+   select sales_rep_id, order_total from oe.orders order by order_total desc;
+   ```
+
+   不设置 LOUISE 的角色，对oe.orders表执行 select
+
+   ```sql
+   connect "LOUISE.DORAN@OSRD.COM"/welcome1@emrep;
+   select sales_rep_id, order_total from oe.orders order by order_total desc;
+   ```
+
+   ![](pic/0618.png)
+
+   由于 Louise 未被授予`ots_role`，因此她没有该角色中定义的表的访问权限。 但她只需知道该角色的名称 `ots_role` 和命令`set role`便可以自行解决此“问题”。 换言之，她非常轻松地获得了她不应知道的信息的访问权限。 
+
+   ```sql
+   connect "LOUISE.DORAN@OSRD.COM"/welcome1@emrep;
+   set role ots_role;
+   select sales_rep_id, order_total from oe.orders where rownum < 3 order by order_total desc;
+   ```
+
+   ![](pic/0619.png)
+
+   
+
+3. 创建并使用一个安全的应用程序角色 
+
+   删除原来的ot_role,重新创建一个使用安全应用程序的角色
+
+   ```sql
+   connect dba1/oracle@emrep
+   drop role ots_role;
+   create role ots_role IDENTIFIED USING sec_roles;
+   ```
+
+   注意：`IDENTIFIED USING <name>`  此处的name可以自定义名称，本质上时一个存储过程的名称，后续需要定义该存储过程。
+
+   您需要授予 oe.orders 和 oe.customers 的 select 访问权限。 然后，向每个用户授予此角色并将他们的配置文件设置为 none。 
+
+   ```sql
+   connect oe/oe@emrep
+   grant select on oe.orders to ots_role;
+   grant select on oe.customers to ots_role;
+   
+   connect dba1/oracle@emrep
+   grant ots_role to "KAREN.PARTNERS@OSRD.COM";
+   alter user "KAREN.PARTNERS@OSRD.COM" default role none;
+   
+   grant ots_role to "LOUISE.DORAN@OSRD.COM";
+   alter user "LOUISE.DORAN@OSRD.COM" default role none;
+   ```
+
+   现在，您可以创建安全性应用程序角色过程。 
+
+   ```sql
+   connect dba1/oracle@emrep
+   CREATE OR REPLACE procedure sec_roles authid current_user
+   as                            
+    v_user          varchar2(50);                           
+    v_manager_id    number :=1;
+                                 
+     begin                          
+      v_user := (sys_context ('userenv', 'session_user'));                         
+      select manager_id into v_manager_id from hr.employees where email=v_user;                       
+       if v_manager_id = 100
+        then
+        dbms_session.set_role('ots_role');                        
+        else null;                        
+       end if;
+                                 
+      exception                          
+      when no_data_found then v_manager_id:=0;                           
+   end sec_roles;                           
+   /
+   ```
+
+   该存储过程中，限定只有当雇员的manager_id为100时，才可以设置为ots_role角色。拥有查询oe.order 和 oe.customer 的权限。
+
+   ![](pic/0620.png)
+
+   
+
+   您需要授予此过程的执行权限。 
+
+   ```sql
+   connect dba1/oracle@emrep
+   GRANT EXECUTE ON sec_roles to "KAREN.PARTNERS@OSRD.COM";
+   GRANT EXECUTE ON sec_roles to "LOUISE.DORAN@OSRD.COM";
+   ```
+
+   ![](pic/0621.png)
+
+   验证
+
+   ```sql
+   connect "KAREN.PARTNERS@OSRD.COM"/welcome1@emrep;
+   execute dba1.sec_roles;
+   select sales_rep_id, order_total from oe.orders where rownum < 3 order by order_total desc;
+   
+   connect "LOUISE.DORAN@OSRD.COM"/welcome1@emrep;
+   execute dba1.sec_roles;
+   select sales_rep_id, order_total from oe.orders where rownum < 3 order by order_total desc;
+   ```
+
+   提示：sec_roles 存储过程执行后，才会确定当前用户是否能够获取 ots_role。
+
+   ![](pic/0622.png)
+
+4. 执行以下步骤清理环境 
+
+   ```sql
+   connect dba1/oracle@emrep
+   drop role ots_role;
+   drop procedure sec_roles;
+   drop user "KAREN.PARTNERS@OSRD.COM" cascade;
+   drop user "LOUISE.DORAN@OSRD.COM" cascade; 
+   connect hr/hr@emrep
+   update employees set email='LDORAN' where email='LOUISE.DORAN@OSRD.COM';
+   update employees set email='KPARTNER' where email='KAREN.PARTNERS@OSRD.COM';                           
+   exit;
+   ```
+
+   
+
+### KnowledgePoint
+
+角色是一种用于在 Oracle 数据库管理权限的强大方法。Oracle 在十多年前首次于 Oracle7 中引入了数据库角色。角色可以授予用户和其他角色。将角色授予用户后，角色可以被设置为默认角色，当用户成功地通过数据库访问权限验证时将激活与角色关联的权限。如果未将角色设置为默认角色，可以使用“set_role”命令调用它。
+
+Oracle9*i* 向数据库角色引入了一个称为“安全应用程序角色”的强大增强功能。要创建安全应用程序角色，可以使用“create role”语法指定程序包名：
+
+```
+  create role acme_hr_role identified using approles_package
+```
+
+一旦授予了安全应用程序角色，用户必须有权执行与该角色相关的程序包以便使其激活。在本例中，approles_package 由数据库管理员或安全官使用 PL/SQL 进行定义。该程序包可以执行任何次数的安全检查，包括在 Oracle Application Context 中定义的应用程序特定的参数，从而使其难于规避。
+
+这是保护角色的最安全的方式，因为数据库制定的决策基于您的安全策略的实现，而且这些定义存储在一个中心位置，而不是存储在您所有的应用程序中。这还提供了其他好处：如果该策略需要更新，则在数据库中只能进行一次。此外，无论用户如何连接到数据库，结果都是相同的，因为该策略是绑定到该角色的。
+
