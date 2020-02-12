@@ -974,7 +974,11 @@ DBMS_REDACT.UPDATE_FULL_REDACTION_VALUES（
 
 ## 实践2-10:RMAN VALIDATE
 
+### Overview
 
+### Task
+
+### Practice
 
 ### KnowledgePoint
 
@@ -999,3 +1003,277 @@ DBMS_REDACT.UPDATE_FULL_REDACTION_VALUES（
 在物理损坏中，数据库根本无法识别该块。在逻辑损坏中，块的内容在逻辑上不一致。默认情况下，该`VALIDATE`命令仅检查物理损坏。您也可以指定`CHECK LOGICAL`检查逻辑损坏。RMAN填充`V$DATABASE_BLOCK_CORRUPTION` 查看其发现。
 
 块损坏可分为块间损坏和块内损坏。在块内损坏中，损坏发生在块本身内，并且可以是物理或逻辑损坏。在块间损坏中，损坏发生在块之间，并且只能是逻辑损坏。该`VALIDATE`命令仅检查块内损坏。
+
+
+
+## 实践2-11:V$RSRC_CONSUMER_GROUP
+
+### Overview
+
+### Task
+
+### Practice
+
+```sql
+select name,active_sessions,queue_length,consumed_cpu_time,cpu_waits,cpu_wait_time from v$rsrc_consumer_group;
+```
+
+* name：消费群体名称
+* active_sessions：消费者组中当前活动的会话数
+* queue_length：队列中等待的会话数
+* consumed_cpu_time：使用者组中所有会话消耗的CPU时间累积量（以毫秒为单位）
+* cpu_waits：由于资源管理，使用者组中所有会话必须等待CPU的累积次数。这不包括由于闩锁或排队争用而引起的等待，I / O等待等。当不主动管理CPU资源时，此值设置为零。
+* cpu_wait_time：由于资源管理，会话等待CPU的累计时间。这不包括由于闩锁或排队争用而引起的等待，I / O等待等。当不主动管理CPU资源时，此值设置为零。
+
+### KnowledgePoint
+
+[V$RSRC_CONSUMER_GROUP](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/refrn/V-RSRC_CONSUMER_GROUP.html#GUID-78EEDB39-2F56-4D6B-8878-5840E95EAFB5)
+
+`V$RSRC_CONSUMER_GROUP` 显示与当前活动的资源使用者组有关的数据。
+
+将`STATISTICS_LEVEL`设置为`TYPICAL`或时`ALL`，即使未设置Resource Manager计划或Resource Manager计划不监视CPU或会话资源，此视图也包含有关CPU利用率和等待时间的信息。
+
+`V$RSRC_CONSUMER_GROUP`当可插拔数据库（PDB）更改其资源计划时，将重置统计信息。它们不受多租户容器数据库（CDB）资源计划更改的影响。
+
+由于可以在不同的PDB之间独立设置PDB计划，`V$RSRC_CONSUMER_GROUP`因此不会在不同的PDB中覆盖相同的时间段。因此，此视图对于比较不同PDB之间的统计信息没有用。
+
+| 柱                          | 数据类型       | 描述                                                         |
+| --------------------------- | -------------- | ------------------------------------------------------------ |
+| `ID`                        | `NUMBER`       | 使用者组对象ID（唯一的数字，在数据库关闭和启动期间保持一致） |
+| `NAME`                      | `VARCHAR2(32)` | 消费群体名称                                                 |
+| `ACTIVE_SESSIONS`           | `NUMBER`       | 消费者组中当前活动的会话数                                   |
+| `EXECUTION_WAITERS`         | `NUMBER`       | 等待执行时间片的当前活动会话数，在这些时间段中将可以使用CPU  |
+| `REQUESTS`                  | `NUMBER`       | 在使用者组中执行的累计请求数                                 |
+| `CPU_WAIT_TIME`             | `NUMBER`       | 由于资源管理，会话等待CPU的累计时间。这不包括由于闩锁或排队争用而引起的等待，I / O等待等。当不主动管理CPU资源时，此值设置为零。 |
+| `CPU_WAITS`                 | `NUMBER`       | 由于资源管理，使用者组中所有会话必须等待CPU的累积次数。这不包括由于闩锁或排队争用而引起的等待，I / O等待等。当不主动管理CPU资源时，此值设置为零。 |
+| `CONSUMED_CPU_TIME`         | `NUMBER`       | 使用者组中所有会话消耗的CPU时间累积量（以毫秒为单位）        |
+| `YIELDS`                    | `NUMBER`       | 由于数量到期，使用者组中的会话必须让CPU放弃其他会话的累积次数。当不主动管理CPU资源时，此值设置为零。 |
+| `CPU_DECISIONS`             | `NUMBER`       | 使用者组所在的CPU决策百分比。当不主动管理CPU资源时，此值设置为零。 |
+| `CPU_DECISIONS_EXCLUSIVE`   | `NUMBER`       | 存在使用者组并且是唯一的使用者组的CPU决策百分比。当不主动管理CPU资源时，此值设置为零。 |
+| `CPU_DECISIONS_WON`         | `NUMBER`       | 消费者组赢得的CPU决策百分比。当不主动管理CPU资源时，此值设置为零。 |
+| `QUEUE_LENGTH`              | `NUMBER`       | 队列中等待的会话数                                           |
+| `CURRENT_UNDO_CONSUMPTION`  | `NUMBER`       | 消费者组当前消耗的撤消量（以KB为单位）                       |
+| `ACTIVE_SESSION_LIMIT_HIT`  | `NUMBER`       | 由于使用者组达到其活动会话限制，使用者组中的会话排队的次数   |
+| `UNDO_LIMIT_HIT`            | `NUMBER`       | 由于使用者组达到其`UNDO_POOL`限制 而取消了使用者组中的查询的次数 |
+| `SWITCHES_IN_CPU_TIME`      | `NUMBER`       | 由于资源管理器计划的`SWITCH_TIME`限制， 进入使用者组的切换数 |
+| `SWITCHES_OUT_CPU_TIME`     | `NUMBER`       | 由于资源管理器计划的`SWITCH_TIME`限制 ，不在使用者组中的交换机数量 |
+| `SWITCHES_IN_IO_MEGABYTES`  | `NUMBER`       | 由于资源管理器计划的`SWITCH_IO_MEGABYTES`限制， 进入使用者组的切换数 |
+| `SWITCHES_OUT_IO_MEGABYTES` | `NUMBER`       | 由于资源管理器计划的`SWITCH_IO_MEGABYTES`限制 ，不在使用者组中的交换机数量 |
+| `SWITCHES_IN_IO_REQUESTS`   | `NUMBER`       | 由于资源管理器计划的`SWITCH_IO_REQS`限制， 进入使用者组的切换数 |
+| `SWITCHES_OUT_IO_REQUESTS`  | `NUMBER`       | 由于资源管理器计划的`SWITCH_IO_REQS`限制 ，不在使用者组中的交换机数量 |
+| `SWITCHES_IN_IO_LOGICAL`    | `NUMBER`       | 由于资源管理器计划的`SWITCH_IO_LOGICAL`限制， 进入使用者组的切换数 |
+| `SWITCHES_OUT_IO_LOGICAL`   | `NUMBER`       | 由于资源管理器计划的`SWITCH_IO_LOGICAL`限制 ，不在使用者组中的交换机数量 |
+| `SWITCHES_IN_ELAPSED_TIME`  | `NUMBER`       | 由于资源管理器计划的`SWITCH_ELAPSED_TIME`限制， 进入使用者组的切换数 |
+| `SWITCHES_OUT_ELAPSED_TIME` | `NUMBER`       | 由于资源管理器计划的`SWITCH_ELAPSED_TIME`限制 ，不在使用者组中的交换机数量 |
+| `SQL_CANCELED`              | `NUMBER`       | 在使用者组中运行的SQL查询由于超出资源管理器计划的`SWITCH_TIME`限制`CANCEL_SQL`并被指定为资源管理器计划的中止而被中止的次数`SWITCH_GROUP` |
+| `ACTIVE_SESSIONS_KILLED`    | `NUMBER`       | 在使用者组中运行的会话由于超出资源管理器计划的`SWITCH_TIME`限制`KILL_SESSION`并被指定为资源管理器计划的会话而被终止的次数`SWITCH_GROUP` |
+| `IDLE_SESSIONS_KILLED`      | `NUMBER`       | 消费者组中的会话由于空闲时间太长（达到`MAX_IDLE_TIME`）而 被杀死的次数 |
+| `IDLE_BLKR_SESSIONS_KILLED` | `NUMBER`       | 消费者组中的会话因空闲时间太长（达到`MAX_IDLE_BLOCKER_TIME`）并阻止其他会话而被杀死的次数 |
+| `QUEUED_TIME`               | `NUMBER`       | 由于活动会话限制，使用者组中的会话在“排队”状态下所花费的总时间（以毫秒为单位） |
+| `QUEUE_TIME_OUTS`           | `NUMBER`       | 消费者组中的会话请求排队时间过长（达到`QUEUEING_P1`）而 超时的次数 |
+| `IO_SERVICE_TIME`           | `NUMBER`       | 累积I / O等待时间（以毫秒为单位）                            |
+| `IO_SERVICE_WAITS`          | `NUMBER`       | 等待请求总数                                                 |
+| `SMALL_READ_MEGABYTES`      | `NUMBER`       | 读取的单块兆字节数                                           |
+| `SMALL_WRITE_MEGABYTES`     | `NUMBER`       | 写入的单块兆字节数                                           |
+| `LARGE_READ_MEGABYTES`      | `NUMBER`       | 读取的多块兆字节数                                           |
+| `LARGE_WRITE_MEGABYTES`     | `NUMBER`       | 写入的多块兆字节数                                           |
+| `SMALL_READ_REQUESTS`       | `NUMBER`       | 单块读取请求数                                               |
+| `SMALL_WRITE_REQUESTS`      | `NUMBER`       | 单块写入请求数                                               |
+| `LARGE_READ_REQUESTS`       | `NUMBER`       | 多块读取请求数                                               |
+| `LARGE_WRITE_REQUESTS`      | `NUMBER`       | 多块写入请求数                                               |
+| `CURRENT_PQS_ACTIVE`        | `NUMBER`       | 使用者组中活动并行语句的数量。此值不包括永不排队的并行语句，例如GV $查询。 |
+| `CURRENT_PQ_SERVERS_ACTIVE` | `NUMBER`       | 使用者组中活动并行服务器的数量。此值不包括运行从未排队的并行语句的服务器，例如GV $查询。 |
+| `PQS_QUEUED`                | `NUMBER`       | 尝试运行并行语句时，使用者组中的会话排队的次数               |
+| `PQS_COMPLETED`             | `NUMBER`       | 使用者组中已完成的并行语句总数                               |
+| `PQ_SERVERS_USED`           | `NUMBER`       | 使用者组中已完成的并行语句使用的并行服务器总数               |
+| `PQ_ACTIVE_TIME`            | `NUMBER`       | 使用者组中所有已完成的并行语句的并行活动时间的累积总和（以毫秒为单位） |
+| `CURRENT_PQS_QUEUED`        | `NUMBER`       | 使用者组中正在尝试运行并行语句的并行语句队列中正在等待的会话数 |
+| `PQ_QUEUED_TIME`            | `NUMBER`       | 尝试运行并行语句时，使用者组中的会话排队的总时间（以毫秒为单位） |
+| `PQ_QUEUE_TIME_OUTS`        | `NUMBER`       | 消费方组中的会话的并行语句由于队列时间超出资源管理器计划的`PARALLEL_QUEUE_TIMEOUT`限制而 超时的次数 |
+| `CON_ID`                    | `NUMBER`       | 数据所属的容器的ID。可能的值包括：`0`：此值用于包含与整个CDB有关的数据的行。此值也用于非CDB中的行。`1`：此值用于包含仅与根相关的数据的行n：其中n是包含数据的行的适用容器ID |
+
+也可以看看：
+
+- “ [STATISTICS_LEVEL](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/refrn/STATISTICS_LEVEL.html#GUID-16B23F95-8644-407A-A6C8-E85CADFA61FF) ”
+- “ [V $ RSRC_PDB](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/refrn/V-RSRC_PDB.html#GUID-8658D0A2-3822-429B-BB3B-79ABEAC70A3D) ”
+- [《 Oracle数据库管理员指南》](https://www.oracle.com/pls/topic/lookup?ctx=en/database/oracle/oracle-database/12.2/refrn&id=ADMIN11881)中有关资源组的信息
+- [《 Oracle数据库PL / SQL软件包和类型参考》，](https://www.oracle.com/pls/topic/lookup?ctx=en/database/oracle/oracle-database/12.2/refrn&id=ARPLS050)以获取有关使用`DBMS_RESOURCE_MANAGER`软件包 创建资源组的信息
+
+## 实践2-12:使用升级前信息工具 
+
+### Overview
+
+### Task
+
+### Practice
+
+### KnowledgePoint
+
+[使用升级前信息工具](https://docs.oracle.com/cd/E11882_01/server.112/e23633/upgrade.htm#UPGRD12395)
+
+在安装了适用于Oracle Database 11 g第2版（11.2）的软件和所有必需的修补程序之后，Oracle建议您分析数据库，然后再将其升级到新版本。这是通过在要升级的数据库环境中运行“升级前信息工具”来完成的。升级前信息工具是Oracle数据库11 g第2版（11.2）软件随附的SQL脚本。如果您要手动升级，则这是必需的步骤。否则，`catupgrd.sql`脚本将以错误终止。如果要使用DBUA进行升级，还建议运行“升级前信息工具”，以便可以预览DBUA检查的项目。
+
+这些主题包含有关升级前信息工具的其他信息：
+
+- [关于升级前信息工具的输出](https://docs.oracle.com/cd/E11882_01/server.112/e23633/upgrade.htm#CHDJGEDB)
+- [升级前信息工具的其他警告](https://docs.oracle.com/cd/E11882_01/server.112/e23633/upgrade.htm#BABDBDCD)
+
+## 实践2-13:`STATISTICS_LEVEL`指定数据库和操作系统统计信息的收集级别 
+
+### Overview
+
+### Task
+
+1. 查看你环境中该参数的值
+
+   ```sql
+   SQL> conn dba1/oracle@emrep
+   
+   SQL> show parameter STATISTICS_LEVEL
+   
+   NAME				     TYPE	 VALUE
+   ------------------------------------ ----------- ------------------------------
+   statistics_level		     string	 TYPICAL
+   SQL> 
+   ```
+
+   
+
+2. 说出参数的含义
+
+### Practice
+
+### KnowledgePoint
+
+[STATISTICS_LEVEL](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/refrn/STATISTICS_LEVEL.html#GUID-16B23F95-8644-407A-A6C8-E85CADFA61FF)
+
+`STATISTICS_LEVEL`指定数据库和操作系统统计信息的收集级别。Oracle数据库出于各种目的收集这些统计信息，包括制定自我管理决策。
+
+| 属性          | 描述                                           |
+| ------------- | ---------------------------------------------- |
+| 参数类型      | 串                                             |
+| 句法          | `STATISTICS_LEVEL = { ALL | TYPICAL | BASIC }` |
+| 默认值        | `TYPICAL`                                      |
+| 可修改的      | `ALTER SESSION`， `ALTER SYSTEM`               |
+| 可在PDB中修改 | 是                                             |
+| 基本的        | 没有                                           |
+
+默认设置`TYPICAL`确保确保收集数据库自我管理功能所需的所有主要统计信息，并提供最佳的整体性能。对于大多数环境，默认值应该足够。
+
+当`STATISTICS_LEVEL`参数设置为时`ALL`，其他统计信息将添加到使用该设置收集的统计信息集中`TYPICAL`。其他统计信息是定时操作系统统计信息和计划执行统计信息。
+
+将`STATISTICS_LEVEL`参数设置为`BASIC`禁用会禁用Oracle数据库功能所需的许多重要统计信息的收集，包括：
+
+- 自动工作量存储库（AWR）快照
+- 自动数据库诊断监视器（ADDM）
+- 所有服务器生成的警报
+- 自动SGA内存管理
+- 自动优化器统计信息收集
+- 对象级统计
+- 端到端应用程序跟踪（`V$CLIENT_STATS`）
+- 数据库时间分布统计（`V$SESS_TIME_MODEL`和`V$SYS_TIME_MODEL`）
+- 服务水平统计
+- 缓冲区高速缓存咨询
+- MTTR咨询
+- 共享池大小调整咨询
+- 段级别统计
+- PGA目标咨询
+- 定时统计
+- 监测统计
+
+注意：
+
+Oracle强烈建议您不要禁用这些重要的功能。
+
+通过`STATISTICS_LEVEL`修改参数后`ALTER SYSTEM`，根据的新值，所有建议或统计信息都会动态打开或关闭`STATISTICS_LEVEL`。当被修改时`ALTER SESSION`，以下咨询或统计信息仅在本地会话中打开或关闭。它们在系统范围内的状态不变：
+
+- 定时统计
+- 定时操作系统统计信息
+- 计划执行统计
+
+该`V$STATISTICS_LEVEL`视图显示有关由`STATISTICS_LEVEL`参数控制的统计信息或咨询状态的信息。请参见“ [V $ STATISTICS_LEVEL](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/refrn/V-STATISTICS_LEVEL.html#GUID-8A215D2B-4A6A-455F-81A9-66D6350A867A) ”。
+
+也可以看看：
+
+[Oracle Database Performance Tuning Guide](https://www.oracle.com/pls/topic/lookup?ctx=en/database/oracle/oracle-database/12.2/refrn&id=TGDBA153)有关此参数的更多信息
+
+
+
+## 实践2-14:Automatic Memory Management 
+
+### Overview
+
+### Task
+
+### Practice
+
+```sql
+SQL> select COMPONENT from V$MEMORY_DYNAMIC_COMPONENTS;
+
+COMPONENT
+----------------------------------------------------------------
+shared pool
+large pool
+java pool
+streams pool
+SGA Target
+DEFAULT buffer cache
+KEEP buffer cache
+RECYCLE buffer cache
+DEFAULT 2K buffer cache
+DEFAULT 4K buffer cache
+DEFAULT 8K buffer cache
+DEFAULT 16K buffer cache
+DEFAULT 32K buffer cache
+Shared IO Pool
+Data Transfer Cache
+In-Memory Area
+In Memory RW Extension Area
+In Memory RO Extension Area
+PGA Target
+ASM Buffer Cache
+
+20 rows selected.
+
+```
+
+### KnowledgePoint
+
+[关于自动内存管理](<https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/managing-memory.html>)
+管理实例内存的最简单方法是允许Oracle数据库实例为您自动管理和调整它。为此（在大多数平台上），您只需设置目标内存大小初始化参数（MEMORY_TARGET）和可选的最大内存大小初始化参数（MEMORY_MAX_TARGET）。
+动态性能视图V$MEMORY_DYNAMIC_COMPONENTS显示所有动态调整的内存组件的当前大小，包括SGA和实例PGA的总大小。
+
+## 实践2-15:Automatic Shared Memory Management
+
+### Overview
+
+### Task
+
+### Practice
+
+### KnowledgePoint
+
+自动共享内存管理简化了SGA内存管理。
+
+- [关于自动共享内存管理](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/managing-memory.html#GUID-B8B8923C-4213-42A9-8ED3-4ABE48C23914)
+  使用自动共享内存管理，您可以使用`SGA_TARGET`初始化参数指定实例可用的SGA内存总量，并且Oracle数据库会自动在各种SGA组件之间分配此内存，以确保最有效的内存利用率。
+- [SGA中](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/managing-memory.html#GUID-F07D8DE0-C756-4E3D-ABFC-27A0D3B45F4B)
+  的[组件和颗粒](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/managing-memory.html#GUID-F07D8DE0-C756-4E3D-ABFC-27A0D3B45F4B) SGA包含几个内存组件，它们是用于满足特定类别的内存分配请求的内存池。
+- [设置最大SGA大小](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/managing-memory.html#GUID-DFDA2DAA-B15D-4EC9-B7B1-A32304D7BEF9)
+  的`SGA_MAX_SIZE`初始化参数指定系统全局区的该实例的生命周期的最大尺寸。
+- [设置SGA目标大小](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/managing-memory.html#GUID-3F0255D6-CE7F-4581-80D1-BE23362A99CF)
+  您可以通过将`SGA_TARGET`初始化参数设置为非零值来启用自动共享内存管理功能。此参数设置SGA的总大小。它替换了控制为一组特定的单个组件分配的内存的参数，这些参数现在可以根据需要自动动态调整大小（调整）。
+- [启用自动共享内存管理](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/managing-memory.html#GUID-0E0EBCD5-6134-492B-9232-3F76D92B1900)
+  启用自动共享内存管理（ASMM）的过程取决于您是从手动共享内存管理还是从自动内存管理更改为ASMM。
+- [设置](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/managing-memory.html#GUID-3DB194B9-1F36-4522-91A1-EC8304FF9DA7)
+  自动调整大小的SGA组件的最小值您可以通过为与这些大小相对应的参数指定最小值来对自动调整大小的SGA组件的大小进行一些控制。如果您知道没有特定组件中的最小内存，应用程序将无法正常运行，则这样做很有用。
+- [SGA_TARGET](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/managing-memory.html#GUID-CB7EE1F0-B6A0-4118-A0DD-5A3CC32A8ECA)
+  的[动态修改](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/managing-memory.html#GUID-CB7EE1F0-B6A0-4118-A0DD-5A3CC32A8ECA)`SGA_TARGET`可以将参数动态增加到为该`SGA_MAX_SIZE`参数指定的值，也可以减少该参数。
+- [修改自动调整大小的组件的参数](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/managing-memory.html#GUID-17DE9E10-3066-4908-A295-B27DD94EF2CB)
+  启用自动共享内存管理后，手动指定的自动调整大小的组件大小将作为组件大小的下限。您可以通过更改相应参数的值来动态修改此限制。
+- [修改手动调整大小的零部件的](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/managing-memory.html#GUID-EBA07C5C-A639-4B6A-A2BF-E3F1176F80D0)
+  参数手动调整大小的[零部件的](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/managing-memory.html#GUID-EBA07C5C-A639-4B6A-A2BF-E3F1176F80D0)参数也可以动态更改。但是，该参数的值不是设置最小大小，而是指定相应组件的精确大小。
+
+也可以看看：
+
+- [《 Oracle数据库性能调优指南》](https://www.oracle.com/pls/topic/lookup?ctx=en/database/oracle/oracle-database/12.2/admin&id=TGDBA291)中有关调优SGA组件的信息
