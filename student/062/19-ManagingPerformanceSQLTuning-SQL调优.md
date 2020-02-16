@@ -3,7 +3,15 @@
 > **Practices for Lesson 19: Managing Performance: SQL Tuning**
 >
 > 2020.01.29 BoobooWei
-[toc]
+
+<!-- MDTOC maxdepth:2 firsth1:1 numbering:0 flatten:0 bullets:1 updateOnSave:1 -->
+
+- [实践19:管理性能之SQL调优](#实践19管理性能之sql调优)   
+   - [实践19:概览](#实践19概览)   
+   - [实践19-1:使用自动SQL调优](#实践19-1使用自动sql调优)   
+   - [实践19-2:收集扩展的统计信息](#实践19-2收集扩展的统计信息)   
+
+<!-- /MDTOC -->
 
 ## 实践19:概览
 
@@ -61,7 +69,7 @@ DBA1 user with SYSDBA privileges has been created in orcl database.
 
 4. Automatic SQL Tuning is implemented by using an automated task that runs during maintenance windows. However, you are not going to wait for the next maintenance window to open. This might take too long. Instead, you will force the opening of your next maintenance window now. This will automatically trigger the Automatic SQL Tuning task. Review and execute the **ast_run.sh** script to do that. It takes about 10 minutes for the script to execute.
 
-5. Execute the **ast_workload_stream.sh** script again. What do you observe? 
+5. Execute the **ast_workload_stream.sh** script again. What do you observe?
 
    You should see that the execution time for ast_workload_stream.sh is much faster than the original execution. This is probably due to the fact that Automatic SQL Tuning implemented a profile for your statement automatically.
 
@@ -151,8 +159,64 @@ DBA1 user with SYSDBA privileges has been created in orcl database.
 
 10. OPTIONAL: Review the ast_manual_config.sh script to understand how you can configure Automatic SQL Tuning by using PL/SQL.   
 
-    
+
 
 ### Practice
 
 ### KnowledgePoint
+
+## 实践19-2:收集扩展的统计信息
+
+### Overview
+
+### Task
+
+### Practice
+
+### KnowledgePoint
+
+管理扩展统计
+
+`DBMS_STATS`使您可以收集**扩展的统计信息**，当表的不同列上存在多个谓词或谓词使用表达式时，这些统计信息可以改善基数估计。
+
+的**扩展**可以是一个列组或表达。当来自同一表的多个列一起出现在SQL语句中时，列组统计信息可以改善基数估计。当谓词使用表达式（例如内置或用户定义的函数）时，表达式统计信息可改进优化程序的估计。
+
+注意：您不能在虚拟列上创建扩展统计信息。
+
+管理列组统计信息
+
+**列组**是一组将被视为一个单元的列。
+
+本质上，列组是虚拟列。通过收集列组的统计信息，当查询将这些列组合在一起时，优化器可以更准确地确定基数估计。
+
+以下各节概述了[列组统计信息](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/tgsql/glossary.html#GUID-FB763B43-B5C7-47D0-8B0D-47CED4922501)，并说明了如何手动管理它们：
+
+- [关于列组](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/tgsql/managing-extended-statistics.html#GUID-858E0BDA-06C6-471F-B9E8-888C3AD29673)
+  统计信息单个列统计信息对于确定`WHERE`子句中单个谓词的选择性很有用。
+- [检测特定工作负载的有用列组](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/tgsql/managing-extended-statistics.html#GUID-E1F39134-24F1-4EF7-B614-82F9428CA762)
+  您可以使用`DBMS_STATS.SEED_COL_USAGE`并`REPORT_COL_USAGE`基于指定的工作负载来确定表需要哪些列组。
+- [创建在工作负载监视期间检测到的列组](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/tgsql/managing-extended-statistics.html#GUID-783A8687-EDB3-437E-AE99-3F12369BA10A)
+  您可以使用该`DBMS_STATS.CREATE_EXTENDED_STATS`功能创建以前通过执行检测到的列组`DBMS_STATS.SEED_COL_USAGE`。
+- [手动创建和收集列组的统计信息](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/tgsql/managing-extended-statistics.html#GUID-D070C3B3-C356-4630-8EB3-766A790866F3)
+  在某些情况下，您可能知道要创建的列组。
+- [显示列组信息](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/tgsql/managing-extended-statistics.html#GUID-532D06C9-C6A2-4018-B496-AD87003B682E)
+  要获取[列组](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/tgsql/managing-extended-statistics.html#GUID-532D06C9-C6A2-4018-B496-AD87003B682E)的名称，请使用`DBMS_STATS.SHOW_EXTENDED_STATS_NAME`函数或数据库视图。
+- [删除列组](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/tgsql/managing-extended-statistics.html#GUID-DBBB6C91-4450-457D-A612-71E835D6159C)
+  使用此`DBMS_STATS.DROP_EXTENDED_STATS`功能可以从表中删除列组。
+
+也可以看看：
+
+[Oracle Database PL / SQL软件包和类型参考](https://www.oracle.com/pls/topic/lookup?ctx=en/database/oracle/oracle-database/12.2/tgsql&id=ARPLS059)以了解该`DBMS_STATS`软件包
+
+| 计划单位或偏好               | 描述                                                         |
+| ---------------------------- | ------------------------------------------------------------ |
+| `SEED_COL_USAGE` 程序        | 遍历指定工作负载中的SQL语句，进行编译，然后为出现在这些语句中的列播种列使用情况信息。为了确定适当的列组，数据库必须遵守代表性的工作负载。在监视期间，您不需要自己运行查询。相反，您可以`EXPLAIN PLAN`在工作负载中运行一些运行时间更长的查询，以确保数据库正在记录这些查询的列组信息。 |
+| `REPORT_COL_USAGE` 功能      | 生成一个报告，该报告列出`GROUP BY`在工作负载中的过滤谓词，连接谓词和子句中看到的列。您可以使用此功能来查看为特定表记录的列使用情况信息。 |
+| `CREATE_EXTENDED_STATS` 功能 | 创建扩展名，扩展名可以是列组或表达式。当用户生成或自动统计信息收集作业收集表的统计信息时，数据库将收集扩展的统计信息。 |
+| `AUTO_STAT_EXTENSIONS` 偏爱  | 收集优化程序统计信息时，控制扩展的自动创建，包括列组。使用此设置偏好`SET_TABLE_PREFS`，`SET_SCHEMA_PREFS`或`SET_GLOBAL_PREFS`。当`AUTO_STAT_EXTENSIONS`设置为`OFF`（默认）时，数据库不会自动创建列组统计信息。要创建扩展，您必须执行`CREATE_EXTENDED_STATS`函数或`METHOD_OPT`在`DBMS_STATS`API 的参数中显式指定扩展统计信息。设置为时`ON`，SQL计划伪指令可以根据工作负载中谓词中列的使用情况自动触发创建列组统计信息。 |
+
+也可以看看：
+
+- “ [为表设置人工优化器统计信息](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/tgsql/controlling-the-use-of-optimizer-statistics.html#GUID-D73DB2F4-46C1-4C5B-94DD-DE1F1DD5BBCC) ”
+- [Oracle Database PL / SQL软件包和类型参考](https://www.oracle.com/pls/topic/lookup?ctx=en/database/oracle/oracle-database/12.2/tgsql&id=ARPLS059)以了解该`DBMS_STATS`软件包
+- [Oracle数据库SQL语言参考](https://www.oracle.com/pls/topic/lookup?ctx=en/database/oracle/oracle-database/12.2/tgsql&id=SQLRF54467)中有关虚拟列限制的列表
