@@ -4,48 +4,31 @@
 >
 > 2020.01.29 BoobooWei
 
-<!-- MDTOC maxdepth:6 firsth1:1 numbering:0 flatten:0 bullets:1 updateOnSave:1 -->
+<!-- MDTOC maxdepth:2 firsth1:1 numbering:0 flatten:0 bullets:1 updateOnSave:1 -->
 
 - [实践2:体系结构](#实践2体系结构)   
    - [实践2:概览](#实践2概览)   
    - [实践2-1:探索Oracle数据库体系结构](#实践2-1探索oracle数据库体系结构)   
    - [实践2-2:关闭数据库实例transactional](#实践2-2关闭数据库实例transactional)   
-      - [Overview](#overview)   
-      - [Task](#task)   
-      - [Practice](#practice)   
-      - [KnowledgePoint](#knowledgepoint)   
    - [实践2-3:关闭数据库实例abort](#实践2-3关闭数据库实例abort)   
-      - [Overview](#overview)   
-      - [Task](#task)   
-      - [Practice](#practice)   
-      - [KnowledgePoint](#knowledgepoint)   
    - [实践2-4:隐藏列 invisible](#实践2-4隐藏列-invisible)   
    - [实践2-5:存储过程DR和IR](#实践2-5存储过程dr和ir)   
    - [实践2-6:参数DB_8K_CACHE_SIZE](#实践2-6参数db_8k_cache_size)   
    - [实践2-7:参数ENABLE_DDL_LOGGING](#实践2-7参数enable_ddl_logging)   
-      - [KnowledgePoint](#knowledgepoint)   
    - [实践2-8:Oracle Data Redaction](#实践2-8oracle-data-redaction)   
-      - [Overview](#overview)   
-      - [Task](#task)   
-      - [Practice](#practice)   
-      - [KnowledgePoint](#knowledgepoint)   
    - [实践2-9:REDACTION_VALUES_FOR_TYPE_FULL](#实践2-9redaction_values_for_type_full)   
-      - [Overview](#overview)   
-      - [Task](#task)   
-      - [Practice](#practice)   
-      - [KnowledgePoint](#knowledgepoint)   
-         - [简介](#简介)   
-         - [工作原理](#工作原理)   
-         - [DBMS_REDACT.REDACTION_VALUES_FOR_TYPE_FULL](#dbms_redactredaction_values_for_type_full)   
-         - [BINARY_DOUBLE_VALUE](#binary_double_value)   
    - [实践2-10:RMAN VALIDATE](#实践2-10rman-validate)   
-      - [KnowledgePoint](#knowledgepoint)   
-         - [目的](#目的)   
-         - [先决条件](#先决条件)   
-         - [使用说明](#使用说明)   
+   - [实践2-11:V$RSRC_CONSUMER_GROUP](#实践2-11vrsrc_consumer_group)   
+   - [实践2-12:使用升级前信息工具](#实践2-12使用升级前信息工具)   
+   - [实践2-13:`STATISTICS_LEVEL`指定数据库和操作系统统计信息的收集级别](#实践2-13statistics_level指定数据库和操作系统统计信息的收集级别)   
+   - [实践2-14:Automatic Memory Management](#实践2-14automatic-memory-management)   
+   - [实践2-15:Automatic Shared Memory Management](#实践2-15automatic-shared-memory-management)   
+   - [实践2-16:关于动态统计级别OPTIMIZER_DYNAMIC_SAMPLING](#实践2-16关于动态统计级别optimizer_dynamic_sampling)   
+   - [实践2-17:在数据库之间传输表空间Management](#实践2-17在数据库之间传输表空间management)   
+   - [实践2-18:DB_FLASH_CACHE_FILE](#实践2-18db_flash_cache_file)   
+   - [实践2-19:在线缩小数据库段](#实践2-19在线缩小数据库段)   
 
 <!-- /MDTOC -->
-
 ## 实践2:概览
 
 Practices for Lesson 2: Overview
@@ -1099,7 +1082,7 @@ select name,active_sessions,queue_length,consumed_cpu_time,cpu_waits,cpu_wait_ti
 - [《 Oracle数据库管理员指南》](https://www.oracle.com/pls/topic/lookup?ctx=en/database/oracle/oracle-database/12.2/refrn&id=ADMIN11881)中有关资源组的信息
 - [《 Oracle数据库PL / SQL软件包和类型参考》，](https://www.oracle.com/pls/topic/lookup?ctx=en/database/oracle/oracle-database/12.2/refrn&id=ARPLS050)以获取有关使用`DBMS_RESOURCE_MANAGER`软件包 创建资源组的信息
 
-## 实践2-12:使用升级前信息工具 
+## 实践2-12:使用升级前信息工具
 
 ### Overview
 
@@ -1118,7 +1101,7 @@ select name,active_sessions,queue_length,consumed_cpu_time,cpu_waits,cpu_wait_ti
 - [关于升级前信息工具的输出](https://docs.oracle.com/cd/E11882_01/server.112/e23633/upgrade.htm#CHDJGEDB)
 - [升级前信息工具的其他警告](https://docs.oracle.com/cd/E11882_01/server.112/e23633/upgrade.htm#BABDBDCD)
 
-## 实践2-13:`STATISTICS_LEVEL`指定数据库和操作系统统计信息的收集级别 
+## 实践2-13:`STATISTICS_LEVEL`指定数据库和操作系统统计信息的收集级别
 
 ### Overview
 
@@ -1128,16 +1111,16 @@ select name,active_sessions,queue_length,consumed_cpu_time,cpu_waits,cpu_wait_ti
 
    ```sql
    SQL> conn dba1/oracle@emrep
-   
+
    SQL> show parameter STATISTICS_LEVEL
-   
+
    NAME				     TYPE	 VALUE
    ------------------------------------ ----------- ------------------------------
    statistics_level		     string	 TYPICAL
-   SQL> 
+   SQL>
    ```
 
-   
+
 
 2. 说出参数的含义
 
@@ -1199,7 +1182,7 @@ Oracle强烈建议您不要禁用这些重要的功能。
 
 
 
-## 实践2-14:Automatic Memory Management 
+## 实践2-14:Automatic Memory Management
 
 ### Overview
 
@@ -1277,3 +1260,256 @@ ASM Buffer Cache
 也可以看看：
 
 - [《 Oracle数据库性能调优指南》](https://www.oracle.com/pls/topic/lookup?ctx=en/database/oracle/oracle-database/12.2/admin&id=TGDBA291)中有关调优SGA组件的信息
+
+## 实践2-16:关于动态统计级别OPTIMIZER_DYNAMIC_SAMPLING
+
+### Overview
+
+### Task
+
+### Practice
+
+### KnowledgePoint
+
+`OPTIMIZER_DYNAMIC_SAMPLING` 控制数据库何时收集动态统计信息以及优化器用来收集统计信息的样本大小。
+
+| 属性          | 描述                                                         |
+| ------------- | ------------------------------------------------------------ |
+| 参数类型      | 整数                                                         |
+| 默认值        | 如果`OPTIMIZER_FEATURES_ENABLE`设置为`10.0.0`或更高，则`2`如果`OPTIMIZER_FEATURES_ENABLE`设置为`9.2.0`，则`1`如果`OPTIMIZER_FEATURES_ENABLE`设置为`9.0.1`或更低，则`0` |
+| 可修改的      | `ALTER SESSION`， `ALTER SYSTEM`                             |
+| 可在PDB中修改 | 是                                                           |
+| 取值范围      | `0` 至 `11`                                                  |
+| 基本的        | 没有                                                         |
+
+注意：
+
+在Oracle Database 12c第1版（12.1）之前的版本中，动态统计信息称为动态采样。
+
+如果将的值`OPTIMIZER_DYNAMIC_SAMPLING`设置为`11`，则该`OPTIMIZER_FEATURES_ENABLE`设置对设置无效`OPTIMIZER_DYNAMIC_SAMPLING`。
+
+该动态统计级别控制都在数据库云集动态统计和样本，优化程序使用，收集统计数据的大小。
+
+使用`OPTIMIZER_DYNAMIC_SAMPLING`初始化参数或语句提示来设置动态统计信息级别。
+
+注意：
+
+在Oracle Database 12c第1版（12.1）之前的版本中，动态统计信息称为动态采样。
+
+下表描述了动态统计信息的级别。请注意以下几点：
+
+- 如果启用了动态统计信息，则当SQL语句使用并行执行时，数据库可以选择使用动态统计信息。
+- 如果`OPTIMIZER_ADAPTIVE_STATISTICS`为`TRUE`，则当存在相关的SQL计划指令时，优化器将使用动态统计信息。数据库将结果统计信息保存在SQL计划指令存储中，以使其可用于其他查询。
+
+表12-5动态统计级别
+
+| 水平 | 当优化器使用动态统计信息时                                   | 样本量（块） |
+| ---- | ------------------------------------------------------------ | ------------ |
+| 0    | 不要使用动态统计信息。                                       | 不适用       |
+| 1    | 对所有没有统计信息的表使用动态统计信息，但前提是必须满足以下条件：查询中至少有一个非分区表没有统计信息。该表没有索引。该表中的块数多于用于此表的动态统计信息的块数。 | 32           |
+| 2    | 如果语句中至少有一个表没有统计信息，请使用动态统计信息。这是默认值。 | 64           |
+| 3    | 如果满足以下任一条件，请使用动态统计信息：该语句中至少有一个表没有统计信息。该语句具有一个或多个`WHERE`子句谓词中使用的表达式，例如`WHERE SUBSTR(CUSTLASTNAME,1,3)`。 | 64           |
+| 4    | 如果满足以下任一条件，请使用动态统计信息：该语句中至少有一个表没有统计信息。该语句具有一个或多个`WHERE`子句谓词中使用的表达式，例如`WHERE SUBSTR(CUSTLASTNAME,1,3)`。该语句使用复杂谓词（同一表上多个谓词之间的`OR`或`AND`运算符）。 | 64           |
+| 5    | 标准与第4级相同，但是数据库使用不同的样本量。                | 128          |
+| 6    | 标准与第4级相同，但是数据库使用不同的样本量。                | 256          |
+| 7    | 标准与第4级相同，但是数据库使用不同的样本量。                | 512          |
+| 8    | 标准与第4级相同，但是数据库使用不同的样本量。                | 1024         |
+| 9    | 标准与第4级相同，但是数据库使用不同的样本量。                | 4086         |
+| 10   | 标准与第4级相同，但是数据库使用不同的样本量。                | 所有块       |
+| 11   | 当优化器认为必要时，数据库会自动使用自适应动态采样。         | 自动确定     |
+
+也可以看看：
+
+- “ [当数据库采样数据时](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/tgsql/optimizer-statistics-concepts.html#GUID-E932F5B4-9BDB-4EE4-934C-7F1979CC62A9) ”
+- [Oracle数据库参考](https://www.oracle.com/pls/topic/lookup?ctx=en/database/oracle/oracle-database/12.2/tgsql&id=REFRN10140)，了解`OPTIMIZER_DYNAMIC_SAMPLING`初始化参数
+- [《 Oracle数据库SQL调优指南》中](https://www.oracle.com/pls/topic/lookup?ctx=en/database/oracle/oracle-database/12.2/refrn&id=TGSQL-GUID-DEE2AF8B-5F4B-4FE7-9F0E-7D188921EBCC)提供了有关可以为`OPTIMIZER_DYNAMIC_SAMPLING`参数设置的值（0 – 11）的详细信息。
+
+## 实践2-17:在数据库之间传输表空间Management
+
+### Overview
+
+### Task
+
+### Practice
+
+### KnowledgePoint
+
+您可以在数据库之间传输表空间。
+
+注意：
+
+要将可传输表空间集导入到不同平台上的Oracle数据库中，两个数据库的兼容性必须至少设置为10.0.0。有关跨发行版传输表空间的数据库兼容性的讨论，请参见“ [传输数据的兼容性注意事项](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/transporting-data.html#GUID-AC5C8D9D-796A-4EDE-AC35-AF963ECCFE5C) ”。
+
+- [可传输表空间简介](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/transporting-data.html#GUID-9304426D-9D40-4F0D-8661-F53B608A652F)
+  可以使用可传输表空间功能将一组表空间从一个Oracle数据库复制到另一个。
+- [可传输表空间](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/transporting-data.html#GUID-DAB51E42-9BBC-4001-B5CB-0ECDBE128787)
+  的限制可传输表[空间](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/transporting-data.html#GUID-DAB51E42-9BBC-4001-B5CB-0ECDBE128787)有限制。
+- [在数据库之间传输表空间](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/transporting-data.html#GUID-E4C56852-73A5-44A2-BB10-938831DA6E4C)
+  您可以在数据库之间传输表空间。
+
+在数据库之间传输表空间的步骤：
+
+您可以在数据库之间传输表空间。
+
+以下任务列表总结了传输表空间的过程。在随后的示例中提供了每个任务的详细信息。
+
+1. 选择一组独立的表空间。
+
+2. 在源数据库中，将表空间集设置为只读模式，并生成可传输表空间集。
+
+   可传输表空间集（或可传输集）由要传输的表空间集的数据文件和包含表空间集的结构信息（元数据）的导出转储文件组成。您使用数据泵执行导出。
+
+3. 传输导出转储文件。
+
+   将导出转储文件复制到目标数据库可访问的位置。
+
+4. 传输表空间集。
+
+   将数据文件复制到目标数据库可访问的位置。
+
+   如果源平台和目标平台不同，则通过运行在所述查询检查每个平台的endian格式`V$TRANSPORTABLE_PLATFORM`视图在“ [传输数据跨平台](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/transporting-data.html#GUID-FE3003B9-605A-4269-B167-005AC778C870) ”。
+
+   如果源平台的字节序格式与目标平台的字节序格式不同，请使用以下方法之一转换数据文件：
+
+   - 使用包中的`GET_FILE`或`PUT_FILE`过程`DBMS_FILE_TRANSFER`来传输数据文件。这些过程自动将数据文件转换为目标平台的字节序格式。
+   - 使用RMAN `CONVERT`命令将数据文件转换为目标平台的字节序格式。
+
+   有关更多信息，请参见“ [在平台之间转换数据](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/transporting-data.html#GUID-E4B0F929-79D0-4DEE-B1DD-378BDBC31A0B) ”。
+
+5. （可选）将表空间还原为源数据库上的读/写模式。
+
+6. 在目标数据库上，导入表空间集。
+
+   调用数据泵实用程序以导入表空间集的元数据。
+
+## 实践2-18:DB_FLASH_CACHE_FILE
+
+### Overview
+
+### Task
+
+### Practice
+
+```sql
+db_flash_cache_file = /dev/raw/sda, /dev/raw/sdb, /dev/raw/sdc
+db_flash_cache_size = 32G, 32G, 64G
+```
+
+
+
+### KnowledgePoint
+
+`DB_FLASH_CACHE_FILE` 指定用于表示闪存集合的闪存或磁盘组的文件名，以与数据库智能闪存缓存一起使用。
+
+| 属性          | 描述                                                         |
+| ------------- | ------------------------------------------------------------ |
+| 参数类型      | 串                                                           |
+| 句法          | `DB_FLASH_CACHE_FILE = ``filename [,filename]...`` | ``disk group` |
+| 默认值        | 没有默认值。                                                 |
+| 可修改的      | `ALTER SYSTEM`                                               |
+| 可在PDB中修改 | 没有                                                         |
+| 基本的        | 没有                                                         |
+
+您最多可以为闪存设备指定16个文件名。例如，如果有三个闪存原始设备：
+
+```
+db_flash_cache_file = /dev/raw/sda, /dev/raw/sdb, /dev/raw/sdc
+```
+
+`DB_FLASH_CACHE_SIZE`不允许在不指定初始化参数的情况下指定此参数。
+
+`DB_FLASH_CACHE_SIZE`指定数据库智能闪存缓存（闪存缓存）的大小。此参数只能在实例启动时指定。
+
+| 属性          | 描述                                                         |
+| ------------- | ------------------------------------------------------------ |
+| 参数类型      | 大整数                                                       |
+| 句法          | `DB_FLASH_CACHE_SIZE =` 整数 `[K | M | G] [,` 整数 `[K | M | G]]...` |
+| 默认值        | `0`                                                          |
+| 可修改的      | `ALTER SYSTEM`                                               |
+| 可在PDB中修改 | 没有                                                         |
+| 取值范围      | 最低要求： `0`最大值：取决于操作系统                         |
+| 基本的        | 没有                                                         |
+
+您最多可以为用指定的闪存设备指定16个文件大小`DB_FLASH_CACHE_FILE`。例如，如果有三个闪存原始设备，则可以如下指定每个设备的大小：
+
+```
+db_flash_cache_file = /dev/raw/sda, /dev/raw/sdb, /dev/raw/sdc
+db_flash_cache_size = 32G, 32G, 64G
+```
+
+如果您的闪存缓存由一个闪存缓存设备组成，则可以`0`在数据库启动后动态将该参数更改为该闪存缓存设备的参数（禁用闪存缓存）。然后，可以通过在启动数据库时将设备的此参数设置回原始值来重新启用闪存缓存。`DB_FLASH_CACHE_SIZE`不支持动态调整闪存缓存大小或将其重新启用为其他大小。
+
+如果您的闪存缓存包含多个闪存缓存设备，则可以`0`在数据库启动后将参数动态更改为特定的闪存缓存设备（将其关闭）。然后，您可以通过将该设备的此参数设置回启动数据库时具有的原始值（将其重新打开）来重新启用该闪存设备。
+
+例如，要关闭`/dev/raw/sdb`闪存设备：
+
+```
+db_flash_cache_file = /dev/raw/sda, /dev/raw/sdb, /dev/raw/sdc
+db_flash_cache_size = 32G, 0, 64G
+```
+
+并且，要重新打开`/dev/raw/sdb`闪存设备：
+
+```
+db_flash_cache_file = /dev/raw/sda, /dev/raw/sdb, /dev/raw/sdc
+db_flash_cache_size = 32G, 32G, 64G
+```
+
+也可以看看：
+
+“ [DB_FLASH_CACHE_FILE](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/refrn/DB_FLASH_CACHE_FILE.html#GUID-45C21508-08FD-4535-A5BD-73284588F850) ”
+
+“ [DB_FLASH_CACHE_SIZE](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/refrn/DB_FLASH_CACHE_SIZE.html#GUID-9B2E54F0-F2C0-4C3A-88B7-C2F64F32376F) ”
+
+
+
+## 实践2-19:在线缩小数据库段
+
+### Overview
+
+### Task
+
+### Practice
+
+### KnowledgePoint
+
+您可以使用在线段收缩来收回Oracle数据库段中高水位以下的零碎可用空间。
+
+段缩减的好处包括：
+
+- 数据压缩可提高缓存利用率，进而提高在线事务处理（OLTP）性能。
+- 压缩后的数据需要在全表扫描中扫描的块更少，从而可以提高决策支持系统（DSS）的性能。
+
+段收缩是一种在线的就地操作。可以在段收缩的数据移动阶段发出DML操作和查询。当释放空间时，并发DML操作在收缩操作结束时会短暂阻塞。索引在收缩操作期间保持不变，并在操作完成后仍然可用。段收缩不需要分配额外的磁盘空间。
+
+段收缩可回收高水位线上方和下方的未使用空间。相反，空间释放仅在高水位线以上回收未使用的空间。在收缩操作中，默认情况下，数据库会压缩段，调整高水位线并释放回收的空间。
+
+段缩小要求将行移到新位置。因此，必须首先在要缩小的对象中启用行移动，并禁用在该对象上定义的所有基于Rowid的触发器。您可以使用`ALTER` `TABLE`... `ENABLE` `ROW` `MOVEMENT`命令在表中启用行移动。
+
+使用自动段空间管理（ASSM），只能对本地管理的表空间中的段执行收缩操作。在ASSM表空间中，所有分段类型均可进行在线分段收缩，但以下情况除外：
+
+- 物联网映射表
+
+- 具有基于rowid的物化视图的表
+
+- 具有基于函数的索引的表
+
+- `SECUREFILE` 吊带
+
+- 使用以下压缩方法压缩的表：
+
+  - 基本表压缩使用 `ROW STORE COMPRESS BASIC`
+  - 仓库压缩使用 `COLUMN STORE COMPRESS FOR QUERY`
+  - 使用压缩存档 `COLUMN STORE COMPRESS FOR ARCHIVE`
+
+  但是，使用高级行压缩来压缩的表`ROW STORE COMPRESS ADVANCED`可以进行在线段收缩。有关表压缩方法的信息，请参见“ [考虑使用表压缩](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/managing-tables.html#GUID-ED833867-4B7F-442E-A70C-9C19DAA8F445) ”。
+
+注意：
+
+在线缩小数据库段可能导致从属数据库对象无效。请参阅“ [关于对象依赖性和对象无效](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/managing-schema-objects.html#GUID-919EF353-E9F4-4767-B6BD-5191BE3E38E5) ”。
+
+也可以看看：
+
+有关该`ALTER` `TABLE`命令的更多信息，请[参见《 Oracle数据库SQL语言参考](https://www.oracle.com/pls/topic/lookup?ctx=en/database/oracle/oracle-database/12.2/admin&id=SQLRF01001)》。
+
+[在线缩小数据库段](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/managing-space-for-schema-objects.html#GUID-37DF35E0-116B-4AAB-BFB3-DDBDBAB29BEB)
