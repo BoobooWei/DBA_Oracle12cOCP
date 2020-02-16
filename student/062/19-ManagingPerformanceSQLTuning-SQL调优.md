@@ -10,6 +10,8 @@
    - [实践19:概览](#实践19概览)   
    - [实践19-1:使用自动SQL调优](#实践19-1使用自动sql调优)   
    - [实践19-2:收集扩展的统计信息](#实践19-2收集扩展的统计信息)   
+   - [实践19-3:为特定工作负载检测有用的列组](#实践19-3为特定工作负载检测有用的列组)   
+   - [实践19-4:创建在工作负载监视期间检测到的列组](#实践19-4创建在工作负载监视期间检测到的列组)   
 
 <!-- /MDTOC -->
 
@@ -169,9 +171,91 @@ DBA1 user with SYSDBA privileges has been created in orcl database.
 
 ### Overview
 
+列组统计信息如何使优化器给出更准确的基数估计
+
 ### Task
 
 ### Practice
+
+该`DBA_TAB_COL_STATISTICS`表的以下查询显示有关在列上ORDER_DATE和ORDER_ID从`OE.ORDERS`表中收集的统计信息的信息：
+
+```sql
+COL COLUMN_NAME FORMAT a20
+COL NDV FORMAT 999
+SELECT COLUMN_NAME, NUM_DISTINCT AS "NDV", HISTOGRAM
+FROM   DBA_TAB_COL_STATISTICS
+WHERE  OWNER = 'OE'
+AND    TABLE_NAME = 'ORDERS'
+AND    COLUMN_NAME IN ('ORDER_MODE', 'ORDER_ID');
+```
+
+示例输出如下：
+
+```sql
+COLUMN_NAME	      NDV HISTOGRAM
+-------------------- ---- ---------------
+ORDER_ID	      105 NONE
+ORDER_MODE		2 FREQUENCY
+```
+
+考虑一个有针对性查询的解释计划：
+
+```sql
+EXPLAIN PLAN FOR
+  SELECT *
+  FROM   sh.customers
+  WHERE  cust_state_province = 'CA'
+  AND    country_id=52790;
+```
+
+查看执行结果
+
+```sql
+SQL> SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
+
+PLAN_TABLE_OUTPUT
+--------------------------------------------------------------------------------
+Plan hash value: 4043159647
+
+--------------------------------------------------------------------------------
+--------
+
+| Id  | Operation		    | Name     | Rows  | Bytes | Cost (%CPU)| Ti
+me     |
+
+--------------------------------------------------------------------------------
+--------
+
+
+PLAN_TABLE_OUTPUT
+--------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT	    |	       |     1 |    37 |     1	 (0)| 00
+:00:01 |
+
+|*  1 |  TABLE ACCESS BY INDEX ROWID| ORDERS   |     1 |    37 |     1	 (0)| 00
+:00:01 |
+
+|*  2 |   INDEX UNIQUE SCAN	    | ORDER_PK |     1 |       |     0	 (0)| 00
+:00:01 |
+
+--------------------------------------------------------------------------------
+--------
+
+PLAN_TABLE_OUTPUT
+--------------------------------------------------------------------------------
+
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   1 - filter("ORDER_MODE"='direct')
+   2 - access("ORDER_ID"=2458)
+
+15 rows selected.
+
+```
+
+
 
 ### KnowledgePoint
 
@@ -220,3 +304,274 @@ DBA1 user with SYSDBA privileges has been created in orcl database.
 - “ [为表设置人工优化器统计信息](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/tgsql/controlling-the-use-of-optimizer-statistics.html#GUID-D73DB2F4-46C1-4C5B-94DD-DE1F1DD5BBCC) ”
 - [Oracle Database PL / SQL软件包和类型参考](https://www.oracle.com/pls/topic/lookup?ctx=en/database/oracle/oracle-database/12.2/tgsql&id=ARPLS059)以了解该`DBMS_STATS`软件包
 - [Oracle数据库SQL语言参考](https://www.oracle.com/pls/topic/lookup?ctx=en/database/oracle/oracle-database/12.2/tgsql&id=SQLRF54467)中有关虚拟列限制的列表
+
+## 实践19-3:为特定工作负载检测有用的列组
+
+### Overview
+
+本教程假定以下内容：
+
+- 对于使用引用列和的谓词`oe.customers_test`的`customers`表查询（从表创建），基数估计不正确。 `country_id``cust_state_province`
+- 您希望数据库在5分钟（300秒）内监视您的工作负载。
+- 您希望数据库确定自动需要哪些列组。
+
+### Task
+
+### Practice
+
+您可以使用`DBMS_STATS.SEED_COL_USAGE`和`REPORT_COL_USAGE`根据指定的工作负荷来确定表需要哪些列组。
+
+当您不知道要创建哪个扩展统计信息时，此技术很有用。此技术不适用于表达式统计。
+
+假设条件
+
+本教程假定以下内容：
+
+- 对于使用引用列和的谓词`sh.customers_test`的`customers`表查询（从表创建），基数估计不正确。
+- 您希望数据库在5分钟（300秒）内监视您的工作负载。
+- 您希望数据库确定自动需要哪些列组。
+
+要检测列组：
+
+1. 启动SQL * Plus或SQL Developer，然后以user身份登录数据库`sh`。
+
+2. 创建`customers_test`表并为其收集统计信息：
+
+   ```sql
+   conn oe/oe@emrep;
+   DROP TABLE customers_test;
+   CREATE TABLE customers_test AS SELECT * FROM customers;
+   EXEC DBMS_STATS.GATHER_TABLE_STATS(user, 'customers_test');  
+   ```
+
+3. 启用工作负载监视。
+
+   在另一个SQL * Plus会话中，连接为`SYS`并运行以下PL / SQL程序以启用监视300秒：
+
+   ```sql
+   conn sys/WLS3Gg5_2@emrep as sysdba
+   BEGIN
+     DBMS_STATS.SEED_COL_USAGE(null,null,300);
+   END;
+   /
+   ```
+
+4. 以用户`oe`身份，运行工作负载中两个查询的解释计划。
+
+   以下示例显示了`customers_test`表中两个查询的解释计划：
+
+   ```sql
+   conn oe/oe@emrep;
+   EXPLAIN PLAN FOR
+     SELECT *
+     FROM   customers_test
+     WHERE  CUST_EMAIL = 'Charlotte.Buckley@PINTAIL.EXAMPLE.COM'
+     AND    GENDER = 'F'
+     AND    ACCOUNT_MGR_ID = 149;
+
+   SELECT PLAN_TABLE_OUTPUT
+   FROM   TABLE(DBMS_XPLAN.DISPLAY('plan_table', null,'basic rows'));
+
+   EXPLAIN PLAN FOR
+     SELECT   ACCOUNT_MGR_ID, GENDER, count(*)
+     FROM     customers_test
+     GROUP BY ACCOUNT_MGR_ID, GENDER;
+
+   SELECT PLAN_TABLE_OUTPUT
+   ```
+
+   输出示例如下：
+
+   ```sql
+   PLAN_TABLE_OUTPUT
+   --------------------------------------------------------------------------------
+   Plan hash value: 2112738156
+
+   ----------------------------------------------------
+   | Id  | Operation	  | Name	   | Rows  |
+   ----------------------------------------------------
+   |   0 | SELECT STATEMENT  |		   |	 1 |
+   |   1 |  TABLE ACCESS FULL| CUSTOMERS_TEST |	 1 |
+   ----------------------------------------------------
+
+   8 rows selected.
+
+   PLAN_TABLE_OUTPUT
+   --------------------------------------------------------------------------------
+   Plan hash value: 1820398555
+
+   -----------------------------------------------------
+   | Id  | Operation	   | Name	    | Rows  |
+   -----------------------------------------------------
+   |   0 | SELECT STATEMENT   |		    |	  6 |
+   |   1 |  HASH GROUP BY	   |		    |	  6 |
+   |   2 |   TABLE ACCESS FULL| CUSTOMERS_TEST |	319 |
+   -----------------------------------------------------
+
+   9 rows selected.
+   ```
+
+
+
+5. 查看为表记录的列使用情况信息。
+
+   `oe`用户调用该`DBMS_STATS.REPORT_COL_USAGE`函数以生成报告：
+
+   ```
+   SET LONG 100000
+   SET LINES 120
+   SET PAGES 0
+   SELECT DBMS_STATS.REPORT_COL_USAGE(user, 'customers_test')
+   FROM   DUAL;
+   ```
+
+   该报告显示在下面：
+
+   ```sql
+   LEGEND:
+   .......
+
+   EQ	   : Used in single table EQuality predicate
+   RANGE	   : Used in single table RANGE predicate
+   LIKE	   : Used in single table LIKE predicate
+   NULL	   : Used in single table is (not) NULL predicate
+   EQ_JOIN    : Used in EQuality JOIN predicate
+   NONEQ_JOIN : Used in NON EQuality JOIN predicate
+   FILTER	   : Used in single table FILTER predicate
+   JOIN	   : Used in JOIN predicate
+   GROUP_BY   : Used in GROUP BY expression
+   ...............................................................................
+
+   ###############################################################################
+
+   COLUMN USAGE REPORT FOR OE.CUSTOMERS_TEST
+   .........................................
+
+   1. ACCOUNT_MGR_ID		       : EQ
+   2. CUST_EMAIL			       : EQ
+   3. GENDER			       : EQ
+   4. (CUST_EMAIL, ACCOUNT_MGR_ID,
+       GENDER)			       : FILTER
+   ###############################################################################
+
+   ```
+
+   在上一个报告中，前三个列在第一个受监视的查询中的相等谓词中使用：
+
+   ```
+   ...
+     WHERE  CUST_EMAIL = 'Charlotte.Buckley@PINTAIL.EXAMPLE.COM'
+     AND    GENDER = 'F'
+     AND    ACCOUNT_MGR_ID = 149;
+   ```
+
+   所有这三列都出现在同一`WHERE`子句中，因此报告将它们显示为组过滤器。`FILTER`报表中的列集是列组的候选项。
+
+### KnowledgePoint
+
+**父主题：** [关于列组的统计信息](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/tgsql/managing-extended-statistics.html#GUID-858E0BDA-06C6-471F-B9E8-888C3AD29673)
+
+为特定工作负载检测有用的列组
+
+您可以使用`DBMS_STATS.SEED_COL_USAGE`和`REPORT_COL_USAGE`根据指定的工作负荷来确定表需要哪些列组。
+
+当您不知道要创建哪个扩展统计信息时，此技术很有用。此技术不适用于表达式统计。
+
+## 实践19-4:创建在工作负载监视期间检测到的列组
+
+### Overview
+
+本教程假定您已经进行中上一步的步骤。
+
+### Task
+
+### Practice
+
+1. `customers_test`根据在监视窗口期间捕获的使用情况信息为表创建列组。
+
+   例如，`oe`用户运行以下查询：
+
+   ```
+   SELECT DBMS_STATS.CREATE_EXTENDED_STATS(user, 'customers_test') FROM DUAL;
+   ```
+
+   输出示例如下：
+
+   ```
+   ###############################################################################
+
+   EXTENSIONS FOR OE.CUSTOMERS_TEST
+   ................................
+
+   1. (CUST_EMAIL, ACCOUNT_MGR_ID,
+       GENDER)			       : SYS_STU6#U3UU_Q98DVUTCYY6RGBXW created
+   ###############################################################################
+   ```
+
+   数据库创建了一个列组`customers_test`：一个列组用于过滤谓词。
+
+2. 收集表统计信息。
+
+   以用户`oe`身份，运行`GATHER_TABLE_STATS`以收集以下统计信息`customers_test`：
+
+   ```
+   EXEC DBMS_STATS.GATHER_TABLE_STATS(user,'customers_test');
+   ```
+
+3. 以用户`oe`身份，运行工作负载中两个查询的解释计划。
+
+   检查`USER_TAB_COL_STATISTICS`视图以确定数据库创建了哪些其他统计信息：
+
+   ```
+   SELECT COLUMN_NAME, NUM_DISTINCT, HISTOGRAM
+   FROM   USER_TAB_COL_STATISTICS
+   WHERE  TABLE_NAME = 'CUSTOMERS_TEST'
+   ORDER BY 1;
+   ```
+
+   部分样本输出如下所示：
+
+   ```sql
+   ...
+   CUST_EMAIL		      319 NONE
+   GENDER				2 FREQUENCY
+   SYS_STU6#U3UU_Q98DVUTCYY6RGBXW	      319 NONE
+   ...
+   ```
+
+   本示例显示了从`DBMS_STATS.CREATE_EXTENDED_STATS`函数返回的1个列组名称 `SYS_STU6#U3UU_Q98DVUTCYY6RGBXW`
+
+4. 再次说明计划。
+
+   以下示例显示了`customers_test`表中两个查询的解释计划：
+
+   ```
+   conn oe/oe@emrep;
+   EXPLAIN PLAN FOR
+     SELECT *
+     FROM   customers_test
+     WHERE  CUST_EMAIL = 'Charlotte.Buckley@PINTAIL.EXAMPLE.COM'
+     AND    GENDER = 'F'
+     AND    ACCOUNT_MGR_ID = 149;
+
+   SELECT PLAN_TABLE_OUTPUT
+   FROM   TABLE(DBMS_XPLAN.DISPLAY('plan_table', null,'basic rows'));
+
+   EXPLAIN PLAN FOR
+     SELECT   ACCOUNT_MGR_ID, GENDER, count(*)
+     FROM     customers_test
+     GROUP BY ACCOUNT_MGR_ID, GENDER;
+
+   SELECT PLAN_TABLE_OUTPUT
+   FROM   TABLE(DBMS_XPLAN.DISPLAY('plan_table', null,'basic rows'));
+   ```
+
+   新计划显示了更准确的基数估计。
+
+### KnowledgePoint
+
+您可以使用该`DBMS_STATS.CREATE_EXTENDED_STATS`函数通过执行创建先前检测到的列组`DBMS_STATS.SEED_COL_USAGE`。
+
+也可以看看：
+
+[Oracle Database PL / SQL软件包和类型参考](https://www.oracle.com/pls/topic/lookup?ctx=en/database/oracle/oracle-database/12.2/tgsql&id=ARPLS059)以了解该`DBMS_STATS`软件包
