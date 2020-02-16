@@ -653,6 +653,39 @@ SQL> SELECT count(*) FROM inventories WHERE quantity_on_hand = 7 AND    WAREHOUS
 
 ### KnowledgePoint
 
+## 实践16-3:数据泵将视图导出并导入成表
+
+### Overview
+
+### Task
+
+1. expdp 操作导出在EMP_DEPT视图中查询的表的表定义。
+2. impdp 操作将EMP_DEPT创建为表
+
+### Practice
+
+```sql
+conn scott/tiger@emrep
+create view emp_dept as select e.ename,d.dname from emp e ,dept d where e.deptno=d.deptno;
+
+conn sys/WLS3Gg5_2@emrep as sysdba
+!mkdir /u01/software/expbk
+create directory dumpdir as '/u01/software/expbk';
+!expdp scott/tiger@emrep DIRECTORY=dumpdir DUMPFILE=emp1.dmp VIEWS_AS_TABLES=emp_dept
+
+conn scott/tiger@emrep
+drop view emp_dept;
+!impdp scott/tiger@emrep DIRECTORY=dumpdir DUMPFILE=emp1.dmp VIEWS_AS_TABLES=emp_dept 
+
+col tname format a10;
+select * from tab;
+
+```
+
+
+
+### KnowledgePoint
+
 ## 总结
 
 ### Oracle Data Pump概述
