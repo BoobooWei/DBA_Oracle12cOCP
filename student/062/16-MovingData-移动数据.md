@@ -18,6 +18,11 @@
       - [Task](#task)   
       - [Practice](#practice)   
       - [KnowledgePoint](#knowledgepoint)   
+   - [实践16-3:数据泵将视图导出并导入成表](#实践16-3数据泵将视图导出并导入成表)   
+      - [Overview](#overview)   
+      - [Task](#task)   
+      - [Practice](#practice)   
+      - [KnowledgePoint](#knowledgepoint)   
    - [总结](#总结)   
       - [Oracle Data Pump概述](#oracle-data-pump概述)   
       - [SQL * Loader](#sql-loader)   
@@ -675,7 +680,7 @@ create directory dumpdir as '/u01/software/expbk';
 
 conn scott/tiger@emrep
 drop view emp_dept;
-!impdp scott/tiger@emrep DIRECTORY=dumpdir DUMPFILE=emp1.dmp VIEWS_AS_TABLES=emp_dept 
+!impdp scott/tiger@emrep DIRECTORY=dumpdir DUMPFILE=emp1.dmp VIEWS_AS_TABLES=emp_dept
 
 col tname format a10;
 select * from tab;
