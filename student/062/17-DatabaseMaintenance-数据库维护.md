@@ -15,6 +15,7 @@
    - [实践17-5:删除PDB](#实践17-5删除pdb)   
    - [实践17-6:创建PDB](#实践17-6创建pdb)   
    - [实践17-7:拔出PDB](#实践17-7拔出pdb)   
+   - [实践17-8:Non-CDB to PDB](#实践17-8non-cdb-to-pdb)   
    - [总结](#总结)   
 
 <!-- /MDTOC -->
@@ -179,6 +180,7 @@ Practice 17-1: Database Maintenance
    *
    ERROR at line 1:
    ORA-00959: tablespace 'TBSSPC' does not exist
+   ```
 
 
    SQL> SQL>   2    3    4    5    6  
@@ -276,6 +278,7 @@ Practice 17-1: Database Maintenance
 
    exit;
    EOF
+   ```
 
 
    [oracle@ocm labs]$ bash P17/lab_17_01_03.sh
@@ -484,6 +487,7 @@ Practice 17-1: Database Maintenance
 
    exit;
    END
+   ```
 
 
    sqlplus dba1/oracle@emrep as sysdba  << EOF
@@ -537,6 +541,7 @@ Practice 17-1: Database Maintenance
 
     ```bash
     PL/SQL procedure successfully completed.
+    ```
 
 
     [oracle@ocm labs]$ bash P17/lab_17_01_05.sh
@@ -1208,6 +1213,76 @@ SQL> show pdbs;
 
 [《 Oracle数据库SQL语言参考》](https://www.oracle.com/pls/topic/lookup?ctx=en/database/oracle/oracle-database/12.2/admin&id=SQLRF55686)以获取有关该`CREATE` `PLUGGABLE` `DATABASE`语句的 更多信息
 
+#### 1.克隆种子容器
+
+```
+sqlplus / as sysdba
+alter session set db_create_file_dest='/opt/oradata/';
+create pluggable database pdbdb admin user pdb_dba identified by oracle
+alter  pluggable database pdbdb open ;
+```
+
+#### 2. 克隆已有的PDB
+
+
+
+```
+alter pluggable database q2 close ;
+alter pluggable database q2 open read only ;
+
+
+create pluggable database q1 from q2  
+    storage unlimited
+    file_name_convert=none ;
+
+alter  pluggable database q1  open read wirte ;;
+
+alter pluggable database q2 close ;
+alter pluggable database q2 open read write ;
+```
+
+
+
+#### 3. 插入一个非CDB数据库
+
+注：如果是12c以前的版本，就必须先升级到12c， 或者使用data pump 移动该数据库
+
+
+
+```
+alter datbase open read only  ;
+exec dbms_pdb.describe('/home/oracle/to_pdb.xml')
+
+#数据文件拷贝过去
+
+create pluggable database  p1 using '/home/oracle/to_pdb.xml';
+alte session set container=p1
+@noncdb_to_pdb.sql
+alter pluggable database p1 open read write ;
+```
+
+
+
+
+
+
+
+#### 4.插入一个以前拔出的PDB
+
+
+
+```
+alter pluggable database m1 close ;
+alter pluggable database m1 unplug into '/home/oracle/to_pdb.xml'
+
+#数据文件拷贝过去
+#drop pluggable database m1 including datafiles ;                     #删除数据库和文件
+#drop pluggable database pdb01 keep datafiles;                        #删除数据库 保存文件
+
+create pluggable database m1 using '/home/oracle/to_pdb.xml' nocopy ;
+alte pluggable database m1 open read wirte ;
+```
+
 ## 实践17-7:拔出PDB
 
 ### Overview
@@ -1237,6 +1312,155 @@ SQL> show pdbs;
 - [拔出PDB](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/creating-and-removing-pdbs-with-sql-plus.html#GUID-75C46F1B-00D8-4FB9-A8E7-6F7FE3DE4CA0)
   拔出PDB时必须满足先决条件。
 
+## 实践17-8:Non-CDB to PDB
+
+### Overview
+
+### Task
+
+### Practice
+
+1. DBCA创建新的非容器数据库实例db01
+
+2. 修改ORACLE_SID参数
+
+   ```shell
+   export ORACLE_SID=db01
+   ```
+
+
+
+3. 使用以下SQL命令来确保数据库处于只读模式：
+
+   ```sql
+   sqlplus / as sysdba
+   startup mount
+   alter database open read only;
+   ```
+
+4. 为PDB创建XML文件。XML文件的根名称与PDB的名称匹配。在以下语法示例中，path的值是XML的保存位置，而myPDB .xml是可插入数据库文件的名称。您可以选择要放置文件的位置。
+
+   ```
+   SQL> exec DBMS_PDB.DESCRIBE('path/myPDB.xml');
+   ```
+
+   例如，其中path是`/home/oracle`，myPDB是`db01：
+
+   ```
+   SQL> exec DBMS_PDB.DESCRIBE('/home/oracle/db01.xml');
+   ```
+
+5. 使用以下命令在旧的（源）Oracle主目录中关闭数据库：
+
+   ```
+   SQL> SHUTDOWN IMMEDIATE
+   ```
+   ![](pic/1710.png)
+
+6. 修改ORACLE_SID为原来的容器数据库booboo，然后运行DBMS_PDB.CHECK_PLUG_COMPATIBILITY函数。
+
+   运行该函数时，请设置以下参数：
+
+   - `pdb_descr_file` 将此参数设置为XML文件的完整路径。
+   - `pdb_name`指定新的PDB的名称。如果省略此参数，则使用XML文件中的PDB名称。
+
+
+
+   例如，要确定文件描述的PDB `/disk1/usr/salespdb.xml`是否与当前CDB兼容，请从新的Oracle主目录运行以下PL / SQL块：
+
+   ```
+   export ORACLE_SID=booboo
+   sqlplus / as sysdba
+   set serveroutput on
+
+   DECLARE
+   compatible CONSTANT VARCHAR2(3) :=
+   CASE DBMS_PDB.CHECK_PLUG_COMPATIBILITY(
+   pdb_descr_file => '/home/oracle/db01.xml',
+   pdb_name       => 'db01')
+   WHEN TRUE THEN 'YES'
+   ELSE 'NO'
+   END;
+   BEGIN
+   DBMS_OUTPUT.PUT_LINE(compatible);
+   END;
+   /
+   ```
+
+   如果输出是 YES，那么PDB是兼容的，您可以继续下一步。
+
+   如果输出是 NO，则表明PDB不兼容，您可以检查PDB_PLUG_IN_VIOLATIONS视图以查看为什么它不兼容。
+
+   ![](pic/1711.png)
+
+7. 使用以下命令语法创建可插入数据库，并将数据库插入CDB：
+
+   ```
+   CREATE PLUGGABLE DATABASE SALESPDB USING 'mypdb.xml' NOCOPY TEMPFILE REUSE;
+   ```
+
+   以下示例显示了用于创建可插入数据库的命令`salespdb`：
+
+   ```sql
+   SQL> CREATE PLUGGABLE DATABASE db01 USING '/home/oracle/db01.xml' NOCOPY TEMPFILE REUSE;
+   ```
+
+   您可以为PDB使用任何名称，但是您使用的名称在此CDB中必须唯一。`TEMPFILE REUSE`指定`TEMP`可以重用现有表空间。
+
+   当此SQL命令完成时，将出现以下消息：
+
+   ```
+   Pluggable database created.
+   ```
+
+   db01数据库现在是PDB，可以将其放入CDB中了。
+
+   警告：
+
+   Oracle强烈建议您先使用有效的备份，然后再使用NOCOPY选项。如果此命令由于任何原因失败，则数据库可能会损坏且无法恢复。
+
+8. 使用以下命令连接到PDB：
+
+   ```
+   ALTER SESSION set container=salespdb;
+   ```
+
+9. 将字典转换为PDB类型。在`admin`目录中，运行`noncdb_to_pdb.sql`脚本。您必须先运行此脚本，才能首次打开PDB。
+
+   例如：
+
+   ```sql
+   @$ORACLE_HOME/rdbms/admin/noncdb_to_pdb.sql
+   ```
+
+   注意：
+
+   请注意，根据必须转换的新PDB词典中对象的数量和类型，此脚本的运行时间可能从几分钟到一个小时不等。
+
+10. 启动并以读/写模式打开新的PDB。您必须以读/写模式打开Oracle数据库的新PDB，才能完成新PDB与CDB的集成。
+
+    例如，由于您已经将PDB容器设置为`salespdb`，请输入以下命令以启动PDB：
+
+    ```
+    SQL> STARTUP
+    ```
+
+11. 使用RMAN（恢复管理器）备份PDB。
+
+    Oracle强烈建议您使用RMAN执行PDB的备份，因为在将其转换为PDB之前，您将无法再使用从数据库中获取的ARCHIVELOG和备份。
+
+    警告：
+
+    您必须立即执行备份以确保可恢复性。
+
+### KnowledgePoint
+
+**相关话题**
+
+- [Oracle数据库备份和恢复用户指南](https://www.oracle.com/pls/topic/lookup?ctx=en/database/oracle/oracle-database/12.2/upgrd&id=BRADV428)
+- [Oracle数据库管理员指南](https://www.oracle.com/pls/topic/lookup?ctx=en/database/oracle/oracle-database/12.2/upgrd&id=ADMIN13549)
+- [Oracle数据库中的COMPATIBLE初始化参数](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/upgrd/what-is-oracle-database-compatibility.html#GUID-A2E90F08-BC9F-4688-A9D0-4A948DD3F7A9)
+
 ## 总结
 
 1. 主动监控数据库
@@ -1245,3 +1469,4 @@ SQL> show pdbs;
 4. 删除PDB
 5. 创建PDB
 6. 拔出PDB
+7. Non-PDB to PDB
