@@ -32,6 +32,8 @@
 * [Schema Demo](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/comsc/lot.html)
 * [Schema Demo Github](https://github.com/oracle/db-sample-schemas)
 * [Oracle数据库12 *c*新特性](https://docs.oracle.com/database/121/NEWFT/toc.htm)
+* [数据库概念 ](https://docs.oracle.com/database/121/CNCPT/process.htm#CNCPT008)
+* [Unicode数据库迁移助手指南 ](https://docs.oracle.com/database/121/DUMAG/toc.htm)
 
 
 
