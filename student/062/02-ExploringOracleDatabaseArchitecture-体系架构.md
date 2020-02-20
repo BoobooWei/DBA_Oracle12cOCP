@@ -27,6 +27,7 @@
    - [实践2-17:在数据库之间传输表空间Management](#实践2-17在数据库之间传输表空间management)   
    - [实践2-18:DB_FLASH_CACHE_FILE](#实践2-18db_flash_cache_file)   
    - [实践2-19:在线缩小数据库段](#实践2-19在线缩小数据库段)   
+   - [实践2-20:数据库内归档In-Database Archiving](#实践2-20数据库内归档in-database-archiving)   
 
 <!-- /MDTOC -->
 ## 实践2:概览
@@ -1513,3 +1514,118 @@ db_flash_cache_size = 32G, 32G, 64G
 有关该`ALTER` `TABLE`命令的更多信息，请[参见《 Oracle数据库SQL语言参考](https://www.oracle.com/pls/topic/lookup?ctx=en/database/oracle/oracle-database/12.2/admin&id=SQLRF01001)》。
 
 [在线缩小数据库段](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/managing-space-for-schema-objects.html#GUID-37DF35E0-116B-4AAB-BFB3-DDBDBAB29BEB)
+
+## 实践2-20:数据库内归档In-Database Archiving
+
+### Overview
+
+ 在企业的应用场景中，经常会遇到当我们不需要表中的某些行时，需要把它删除。但是有时候并不是想在物理上真正的删除这些数据，在传统的表设计中，我们一般会采用加一个额外的列来表示逻辑删除。比如is_del，当应用程序在处理时，在where条件中根据is_del的值来判断某些行是否应该被删除了。这种解决方案给维护带来了额外的开销，而且缺少灵活性。    
+
+Oracle12c版本中增加了一个新特性叫作row archive，可以让数据库自动判断某些行数据是否为删除，这个新功能也叫作In-DatabaseArchiving（数据库内归档），这个解决方案减少了维护上的开销，而且实现起来非常简单灵活。     
+
+简单的说数据库内归档（即行归档）就是在数据库自动创建的隐藏列上给予赋值，如果是0，说明是活跃的数据，可以被查询到，如果是非0的数据，则表示为归档的数据（即被删除的数据），查询时就不会被查询出来。行归档就像一个开关一样，数据要么是活跃的，要么是归档的，根据用户设置的归档策略数据库自动判断。      
+
+本文通过各种案例诠释Oracle 12c中关于ILM（数据生命周期管理）多个新特性中相对最简单的一个――数据库内归档（In-DatabaseArchiving）。    
+
+ILM有些特性在12c版本中只有12.2版本才支持，但是行归档功能在12.1版本中就支持，而且支持多租户架构，可以在PDB中使用。
+
+### Task
+
+
+
+### Practice
+
+1. 观察表启用行归档前后的结构变化
+
+   ```sql
+   /* 查看启用行归档前表的结构 */
+   conn scott/tiger@booboopdb1
+   col COLUMN_NAME for a20
+   col DATA_TYPE for a20
+   col HIDDEN_COLUMN for a10
+   select COLUMN_NAME,DATA_TYPE,HIDDEN_COLUMN FROM USER_TAB_COLS WHERE TABLE_NAME='EMP';
+   /* 启用行归档 */
+   alter table EMP row archival;
+   /* 查看启用行归档后表的结构 */
+   select COLUMN_NAME,DATA_TYPE,HIDDEN_COLUMN FROM USER_TAB_COLS WHERE TABLE_NAME='EMP';
+   ```
+
+   ![](pic/0206.png)
+
+   可以看出Oracle是使用隐藏列来实现这个功能的，在启用该特性以后，会自动在表上增加`SYS_NC00009$`和`ORA_ARCHIVE_STATE`字段，`ORA_ARCHIVE_STATE`是一个`VARCHAR2(4000)`的字段。其中S`YS_NC00009$`是为了以后创建函数索引的时候使用，`ORA_ARCHIVE_STATE`用来表示行数据的活跃状态。
+
+
+
+2. 启用行归档后数据查询操作
+
+   ```sql
+   /*查看EMP表中的当前的数据分布：*/
+   select ename,to_char(hiredate,'yyyy-mm-dd hh24:mi:ss') from emp order by hiredate;
+   /*将雇佣日期在1981-05-01 00:00:00之前的记录设置为归档。可以通过使用UPDATE语句将ORA_ARCHIVE_STATE字段更新为任意非0的字符来实现。*/
+   update emp set ORA_ARCHIVE_STATE=1 where hiredate < to_date('1981-05-01 00:00:00','yyyy-mm-dd hh24:mi:ss');
+   /*查看EMP表中的当前的数据分布：*/
+   select ename,to_char(hiredate,'yyyy-mm-dd hh24:mi:ss') from emp order by hiredate;
+   /* 可以查看这些行的数据活跃状态标识 */
+   select ename,to_char(hiredate,'yyyy-mm-dd hh24:mi:ss'),ORA_ARCHIVE_STATE from emp order by hiredate;
+   ```
+
+    通过隐藏的列的值，数据库自动判断哪些数据是活跃的，哪些是归档的，活跃的就显示，归档的就不显示，无需添加条件语句。
+
+   可以在会话级别控制归档数据的显示情况：
+
+   ```sql
+   /* 记录是归档的，也显示出来，注意归档的状态标识0为活跃的，非0值为归档的 */
+   ALTER SESSION SET ROW ARCHIVAL VISIBILITY = ALL;
+   select ename,to_char(hiredate,'yyyy-mm-ddhh24:mi:ss'),ORA_ARCHIVE_STATE from emp order by hiredate;
+   /* 如果不显示归档的数据，则重新设置为默认值：*/
+   ALTER SESSION SET ROW ARCHIVAL VISIBILITY = ACTIVE;
+   select ename,to_char(hiredate,'yyyy-mm-ddhh24:mi:ss'),ORA_ARCHIVE_STATE from emp order by hiredate;
+   ```
+
+3. 启用行归档后数据更新操作
+
+   如果会话处于ARCHIVAL VISIBILITY = ACTIVE，如果在UPDATE的时候ORA_ARCHIVE_STATE字段为非0值，则这些行不会被修改；如果需要被修改则要把参数设为ROW ARCHIVAL VISIBILITY = ALL。
+
+   ```sql
+   update emp set sal=sal+100 where hiredate < to_date('1981-12-17 00:00:00','yyyy-mm-dd hh24:mi:ss');
+   /*如果要能够更新这些行，需要设置如下参数：*/
+   ALTER SESSION SET ROW ARCHIVALVISIBILITY = ALL;
+   update emp set sal=sal+100 where hiredate < to_date('1981-12-17 00:00:00','yyyy-mm-dd hh24:mi:ss');
+   ```
+
+   被标识为归档的数据，用select查询不出来，那么在进行update和delete操作的时候也一样无法操作。只有在会话级把ROW ARCHIVAL VISIBILITY 设置成all，才可以修改。
+
+4. 那么数据库是如何处理归档的数据呢，虽然我们没有添加条件，但是数据库还是对隐藏字段进行了filter操作。即使是只显示活跃数据，也仍然需要扫描全表。这一点在真实应用中可以通过创建索引来避免全表扫描，也就是**数据库内归档虽然没有显示归档的数据，但是归档的数据数据库还是会扫描的**。
+
+   ```sql
+   select count(*) from emp;
+   /* 查看执行计划 */
+   EXPLAIN PLAN FOR SELECT * FROM EMP;
+   SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
+   ```
+
+   数据库内归档是一个Oracle利用隐藏字段实现的非常简单的功能，但是数据架构人员在规划的时候一定要考虑性能因素，不显示不代表不扫描。
+
+   ![](pic/0207.png)
+
+5. 取消行归档
+
+   ```sql
+   /* 禁用行归档 */
+   alter table EMP no row archival;
+
+   /* 查看禁用行归档后表的结构 */
+   select COLUMN_NAME,DATA_TYPE,HIDDEN_COLUMN FROM USER_TAB_COLS WHERE TABLE_NAME='EMP';
+   ```
+
+   可以看出原来在表上增加SYS_NC00009$和ORA_ARCHIVE_STATE字段被自动删除了。
+
+### KnowledgePoint
+
+数据库内归档允许用户和应用程序设置单个行的归档状态。除非启用了会话以查看存档的数据，否则标记为已存档的行是不可见的。
+
+使用数据库内归档，可以在生产数据库中存储更多数据更长的时间，而不会影响应用程序性能。此外，可以主动压缩归档数据，以帮助提高查询和备份性能。在应用程序升级期间可以推迟对存档数据的更新，从而极大地提高了升级性能。
+
+也可以看看：
+
+有关详细信息，请参见[《 Oracle数据库VLDB和分区指南](https://docs.oracle.com/database/121/VLDBG/GUID-0193CE0F-4D9A-4D6F-8B19-E471DE94107C.htm#VLDBG007)》
