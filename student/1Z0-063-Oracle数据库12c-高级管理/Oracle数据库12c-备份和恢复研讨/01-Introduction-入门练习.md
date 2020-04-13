@@ -5,14 +5,14 @@
 <!-- MDTOC maxdepth:6 firsth1:1 numbering:0 flatten:0 bullets:1 updateOnSave:1 -->
 
 - [第1课：入门练习](#第1课：入门练习)   
-   - [第1课：概述的练习](#第1课：概述的练习)   
+   - [实践概述](#实践概述)   
    - [练习1-1：探索课程环境](#练习1-1：探索课程环境)   
       - [Overview](#overview)   
       - [Tasks](#tasks)   
 
 <!-- /MDTOC -->
 
-## 第1课：概述的练习
+## 实践概述
 
 在本练习中，您将探索在课程练习中将使用的环境。
 
