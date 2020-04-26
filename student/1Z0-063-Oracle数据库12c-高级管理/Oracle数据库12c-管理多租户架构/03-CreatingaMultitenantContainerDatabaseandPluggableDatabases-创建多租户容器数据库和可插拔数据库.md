@@ -30,6 +30,7 @@
       - [总览](#总览)   
       - [假设条件](#假设条件)   
       - [任务](#任务)   
+   - [总结](#总结)   
 
 <!-- /MDTOC -->
 
@@ -470,3 +471,7 @@ startup mount restrict
 DROP DATABASE;
 EXIT
 ```
+
+## 总结
+
+* [Oracle数据库管理员指南](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/creating-and-removing-pdbs-with-sql-plus.html#GUID-9A250D93-5B3B-4643-BE85-F32CC7B0E413)
