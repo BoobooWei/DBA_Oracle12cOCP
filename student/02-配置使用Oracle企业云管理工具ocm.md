@@ -1,4 +1,4 @@
-# 配置使用Oracle企业云管理工具ocm
+# 配置使用Oracle企业云管理工具oem
 
 > 2019.10.27 BoobooWei
 >
