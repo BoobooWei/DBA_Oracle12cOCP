@@ -181,3 +181,175 @@ Tips：
 
 1. 学会看帮助文档 README.md
 2. 导入的过程中，弄明白每一个传参的含义，例如：第八个参数为何要填写`v3`
+
+
+## 其他
+
+### Centos 7 装插件rlwrap
+```sql
+# 安装插件rlwrap，sqlplus可以光标回退，命令回显，使用方向键操作命令行
+wget ftp://ftp.pbone.net/mirror/archive.fedoraproject.org/epel/7.2019-05-29/x86_64/Packages/r/rlwrap-0.43-2.el7.x86_64.rpm
+yum localinstall -y rlwrap-0.43-2.el7.x86_64.rpm
+ 
+ 
+# 在.bashrc中增加调用sqlplus的别名
+vi .bashrc
+------------------------------------
+alias sqlplus='rlwrap sqlplus'
+ 
+# 使.bashrc新增的内容生效
+source .bashrc
+# 启动sqlplus
+sqlplus /nolog
+sqlplus / as sysdba
+ 
+# 美化结果集的脚本文件
+vi /home/oracle/login.sql
+-------------------------
+set linesize 120
+set pagesize 500
+ 
+ 
+# 增加环境变量使sqlplus永远能读取/home/oracle/login.sql
+vi .bashrc
+---------------------------
+export SQLPATH=/home/oracle
+ 
+ 
+# 使.bashrc新增的内容生效
+source .bashrc
+```
+
+### OCP考试练习环境的创建
+
+> 再练习一次
+
+```bash
+# 1.为cdb1的新PDB数据文件创建存放目录。
+cd $ORACLE_BASE/oradata/orcl
+mkdir ocp
+ 
+# 2.运行SQL * Plus，并使用CREATE PLUGGABLE DATABASE与用户连接到根目录
+sqlplus / as sysdba
+CREATE PLUGGABLE DATABASE ocp ADMIN USER ocp
+IDENTIFIED BY oracle_4U ROLES=(CONNECT)
+FILE_NAME_CONVERT=('/u01/app/oracle/oradata/orcl/pdbseed',
+  '/u01/app/oracle/oradata/orcl/ocp');
+ 
+ 
+ 
+# 3.检查ocp的打开模式。
+col con_id format 999
+col name format A10
+select con_id, NAME, OPEN_MODE,DBID, CON_UID from V$PDBS;
+ 
+ 
+# 4.打开ocp。
+alter pluggable database ocp open;
+ 
+ 
+# 登陆
+sqlplus / as sysdba
+alter session set container=ocp;
+conn ocp/oracle as sysdba
+show con_name
+# 使用OCP sysdba用户登陆到 pdb中
+sqlplus sys/WLS3Gg5_2@127.0.0.1:1521/ocp.ilt.example.com as sysdba
+ 
+ 
+# 使用oe业务用户登陆到pdb中
+conn oe/oracle@127.0.0.1:1521/ocp.ilt.example.com
+show con_name
+```
+
+### 检查
+
+```
+# 检查用户是否创建成功
+column account_status format a20
+column username format a20
+column password format a20
+select username,password,account_status from dba_users where username='OE';
+ 
+USERNAME         PASSWORD         ACCOUNT_STATUS
+-------------------- -------------------- --------------------
+OE                    OPEN
+ 
+ 
+# 创建用户的表
+column OWNER format a20
+column TABLE_NAME format a20
+select owner, table_name from dba_tables where owner='OE';
+ 
+OWNER            TABLE_NAME
+-------------------- --------------------
+OE           CUSTOMERS
+OE           WAREHOUSES
+OE           ORDER_ITEMS
+OE           ORDERS
+OE           INVENTORIES
+OE           PRODUCT_INFORMATION
+OE           PRODUCT_DESCRIPTIONS
+OE           PROMOTIONS
+ 
+ 
+# 查看OE的系统权限
+select privilege from dba_sys_privs where GRANTEE='OE';
+ 
+PRIVILEGE
+----------------------------------------
+CREATE MATERIALIZED VIEW
+UNLIMITED TABLESPACE
+CREATE VIEW
+QUERY REWRITE
+CREATE SYNONYM
+CREATE SESSION
+CREATE DATABASE LINK
+ 
+ 
+# 查看用户被授予的对象权限
+col GRANTEE for a15;
+col PRIVILEGE for a20;
+col owner for a15;
+SELECT GRANTEE,PRIVILEGE,OWNER,TABLE_NAME FROM DBA_TAB_PRIVS WHERE GRANTEE='OE';
+ 
+ 
+ 
+GRANTEE     PRIVILEGE        OWNER       TABLE_NAME
+--------------- -------------------- --------------- --------------------
+OE      EXECUTE          SYS         DBMS_STATS
+OE      READ             SYS         SUBDIR
+OE      READ             SYS         SS_OE_XMLDIR
+OE      WRITE            SYS         SUBDIR
+OE      WRITE            SYS         SS_OE_XMLDIR
+ 
+ 
+# 修改秘密
+alter user oe identified by oracle;
+ 
+ 
+# 登陆
+conn oe/oracle@127.0.0.1:1521/ocp.ilt.example.com
+show con_name
+ 
+CON_NAME
+------------------------------
+OCP
+ 
+ 
+# 查看OE用户有权限的表
+SQL>  select table_name from tabs;
+ 
+TABLE_NAME
+--------------------------------------------------------------------------------
+CUSTOMERS
+WAREHOUSES
+ORDER_ITEMS
+ORDERS
+INVENTORIES
+PRODUCT_INFORMATION
+PRODUCT_DESCRIPTIONS
+PROMOTIONS
+ 
+8 rows selected.
+```
